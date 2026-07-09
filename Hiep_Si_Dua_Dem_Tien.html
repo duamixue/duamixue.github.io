@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hiệp Sĩ Dừa - Đếm Tiền</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;color:#fff;background:linear-gradient(180deg,#243b55,#141e30);overflow-x:hidden;transition:background 1s ease}
+.wrap{max-width:1200px;margin:auto;padding:30px 20px}
+h1,h2,#msg,#question{text-align:center}
+h1{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.logoIcon{width:40px;height:40px;vertical-align:middle}
+.introBox h1 .logoIcon{width:34px;height:34px}
+.sub{text-align:center;opacity:.9}
+.stats{text-align:center;font-size:22px;margin:24px 0 6px;padding-top:16px;border-top:1.5px solid rgba(255,255,255,.15);display:flex;justify-content:center;gap:18px;flex-wrap:wrap}
+.stats span{background:rgba(255,255,255,.08);padding:4px 12px;border-radius:10px}
+.combo{color:#ffd54f;font-weight:bold;transition:.2s}
+.combo.show{transform:scale(1.25)}
+
+.battle{display:flex;justify-content:center;align-items:flex-start;margin:25px 0;gap:24px;position:relative}
+.hero,.enemy{width:50%;max-width:280px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.hero img{width:180px;height:180px;border-radius:50%;object-fit:cover;border:6px solid gold;transition:.15s}
+.monwrap{width:180px;height:180px;border-radius:50%;border:6px solid #111;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;transition:.15s;position:relative;overflow:visible}
+.monster{font-size:100px;display:inline-block}
+.hero h2,.enemy h2{margin:10px 0 4px;font-size:22px;height:52px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.15}
+
+/* Kiếm chém: bay từ trái, đâm vào quái rồi vụt qua + biến mất */
+#swordSlash{position:absolute;font-size:90px;left:0;top:30px;opacity:0;pointer-events:none;z-index:30;transform:translateX(0) rotate(70deg)}
+#swordSlash.go{animation:slashFly .42s cubic-bezier(.2,.7,.3,1)}
+@keyframes slashFly{
+0%{opacity:0;left:0;transform:translateX(0) rotate(70deg) scale(.8)}
+12%{opacity:1}
+55%{opacity:1;left:48%;transform:translateX(-50%) rotate(20deg) scale(1.15)}
+75%{opacity:1;left:78%;transform:translateX(-50%) rotate(-10deg) scale(1.05)}
+100%{opacity:0;left:100%;transform:translateX(-50%) rotate(-25deg) scale(.9)}
+}
+.slashLine{position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:0}
+.slashLine.go{animation:slashCut .3s ease-out}
+@keyframes slashCut{
+0%{opacity:0}
+20%{opacity:.75;box-shadow:inset 0 0 0 3px #fff, 0 0 14px 4px #fff}
+100%{opacity:0;box-shadow:inset 0 0 0 3px #fff, 0 0 14px 4px transparent}
+}
+
+.hero,.enemy{animation:heroIdle 2.2s ease-in-out infinite}
+@keyframes heroIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+.monster{animation:monsterIdle 2.6s ease-in-out infinite;transform-origin:center}
+@keyframes monsterIdle{
+0%,100%{transform:scale(1);opacity:1}
+42%{transform:scale(1.05);opacity:1}
+48%{transform:scale(1.05);opacity:.8}
+54%{transform:scale(1.05);opacity:1}
+70%{transform:scale(1);opacity:1}
+}
+
+body.shake{animation:screenShake .3s}
+@keyframes screenShake{
+0%,100%{transform:translateX(0)}
+20%{transform:translateX(-3px)}
+40%{transform:translateX(2.5px)}
+60%{transform:translateX(-2px)}
+80%{transform:translateX(1.5px)}
+}
+
+.hit{animation:hitflash .35s}
+@keyframes hitflash{
+0%{filter:brightness(1)}
+30%{filter:brightness(1.5) drop-shadow(0 0 14px #ff3b3b);transform:translateX(4px) scale(.97)}
+60%{transform:translateX(-3px) scale(1.01)}
+100%{filter:brightness(1);transform:translateX(0) scale(1)}
+}
+.heroHit{animation:herohitflash .3s}
+@keyframes herohitflash{
+0%{filter:brightness(1)}
+40%{filter:brightness(1.35) drop-shadow(0 0 10px #ff3b3b);transform:translateX(-3px)}
+100%{filter:brightness(1);transform:translateX(0)}
+}
+
+.hpbar{width:180px;height:22px;background:#444;border-radius:20px;overflow:hidden;margin-top:10px;position:relative;border:2px solid rgba(255,255,255,.15)}
+.barfill{height:100%;transition:width .3s ease}
+.green{background:linear-gradient(90deg,#2ecc71,#58e08a)}
+.red{background:linear-gradient(90deg,#e53935,#ff7b72)}
+.barlabel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;text-shadow:0 1px 2px #000}
+
+.storyText{max-width:640px;margin:0 auto;text-align:center;font-size:19px;font-family:'Courier New',monospace;font-style:normal;letter-spacing:.5px;color:#ffe9a8;min-height:52px;line-height:1.4;padding:0 10px}
+.storyText.typing::after{content:'▍';animation:blinkCursor .8s steps(1) infinite;margin-left:2px;font-style:normal}
+@keyframes blinkCursor{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+#question{font-size:58px;margin:20px}
+
+.billsWrap{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin:6px 0 18px;min-height:56px}
+.billGroup{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:190px}
+.bill{width:92px;height:52px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.4);position:relative;border:2px solid rgba(255,255,255,.3);animation:billPop .3s ease}
+.bill::before{content:'';position:absolute;inset:5px;border:1.5px dashed rgba(255,255,255,.4);border-radius:6px}
+.bill .val{position:relative;z-index:1;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.billCount{position:absolute;top:-9px;right:-9px;background:#1c1c1c;color:#ffd54f;border-radius:50%;width:24px;height:24px;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-weight:bold}
+@keyframes billPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.priceTag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);padding:8px 14px;border-radius:10px;font-size:15px;font-weight:bold;margin:0 4px}
+.priceTag .lbl{opacity:.75;font-weight:normal;font-size:12px}
+.billArrow{font-size:20px;opacity:.7;margin:0 2px}
+.billPlus{font-size:26px;font-weight:bold;opacity:.85;margin:0 4px;color:#ffd54f}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{font-size:32px;padding:14px;border:none;border-radius:12px;cursor:pointer;transition:.15s}
+button:active{transform:scale(.96)}
+.correctBtn{background:#2ecc71!important;color:#fff!important}
+.wrongBtn{background:#e53935!important;color:#fff!important}
+
+#msg{height:30px;font-size:24px}
+#explainText{min-height:24px;font-size:16px;text-align:center;color:#ffe9a8;opacity:.9;margin-top:2px}
+
+.introOverlay{position:fixed;inset:0;background:rgba(10,15,25,.92);display:flex;align-items:center;justify-content:center;z-index:60;padding:20px}
+.introBox{background:#1c2b40;border-radius:18px;padding:28px 22px;max-width:420px;text-align:center;border:2px solid rgba(255,213,79,.4)}
+.introBox h1{font-size:26px;margin:0 0 12px}
+.introBox p{font-size:17px;line-height:1.5;color:#ffe9a8;margin:0 0 20px}
+.introBox button{font-size:20px;padding:12px 28px;background:#ffd54f;border-radius:12px;font-weight:bold}
+
+.collectionBtn{position:fixed;top:14px;right:74px;font-size:26px;background:rgba(255,255,255,.12);border:none;border-radius:50%;width:50px;height:50px;cursor:pointer;z-index:55}
+.unlockToast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1c2b40;border:2px solid #ffd54f;border-radius:14px;padding:12px 20px;font-size:16px;text-align:center;z-index:70;opacity:0;transition:opacity .3s,top .3s}
+.unlockToast.show{opacity:1;top:70px}
+.collectionGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}
+.collectionItem{background:rgba(255,255,255,.06);border-radius:12px;padding:10px 4px;font-size:26px;position:relative}
+.collectionItem.locked{opacity:.25;filter:grayscale(1)}
+.collectionItem .clabel{display:block;font-size:10px;margin-top:4px;opacity:.8}
+
+.shopBtn{position:fixed;top:14px;right:14px;font-size:26px;background:rgba(255,255,255,.12);border:none;border-radius:50%;width:50px;height:50px;cursor:pointer;z-index:55}
+.shopOverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
+.shopOverlay.open{display:flex}
+.shopBox{background:#1c2b40;border-radius:18px;padding:24px;max-width:340px;width:90%;text-align:center}
+.shopItem{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.06);padding:10px 14px;border-radius:12px;margin:10px 0}
+.shopItem button{font-size:18px;padding:8px 14px;background:#ffd54f;border-radius:10px}
+.closeShop{margin-top:10px;background:rgba(255,255,255,.15);font-size:18px;padding:8px 18px;border-radius:10px}
+
+.confettiWrap{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:40}
+.confetti{position:absolute;top:-20px;font-size:24px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.9}}
+
+.win{text-align:center;margin-top:80px;animation:popIn .4s}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+
+.mquote{position:relative;min-height:56px;width:230px;margin:12px auto 16px;background:#fff;color:#161616;border:3px solid #161616;border-radius:16px;padding:8px 14px;font-size:13.5px;font-weight:bold;font-family:'Comic Sans MS','Comic Sans',Arial,sans-serif;line-height:1.3;display:flex;align-items:center;justify-content:center;text-align:center;opacity:0;transform:scale(.6);transition:opacity .25s ease,transform .25s ease;box-shadow:3px 4px 0 rgba(0,0,0,.35)}
+.mquote.show{opacity:1;transform:scale(1)}
+.mquote::before{content:'';position:absolute;top:-15px;left:50%;transform:translateX(-50%);border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:15px solid #161616}
+.mquote::after{content:'';position:absolute;top:-11px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:12px solid #fff}
+.heroSpacer{visibility:hidden;border-color:transparent;box-shadow:none}
+
+.journeyMap{position:relative;width:100%;max-width:400px;height:150px;margin:4px auto 14px}
+.journeyPath{position:absolute;inset:0;width:100%;height:100%}
+.stage{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;opacity:.35;transition:.3s;width:64px}
+.stage.done{opacity:.75}
+.stage.current{opacity:1;transform:translate(-50%,-50%) scale(1.2)}
+.stageIcon{font-size:27px;display:block}
+.stage.current .stageIcon{animation:stagePulse 1.4s ease-in-out infinite}
+@keyframes stagePulse{0%,100%{filter:drop-shadow(0 0 0px #ffd54f)}50%{filter:drop-shadow(0 0 9px #ffd54f)}}
+.stageLabel{font-size:9px;text-align:center;margin-top:2px;max-width:64px;white-space:nowrap}
+
+body.bossMode{animation:bossPulseBg 2.4s ease-in-out infinite}
+@keyframes bossPulseBg{0%,100%{box-shadow:inset 0 0 60px rgba(255,0,0,0)}50%{box-shadow:inset 0 0 90px rgba(255,30,30,.35)}}
+.bossMode .monwrap{border-color:#ff5252;box-shadow:0 0 25px 6px rgba(255,50,50,.5)}
+.bossMode #monster{font-size:120px}
+
+.heroBtn{position:fixed;top:14px;right:134px;font-size:26px;background:rgba(255,255,255,.12);border:none;border-radius:50%;width:50px;height:50px;cursor:pointer;z-index:55}
+.muteBtn{position:fixed;top:14px;right:194px;font-size:26px;background:rgba(255,255,255,.12);border:none;border-radius:50%;width:50px;height:50px;cursor:pointer;z-index:55}
+.heroGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.heroCard{background:rgba(255,255,255,.06);border-radius:14px;padding:10px;cursor:pointer;border:2px solid transparent;transition:.15s}
+.heroCard.active{border-color:#ffd54f;background:rgba(255,213,79,.12)}
+.heroCard img{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid gold}
+.heroCard .hname{font-size:13px;font-weight:bold;margin-top:6px}
+.heroCard .hdesc{font-size:10px;opacity:.75;margin-top:2px;line-height:1.3}
+
+.celebBox{background:#1c2b40;border-radius:18px;padding:26px 22px;max-width:340px;width:90%;text-align:center;border:2px solid rgba(255,213,79,.4)}
+.celebBox h2{margin:0 0 10px}
+.celebReward{font-size:18px;margin:10px 0}
+.celebUnlock{font-size:34px;margin:10px 0}
+.celebBox button{font-size:20px;padding:10px 26px;background:#ffd54f;border-radius:12px;font-weight:bold;margin-top:8px}
+</style>
+</head>
+<body>
+<audio id="bgMusic" loop preload="auto" src="bg-music.mp3"></audio>
+<button id="shopOpen" class="shopBtn">🛒</button>
+<button id="collectionOpen" class="collectionBtn">🏆</button>
+<button id="heroOpen" class="heroBtn">🎭</button>
+<button id="muteBtn" class="muteBtn">🔊</button>
+<div id="unlockToast" class="unlockToast"></div>
+
+<div id="introOverlay" class="introOverlay">
+<div class="introBox">
+<h1><img class="logoIcon" src="coconut-logo.png"> Hiệp Sĩ Dừa - Đếm Tiền</h1>
+<p>Lũ quái vật đã cướp hết tiền của dân làng Dừa! 😱<br>Hiệp Sĩ Dừa phải đánh bại từng con quái bằng cách <b>tính đúng số tiền</b> để lấy lại kho báu cho dân làng.<br>Con có sẵn sàng chưa?</p>
+<div id="continueHint" style="font-size:13px;opacity:.85;margin-bottom:14px"></div>
+<button id="startGame">⚔️ Bắt đầu</button>
+<div style="margin-top:10px">
+<button id="resetSave" style="display:none;background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;font-size:13px;padding:7px 14px;border-radius:10px;cursor:pointer">🔄 Xoá tiến trình, chơi lại từ đầu</button>
+</div>
+</div>
+</div>
+
+<div class="wrap">
+<h1><img class="logoIcon" src="coconut-logo.png"> Hiệp Sĩ Dừa - Đếm Tiền</h1>
+
+<div id="journeyMap" class="journeyMap"></div>
+
+<div class="battle">
+<div id="swordSlash">🗡️</div>
+<div class="hero">
+<img id="heroImg" src="hero-dua.jpg">
+<h2 id="heroName">Hiệp Sĩ Dừa</h2>
+<div class="mquote heroSpacer"></div>
+<div class="hpbar"><div id="herohp" class="barfill green"></div><div id="herohpLabel" class="barlabel"></div></div>
+</div>
+
+<div class="enemy">
+<div class="monwrap"><div id="monster" class="monster"></div><div id="slashLine" class="slashLine"></div></div>
+<h2 id="mname"></h2>
+<div id="mquote" class="mquote"></div>
+<div class="hpbar"><div id="enemyhp" class="barfill red"></div><div id="enemyhpLabel" class="barlabel"></div></div>
+</div>
+</div>
+
+<div id="storyText" class="storyText"></div>
+<div id="question"></div>
+<div id="billsArea" class="billsWrap"></div>
+<div id="answers" class="answers"></div>
+<div id="msg"></div>
+<div id="explainText"></div>
+
+<div id="stats" class="stats"></div>
+</div>
+
+<div id="shopOverlay" class="shopOverlay">
+<div class="shopBox">
+<h2>🛒 Cửa hàng Dừa</h2>
+<div class="shopItem">
+<span>❤️ +1 Tim (30💰)</span>
+<button id="buyHeart">Mua</button>
+</div>
+<div class="shopItem">
+<span>💚 Hồi đầy máu (60💰)</span>
+<button id="buyFullHeal">Mua</button>
+</div>
+<div class="shopItem">
+<span>💡 Gợi ý đáp án (15💰)</span>
+<button id="buyHint">Mua</button>
+</div>
+<div class="shopItem">
+<span>⚡ Nhân đôi xu câu tới (25💰)</span>
+<button id="buyDouble">Mua</button>
+</div>
+<button id="closeShop" class="closeShop">Đóng</button>
+</div>
+</div>
+
+<div id="collectionOverlay" class="shopOverlay">
+<div class="shopBox">
+<h2>🏆 Bộ Sưu Tập</h2>
+<div id="collectionGrid" class="collectionGrid"></div>
+<button id="closeCollection" class="closeShop">Đóng</button>
+</div>
+</div>
+
+<div id="heroOverlay" class="shopOverlay">
+<div class="shopBox">
+<h2>🎭 Chọn Hiệp Sĩ</h2>
+<div id="heroGrid" class="heroGrid"></div>
+<button id="closeHero" class="closeShop">Đóng</button>
+</div>
+</div>
+
+<div id="celebOverlay" class="shopOverlay">
+<div id="celebBox" class="celebBox"></div>
+</div>
+
+<script>
+const mons=[["🐷","Heo Đất Tham Lam"],["🦝","Gấu Trúc Buôn Bán"],["🦊","Cáo Ranh Ma"],["🐿️","Sóc Tích Trữ"],["🦡","Lửng Keo Kiệt"],["🐻","Gấu Thương Gia"],["🦌","Hươu Vàng"],["🐂","Trâu Chúa"],["🐉","Rồng Giữ Kho"],["👑","Vua Kho Báu"]];
+
+// ---------- Lời thoại riêng cho từng quái, mỗi con 5 câu enter + 4-5 câu hurt để đỡ lặp lại ----------
+const MONSTER_QUOTES=[
+ {enter:["Ta sẽ giữ hết tiền, không chia cho ai!","Hớ hớ, tiền này là của ta!","Đố ngươi tính ra được đấy!","Heo đất của ta chắc nịch lắm nha!","Ngươi mà tính sai là ta cười cho coi!"],
+  hurt:["Ấy da! Sao ngươi tính giỏi thế!","Không... vàng của ta...","Đau bụng quá, tính đúng làm gì!","Trời, heo đất ta nứt rồi!"]},
+ {enter:["Muốn qua đây? Trả giá đi!","Ta buôn bán khôn lắm, đừng hòng lừa ta.","Không tính đúng thì đừng hòng mua rẻ!","Ta có bí quyết làm ăn riêng đó nha.","Thử tính coi, ta không nhường đâu!"],
+  hurt:["Hàng họ gì mà tính nhanh vậy!","Ế... ta lỗ vốn rồi.","Thôi thôi, ta chịu thua vụ này!","Gấu trúc cũng phải nể ngươi."]},
+ {enter:["Ngươi tính sai thì mất vàng nhé!","Hi hi, ta ranh ma lắm đấy.","Ta giấu tiền khéo lắm, tìm không ra đâu!","Thử tài xem ngươi tính có nhanh không.","Cáo ta chưa thua ai bao giờ!"],
+  hurt:["Ranh ma cỡ nào cũng thua bé tính nhanh!","Cáo già cũng phải chào thua!","Ui da, lộ hết mánh khóe rồi!","Thôi ta chịu, ngươi giỏi thật."]},
+ {enter:["Ta tích trữ cả núi tiền rồi, không lấy được đâu!","Đồ ăn ta còn giấu kỹ hơn cả tiền.","Sóc ta chuẩn bị cho cả mùa đông lận.","Đố ngươi đếm hết kho của ta.","Cẩn thận, kho ta canh gác kỹ lắm!"],
+  hurt:["Kho của ta... lộ ra rồi!","Trời ơi, tính đúng thiệt à?","Hạt dẻ ta rớt hết rồi nè!","Thua rồi, ngươi tính nhanh ghê."]},
+ {enter:["Một xu ta cũng không cho không!","Keo kiệt là nghề của ta.","Ta tiết kiệm từng đồng đó nha.","Đừng mong ta hào phóng đâu!","Tính sai một chút là ta không thối đâu."],
+  hurt:["Hào phóng thế này ta chịu không nổi!","Đau ví quá đi mất...","Thôi được, ta chịu thua ngươi.","Ví ta nhẹ tênh luôn rồi!"]},
+ {enter:["Thương trường là chiến trường, tính sai là thua!","Ta buôn to, tính nhỏ không dọa được ta.","Ta có cả đội quân tính toán riêng đó.","Xem ngươi có bản lĩnh thương gia không.","Đừng coi thường Gấu Thương Gia này!"],
+  hurt:["Đối thủ đáng gờm đây!","Ta phải xem lại sổ sách rồi.","Thua đậm rồi, phục ngươi thật.","Vốn liếng ta bay hết trơn!"]},
+ {enter:["Sừng vàng gạc bạc, tiền của ta nhiều lắm!","Ngươi mà tính sai là gạc ta húc liền.","Ta chạy nhanh nhưng tính còn nhanh hơn đó.","Thử thách này không dễ đâu nhé.","Hươu vàng ta chưa từng thua cuộc!"],
+  hurt:["Sừng ta cũng phải cúi đầu thán phục!","Hươu vàng cũng có ngày thua bé con.","Chạy không kịp phép tính của ngươi rồi!","Thôi ta phục, quá giỏi luôn."]},
+ {enter:["Ta là Trâu Chúa, kho báu này ta canh giữ!","Ai muốn qua phải tính đúng trăm phần trăm.","Sức ta khỏe, đầu ta cũng tính giỏi lắm.","Đừng hòng qua mặt Trâu Chúa dễ dàng.","Thử xem gan ngươi to cỡ nào!"],
+  hurt:["Trâu chúa cũng phải nể ngươi vài phần!","Húc... à quên, thua rồi.","Sức mạnh không bằng cái đầu tính nhanh!","Kho báu ta lung lay hết rồi."]},
+ {enter:["Rồng ta ngủ trên núi vàng, đừng hòng đánh thức!","Lửa ta phun, nhưng ngươi tính còn nhanh hơn lửa.","Vảy ta cứng lắm, phép tính này chọc thủng không?","Kho báu ngàn năm, dễ gì lấy được.","Ta là thử thách khó nhất từ trước giờ!"],
+  hurt:["Vảy rồng cũng không chắn nổi phép tính này!","Gừ... kho báu ta lung lay rồi.","Lửa ta tắt ngóm vì thua cuộc rồi!","Ngàn năm tu luyện thua một bé con."]},
+ {enter:["Muốn lấy kho báu cuối cùng? Trả lời ta đây!","Ta là Vua Kho Báu, không dễ đánh bại đâu!","Đây là thử thách khó nhất, con có dám không?","Ngai vàng này ta giữ vững ngàn đời.","Tính sai một lần là mất cơ hội đó!"],
+  hurt:["Không thể nào... vương miện ta lung lay!","Ngai vàng của ta... sắp mất rồi!","Vua cũng có ngày chịu thua hiệp sĩ nhỏ!","Kho báu cuối cùng... con xứng đáng có nó."]}
+];
+function showMonsterQuote(type){
+ const set=MONSTER_QUOTES[g.t-1];
+ if(!set||!set[type]||!set[type].length)return;
+ mquote.textContent=pick(set[type]);
+ mquote.classList.add('show');
+}
+
+// ---------- Bộ nhân vật có thể chọn trong cửa hàng ----------
+const HEROES=[
+ {id:'dua',name:'Hiệp Sĩ Dừa',img:'hero-dua.jpg',desc:'Dòng máu làng Dừa, gan dạ và nhanh trí.'},
+ {id:'mixue',name:'Hiệp Sĩ Mixue',img:'hero-mixue.jpg',desc:'Em trai tinh nghịch, tính nhẩm cực nhanh.'},
+ {id:'nu',name:'Hiệp Sĩ Nữ',img:'hero-nu.svg',desc:'Công chúa dũng cảm, mang vương miện may mắn.'},
+ {id:'nam',name:'Hiệp Sĩ Nam',img:'hero-nam.svg',desc:'Chiến binh gan dạ, không ngại thử thách.'}
+];
+function applyHero(){
+ const h=HEROES.find(x=>x.id===g.hero)||HEROES[0];
+ heroImg.src=h.img;
+ heroName.textContent=h.name;
+}
+function renderHeroGrid(){
+ heroGrid.innerHTML=HEROES.map(h=>`
+  <div class="heroCard${h.id===g.hero?' active':''}" data-id="${h.id}">
+   <img src="${h.img}">
+   <div class="hname">${h.name}</div>
+   <div class="hdesc">${h.desc}</div>
+  </div>`).join('');
+ [...heroGrid.children].forEach(card=>{
+  card.onclick=()=>{
+   g.hero=card.dataset.id;
+   applyHero();
+   renderHeroGrid();
+   saveGame();
+  };
+ });
+}
+
+// ---------- Bản đồ hành trình: 5 chặng nối bằng con đường uốn lượn ----------
+const JOURNEY_STAGES=[
+ {icon:'🏡',label:'Làng Dừa',x:6,y:105},
+ {icon:'🌳',label:'Rừng Heo',x:27,y:30},
+ {icon:'🏪',label:'Chợ Cáo',x:50,y:105},
+ {icon:'🏔️',label:'Núi Trâu',x:73,y:30},
+ {icon:'🏰',label:'Lâu Đài Rồng',x:94,y:105}
+];
+const JOURNEY_PATH_D="M24,105 C50,45 82,15 108,30 C138,48 166,118 200,105 C232,93 262,18 292,30 C320,42 348,95 376,105";
+function renderJourney(){
+ const current=Math.min(JOURNEY_STAGES.length-1,Math.floor((g.t-1)/2));
+ let html=`<svg class="journeyPath" viewBox="0 0 400 130" preserveAspectRatio="none">
+  <path d="${JOURNEY_PATH_D}" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="4" stroke-dasharray="1 11" stroke-linecap="round"/>
+ </svg>`;
+ html+=JOURNEY_STAGES.map((s,idx)=>{
+  const state=idx<current?'done':idx===current?'current':'';
+  return `<div class="stage ${state}" style="left:${s.x}%;top:${s.y}px"><span class="stageIcon">${s.icon}</span><span class="stageLabel">${s.label}</span></div>`;
+ }).join('');
+ journeyMap.innerHTML=html;
+}
+// Mỗi level có 10 câu đếm tiền / tính tiền thối, phạm vi số tiền tăng dần theo level
+const QUESTIONS_PER_TABLE=10;
+const MAXHP=5;
+const TABLE_LEVELS=9;      // số level thường (1-9)
+const BOSS_LEVEL=10;       // level khó nhất: đếm tiền lớn hoặc mua 2 món tính tiền thối, tới 1.000.000đ
+const BOSS_QUESTIONS=10;
+const levelRanges=[10,20,50,100,150,200,300,400,500]; // phạm vi số tiền (đơn vị nghìn đồng) cho từng level 1-9
+const DENOMS=[1,2,5,10,20,50,100,200,500]; // mệnh giá tiền Việt Nam (đơn vị nghìn đồng)
+function fmt(nThousand){ return (nThousand*1000).toLocaleString('vi-VN')+'đ'; }
+
+// ---------- Bộ nhân vật & chủ đề để tạo câu chuyện ngẫu nhiên cho mỗi câu hỏi ----------
+const KID_NAMES=['Bin','Na','Su','Bo','Kem','Tép','Miu','Nhím','Sóc','Tôm','Cam','Chíp','Bống','Tí','Bún','Sim','Bắp','Ổi'];
+const SHOPS=[
+ {seller:'cô bán tạp hóa',items:['bim bim','kẹo mút','bánh quy','xúc xích','chai nước suối']},
+ {seller:'chú bán văn phòng phẩm',items:['bút chì','cục tẩy','quyển vở','hộp màu vẽ','cây thước kẻ']},
+ {seller:'bà bán trái cây',items:['quả táo','quả cam','quả xoài','quả ổi','chùm nho']},
+ {seller:'anh bán kem',items:['kem que','kem ốc quế','kem hộp']},
+ {seller:'chị bán bánh',items:['bánh bao','bánh mì','bánh flan','bánh su kem']},
+ {seller:'chú bán sách',items:['quyển truyện tranh','cuốn sách tô màu','tấm thiệp']},
+ {seller:'cô bán đồ chơi',items:['bóng bay','cái kẹp tóc','con quay','viên bi màu']}
+];
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function pickShop(){return SHOPS[Math.floor(Math.random()*SHOPS.length)];}
+
+// ---------- Bộ sưu tập: mỗi lần qua 1 level sẽ mở khóa 1 vật phẩm ----------
+const COLLECTIBLES=[
+ {icon:'🥋',label:'Áo giáp dừa'},
+ {icon:'🛡️',label:'Khiên gáo dừa'},
+ {icon:'🗡️',label:'Kiếm lá dừa'},
+ {icon:'👢',label:'Giày vải'},
+ {icon:'🧤',label:'Găng tay'},
+ {icon:'🎽',label:'Áo choàng'},
+ {icon:'💍',label:'Nhẫn may mắn'},
+ {icon:'🪖',label:'Mũ hiệp sĩ'},
+ {icon:'🏅',label:'Huy hiệu dũng cảm'},
+ {icon:'👑',label:'Vương miện Kho Báu'}
+];
+
+// Màu đặc trưng cho từng mệnh giá (tông màu gợi nhớ tiền thật, không sao chép hình ảnh thật)
+const BILL_COLORS={
+ 1:'#8a7a3c', 2:'#7a2426', 5:'#1f6f78', 10:'#b2532e', 20:'#1a4f8c',
+ 50:'#a13d63', 100:'#1f7a3d', 200:'#8a4b1e', 500:'#123f57'
+};
+function billHTML(denom){
+ const color=BILL_COLORS[denom]||'#555';
+ return `<div class="bill" style="background:${color}"><span class="val">${fmt(denom)}</span></div>`;
+}
+function renderBillsGroup(billsArr){
+ const counts={};
+ billsArr.forEach(b=>counts[b]=(counts[b]||0)+1);
+ const groups=Object.keys(counts).map(Number).sort((a,b)=>b-a).map(d=>{
+  const items=Array(counts[d]).fill(0).map(()=>billHTML(d)).join('');
+  return `<div class="billGroup">${items}</div>`;
+ });
+ return groups.join('<span class="billPlus">+</span>');
+}
+function priceTagHTML(label,amount){
+ return `<div class="priceTag"><span class="lbl">${label}</span>${fmt(amount)}</div>`;
+}
+function renderVisual(v){
+ if(!v)return'';
+ if(v.kind==='count'){
+  return renderBillsGroup(v.bills);
+ }
+ if(v.kind==='change'){
+  return billHTML(v.paid)+`<span class="billArrow">➜</span>`+priceTagHTML('Mua '+v.item,v.price);
+ }
+ if(v.kind==='change2'){
+  return billHTML(v.paid)+`<span class="billArrow">➜</span>`+priceTagHTML('Mua '+v.item1,v.price1)+priceTagHTML('Mua '+v.item2,v.price2);
+ }
+ return'';
+}
+
+// ---------- Hiệu ứng "chữ chạy ra" từng ký tự cho đoạn câu chuyện ----------
+function typewriter(el,text,speed){
+ clearInterval(el._twTimer);
+ el.textContent='';
+ el.classList.add('typing');
+ // tốc độ co giãn theo độ dài câu chuyện, tránh câu dài chạy quá lâu
+ if(!speed)speed=Math.max(18,Math.min(55,Math.round(1400/Math.max(text.length,1))));
+ let i=0;
+ el._twTimer=setInterval(()=>{
+  i++;
+  el.textContent=text.slice(0,i);
+  if(i>=text.length){
+   clearInterval(el._twTimer);
+   el.classList.remove('typing');
+  }
+ },speed);
+}
+
+// Nền đổi theo từng level (gradient riêng cho mỗi quái vật giữ kho báu)
+const bgThemes=[
+ 'linear-gradient(180deg,#6b4423,#2e1d0f)',   // level 1 - kho thóc nhỏ
+ 'linear-gradient(180deg,#7a5c2e,#33260f)',   // level 2 - chợ làng
+ 'linear-gradient(180deg,#8a6d1f,#3a2e0a)',   // level 3 - kho vàng nhỏ
+ 'linear-gradient(180deg,#9c7a1a,#402f08)',   // level 4 - hầm chứa bạc
+ 'linear-gradient(180deg,#6e5210,#2a1e06)',   // level 5 - hang tiền cổ
+ 'linear-gradient(180deg,#4a3a12,#1c1608)',   // level 6 - kho báu ẩn
+ 'linear-gradient(180deg,#3a2e10,#150f05)',   // level 7 - hầm mộ vàng
+ 'linear-gradient(180deg,#2b2208,#0d0a03)',   // level 8 - kho báu rồng
+ 'linear-gradient(180deg,#1c1605,#080602)',   // level 9 - kho báu tối thượng
+ 'linear-gradient(180deg,#000000,#3d2b00)'    // level 10 - Vua Kho Báu (khó nhất)
+];
+
+// ---------- Toast thông báo dùng chung, thay cho alert() để không phá không khí game ----------
+function showToast(text,ms){
+ unlockToast.textContent=text;
+ unlockToast.classList.add('show');
+ clearTimeout(unlockToast._t);
+ unlockToast._t=setTimeout(()=>unlockToast.classList.remove('show'),ms||2200);
+}
+
+// ---------- Lưu / tải tiến trình bằng localStorage để không mất khi tắt trình duyệt ----------
+const SAVE_KEY='hiepSiDua_save_v1';
+function saveGame(){
+ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(g)); }catch(e){}
+}
+function loadGame(){
+ try{
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(!raw)return false;
+  const saved=JSON.parse(raw);
+  if(saved&&typeof saved==='object')Object.assign(g,saved);
+  return true;
+ }catch(e){ return false; }
+}
+
+let g={t:1,i:1,l:MAXHP,xp:0,gold:0,combo:0,wrongInTable:0,queue:null,bossPair:null,unlocked:[],hero:'dua',doubleNext:false};
+let ans=0;
+let curExplain='';
+let hintUsed=false;
+
+// ---------- Tạo câu hỏi "đếm tổng tiền" (gộp nhiều tờ tiền, hỏi tổng) ----------
+function randInt(min,max){return min+Math.floor(Math.random()*(max-min+1));}
+
+function genCountQuestion(maxRange,minBills,maxBills,forceDiverse){
+ minBills=minBills||2; maxBills=maxBills||4;
+ const available=DENOMS.filter(d=>d<=maxRange);
+ const n=randInt(minBills,Math.max(minBills,maxBills));
+ let bills=[];
+ if(forceDiverse){
+  const shuffled=[...available].sort(()=>Math.random()-.5);
+  for(let i=0;i<Math.min(n,shuffled.length);i++)bills.push(shuffled[i]);
+  while(bills.length<n)bills.push(pick(available));
+ }else{
+  for(let i=0;i<n;i++)bills.push(pick(available));
+ }
+ const total=bills.reduce((a,b)=>a+b,0);
+ const name=pick(KID_NAMES);
+ const storyTemplates=[
+  `Bé ${name} đập heo đất, đếm được các tờ tiền sau.`,
+  `Mẹ đưa cho bé ${name} những tờ tiền này để đi chợ.`,
+  `Bé ${name} nhặt được các tờ tiền rơi trong ngăn bàn học.`,
+  `Ông cho bé ${name} tiền lì xì gồm những tờ sau.`
+ ];
+ const story=`${pick(storyTemplates)} Hỏi bé ${name} có tổng cộng bao nhiêu tiền?`;
+ const explain=[...bills].sort((a,b)=>b-a).map(fmt).join(' + ')+' = '+fmt(total);
+ return {text:`Tổng cộng = ?`,ans:total,visual:{kind:'count',bills},story,explain};
+}
+
+// ---------- Tạo câu hỏi "tính tiền thối" (mua 1 món, đưa 1 tờ tiền lớn nhất của level) ----------
+function genChangeQuestion(maxRange){
+ const available=DENOMS.filter(d=>d<=maxRange);
+ const paidNote=available[available.length-1];
+ const price=randInt(1,paidNote-1);
+ const change=paidNote-price;
+ const name=pick(KID_NAMES);
+ const shop=pickShop();
+ const item=pick(shop.items);
+ const story=`Bé ${name} có ${fmt(paidNote)}, mua ${item} hết ${fmt(price)}. Hỏi ${shop.seller} trả lại cho bé bao nhiêu?`;
+ const explain=`${fmt(paidNote)} - ${fmt(price)} = ${fmt(change)}`;
+ return {text:`Thối lại = ?`,ans:change,visual:{kind:'change',price,paid:paidNote,item},story,explain};
+}
+
+// Độ khó chia theo giai đoạn: 1-3 (1-2 tờ) -> 4-6 (3-4 tờ) -> 7-8 (nhiều mệnh giá) -> 9 (chủ yếu tính tiền thối)
+function genQuestionForLevel(t,maxRange){
+ if(t<=3)return genCountQuestion(maxRange,1,2);
+ if(t<=6)return genCountQuestion(maxRange,3,4);
+ if(t<=8)return genCountQuestion(maxRange,4,7,true);
+ return Math.random()<0.8?genChangeQuestion(maxRange):genCountQuestion(maxRange,3,5);
+}
+
+function buildQueue(t){
+ const maxRange=levelRanges[t-1];
+ let arr=[];
+ for(let k=0;k<QUESTIONS_PER_TABLE;k++){
+  arr.push(genQuestionForLevel(t,maxRange));
+ }
+ return arr;
+}
+
+// ---------- Câu hỏi cho level khó nhất (boss): đếm tiền lớn hoặc mua 2 món tính tiền thối, tới 1.000.000đ ----------
+function genBossPair(){
+ if(Math.random()<0.5){
+  const available=DENOMS.filter(d=>d<=500);
+  let bills,total,tries=0;
+  do{
+   total=randInt(300,1000);
+   bills=[];
+   let remaining=total;
+   for(let i=available.length-1;i>=0;i--){
+    const d=available[i];
+    while(remaining>=d){bills.push(d);remaining-=d;}
+   }
+   tries++;
+  }while(bills.length<3&&tries<30);
+  const name=pick(KID_NAMES);
+  const story=`Bé ${name} kiểm kê heo đất cuối năm, đếm được các tờ tiền sau. Hỏi bé ${name} có tổng cộng bao nhiêu tiền?`;
+  const explain=[...bills].sort((a,b)=>b-a).map(fmt).join(' + ')+' = '+fmt(total);
+  return {text:`Tổng cộng = ?`,ans:total,visual:{kind:'count',bills},story,explain};
+ }else{
+  const paidOptions=[200,500,1000];
+  const paid=paidOptions[Math.floor(Math.random()*paidOptions.length)];
+  let gia1,gia2,tries=0;
+  do{
+   gia1=randInt(20,Math.floor(paid*0.6));
+   gia2=randInt(20,Math.floor(paid*0.6));
+   tries++;
+  }while(gia1+gia2>=paid-10&&tries<30);
+  const change=paid-gia1-gia2;
+  const name=pick(KID_NAMES);
+  const shop=pickShop();
+  let item1=pick(shop.items),item2=pick(shop.items);
+  while(item2===item1&&shop.items.length>1)item2=pick(shop.items);
+  const story=`Bé ${name} mua ${item1} và ${item2}, đưa ${shop.seller} ${fmt(paid)}. Hỏi ${shop.seller} thối lại cho bé bao nhiêu?`;
+  const explain=`${fmt(paid)} - ${fmt(gia1)} - ${fmt(gia2)} = ${fmt(change)}`;
+  return {text:`Thối lại = ?`,ans:change,visual:{kind:'change2',price1:gia1,price2:gia2,paid,item1,item2},story,explain};
+ }
+}
+
+// ---------- Âm thanh (Web Audio, không cần file) ----------
+let actx;
+function audioCtx(){
+ if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();
+ return actx;
+}
+function beep(freq,dur,type='sine',vol=.18,delay=0){
+ try{
+ const ctx=audioCtx();
+ const t0=ctx.currentTime+delay;
+ const osc=ctx.createOscillator();
+ const gain=ctx.createGain();
+ osc.type=type;
+ osc.frequency.setValueAtTime(freq,t0);
+ gain.gain.setValueAtTime(vol,t0);
+ gain.gain.exponentialRampToValueAtTime(.001,t0+dur);
+ osc.connect(gain);gain.connect(ctx.destination);
+ osc.start(t0);osc.stop(t0+dur);
+ }catch(e){}
+}
+function sndSwoosh(){beep(1400,.06,'sawtooth',.06);beep(900,.08,'sawtooth',.05,.03);}
+function sndHit(){beep(700,.12,'square',.15);beep(420,.15,'square',.1,.05);}
+function sndWrong(){beep(180,.25,'sawtooth',.18);}
+function sndLevelUp(){beep(523,.12,'sine',.18);beep(659,.12,'sine',.18,.12);beep(784,.18,'sine',.2,.24);}
+function sndGameOver(){beep(300,.2,'sawtooth',.2);beep(220,.25,'sawtooth',.2,.2);beep(140,.35,'sawtooth',.2,.4);}
+function sndWin(){[523,659,784,1046].forEach((f,i)=>beep(f,.2,'sine',.2,i*.15));}
+function sndCoin(){beep(900,.08,'square',.12);beep(1200,.08,'square',.12,.06);}
+
+// ---------- Tấn công: kiếm bay từ hiệp sĩ chém vào quái ----------
+function shakeScreen(){
+ document.body.classList.remove('shake');
+ void document.body.offsetWidth;
+ document.body.classList.add('shake');
+ setTimeout(()=>document.body.classList.remove('shake'),300);
+}
+
+function attack(){
+ sndSwoosh();
+ swordSlash.classList.remove('go');
+ void swordSlash.offsetWidth; // restart animation
+ swordSlash.classList.add('go');
+
+ // Kiếm chạm quái ở khoảng 55% thời gian animation (~220ms trong 420ms) -> đúng lúc đó mới phát tiếng va chạm + rung + flash
+ setTimeout(()=>{
+  sndHit();
+  monster.parentElement.classList.add('hit');
+  shakeScreen();
+  slashLine.classList.remove('go');
+  void slashLine.offsetWidth;
+  slashLine.classList.add('go');
+  setTimeout(()=>monster.parentElement.classList.remove('hit'),350);
+ },220);
+
+ setTimeout(()=>swordSlash.classList.remove('go'),450);
+}
+function heroHurt(){
+ heroImg.classList.add('heroHit');
+ shakeScreen();
+ setTimeout(()=>heroImg.classList.remove('heroHit'),300);
+}
+
+function comboPop(){
+ combo.classList.remove('show');
+ void combo.offsetWidth;
+ combo.classList.add('show');
+}
+
+function applyTheme(){
+ document.body.style.background=bgThemes[(g.t-1)%bgThemes.length];
+}
+
+function draw(){
+ applyTheme();
+ applyHero();
+ renderJourney();
+ const isBoss=g.t===BOSS_LEVEL;
+ document.body.classList.toggle('bossMode',isBoss);
+ stats.innerHTML=`<span>❤️ ${g.l}/${MAXHP}</span><span>📚 Level ${isBoss?'👑 Cuối':g.t}</span><span>⭐ ${g.xp}</span><span>💰 ${g.gold}</span><span id="combo" class="combo">🔥x${g.combo}</span>`;
+ monster.textContent=mons[g.t-1][0];
+ mname.textContent=mons[g.t-1][1];
+
+ // Hai thanh máu dùng cùng công thức tỉ lệ (giá trị hiện tại / giá trị tối đa) để luôn cân đối về logic hiển thị
+ herohp.style.width=(g.l/MAXHP*100)+'%';
+ herohpLabel.textContent=`${g.l}/${MAXHP}`;
+
+ let totalQ;
+ let q;
+ if(isBoss){
+  totalQ=BOSS_QUESTIONS;
+  if(!g.bossPair)g.bossPair=genBossPair();
+  q=g.bossPair;
+ }else{
+  if(!g.queue)g.queue=buildQueue(g.t);
+  totalQ=g.queue.length;
+  q=g.queue[g.i-1];
+ }
+ ans=q.ans;
+ curExplain=q.explain||'';
+ question.innerHTML=q.text;
+ billsArea.innerHTML=renderVisual(q.visual);
+ typewriter(storyText,q.story||'');
+ explainText.textContent='';
+
+ showMonsterQuote('enter');
+
+ const enemyRemaining=totalQ-g.i+1; // số câu quái còn "chịu" được
+ enemyhp.style.width=(enemyRemaining/totalQ*100)+'%';
+ enemyhpLabel.textContent=`${enemyRemaining}/${totalQ}`;
+
+ hintUsed=false;
+
+ let a=[ans];
+ let guard=0;
+ const deltaRange=Math.max(5,Math.round(ans*0.25));
+ while(a.length<4&&guard<200){
+  guard++;
+  let delta=Math.floor(Math.random()*(deltaRange*2+1))-deltaRange;
+  if(delta===0)continue;
+  let n=ans+delta;
+  if(n>=0&&!a.includes(n))a.push(n);
+ }
+ let step=Math.max(1,Math.round(deltaRange/2));
+ while(a.length<4){
+  const cand=ans+step*(a.length+1);
+  if(cand>=0&&!a.includes(cand))a.push(cand);
+  else step++;
+ }
+ a.sort(()=>Math.random()-.5);
+ answers.innerHTML='';
+ a.forEach(v=>{
+  let b=document.createElement('button');
+  b.textContent=fmt(v);
+  b.dataset.val=v;
+  b.onclick=()=>check(v,b);
+  answers.appendChild(b);
+ });
+ saveGame();
+}
+
+function check(v,btnEl){
+ ensureMusicPlaying();
+ [...answers.children].forEach(b=>b.disabled=true);
+ const isBoss=g.t===BOSS_LEVEL;
+ const totalQ=isBoss?BOSS_QUESTIONS:g.queue.length;
+ if(v===ans){
+  btnEl.classList.add('correctBtn');
+  attack();
+  g.combo++;
+  let bonus=5+Math.min(g.combo,10)*2+(isBoss?10:0);
+  if(g.doubleNext){bonus*=2; g.doubleNext=false;}
+  g.xp+=isBoss?20:10; g.gold+=bonus; g.i++;
+  if(isBoss)g.bossPair=null; // chuyển sang cặp số mới cho câu tiếp theo
+  msg.textContent=g.combo>=3?`⚔️ Chính xác! +${bonus}💰 (combo x${g.combo} 🔥)`:`⚔️ Chính xác! +${bonus}💰`;
+  comboPop();
+
+  let leveledUp=false, reward=0, perfect=false;
+  if(g.i>totalQ){
+   perfect=g.wrongInTable===0;
+   reward=perfect?(isBoss?300:150):(isBoss?200:100);
+   g.gold+=reward;
+   leveledUp=true;
+   unlockItem(g.t);
+   g.t++; g.i=1; g.wrongInTable=0; g.queue=null; g.bossPair=null;
+   sndLevelUp();
+  }
+  if(g.t>BOSS_LEVEL){
+   sndWin();
+   showWin();
+   return;
+  }
+  if(leveledUp){
+   setTimeout(()=>showLevelComplete(reward,perfect),500);
+  }else{
+   setTimeout(draw,500);
+  }
+ } else {
+  btnEl.classList.add('wrongBtn');
+  [...answers.children].forEach(b=>{if(+b.dataset.val===ans)b.classList.add('correctBtn');});
+  heroHurt();
+  sndWrong();
+  g.l--; g.combo=0; g.wrongInTable++;
+  msg.textContent='💥 Sai rồi!';
+  if(curExplain)explainText.textContent=`👉 ${curExplain}`;
+  showMonsterQuote('hurt');
+  if(g.l<=0){
+   sndGameOver();
+   // Thua thì thử lại chặng hiện tại, không mất vàng/XP/bộ sưu tập đã có
+   g.l=MAXHP; g.i=1; g.combo=0; g.wrongInTable=0; g.queue=null; g.bossPair=null; g.doubleNext=false;
+   saveGame();
+   setTimeout(showDefeat,200);
+   return;
+  }
+  const waitMs=Math.min(3600,Math.max(1800,curExplain.length*45)); // chờ lâu hơn nếu lời giải thích dài
+  setTimeout(draw,waitMs);
+ }
+}
+
+// ---------- Màn hình ăn mừng khi qua level ----------
+function showLevelComplete(reward,perfect){
+ const item=COLLECTIBLES[g.t-2]; // g.t đã +1, level vừa xong = g.t-1
+ celebBox.innerHTML=`
+  <h2>🎉 Chúc mừng!</h2>
+  <p>Dân làng tặng Hiệp Sĩ ${perfect?'một phần thưởng lớn vì quá xuất sắc':'một phần quà nhỏ'}!</p>
+  <div class="celebReward">⭐ +${reward}💰 vàng</div>
+  ${item?`<div class="celebUnlock">${item.icon}</div><div>Mở khóa: <b>${item.label}</b></div>`:''}
+  <button id="celebContinue">Tiếp tục ⚔️</button>
+ `;
+ celebOverlay.classList.add('open');
+ document.getElementById('celebContinue').onclick=()=>{
+  celebOverlay.classList.remove('open');
+  draw();
+ };
+}
+
+// ---------- Màn hình khi hết máu: động viên bé thử lại chặng, không mất vàng/XP ----------
+function showDefeat(){
+ celebBox.innerHTML=`
+  <h2>😵 Hiệp Sĩ gục ngã rồi!</h2>
+  <p>Không sao đâu, nghỉ lấy sức rồi đánh lại chặng này nhé! Vàng và huy hiệu của con vẫn còn nguyên.</p>
+  <button id="celebContinue">Thử lại 💪</button>
+ `;
+ celebOverlay.classList.add('open');
+ document.getElementById('celebContinue').onclick=()=>{
+  celebOverlay.classList.remove('open');
+  draw();
+ };
+}
+
+// ---------- Bộ sưu tập: mở khóa vật phẩm sau mỗi level ----------
+function unlockItem(levelJustCompleted){
+ const idx=levelJustCompleted-1;
+ if(idx<0||idx>=COLLECTIBLES.length||g.unlocked.includes(idx))return;
+ g.unlocked.push(idx);
+ const item=COLLECTIBLES[idx];
+ unlockToast.textContent=`🎉 Mở khóa: ${item.label} ${item.icon}`;
+ unlockToast.classList.add('show');
+ clearTimeout(unlockToast._t);
+ unlockToast._t=setTimeout(()=>unlockToast.classList.remove('show'),2600);
+}
+function renderCollection(){
+ collectionGrid.innerHTML=COLLECTIBLES.map((c,idx)=>{
+  const got=g.unlocked.includes(idx);
+  return `<div class="collectionItem${got?'':' locked'}">${got?c.icon:'🔒'}<span class="clabel">${got?c.label:'???'}</span></div>`;
+ }).join('');
+}
+
+// ---------- Shop ----------
+shopOpen.onclick=()=>{shopOverlay.classList.add('open');};
+closeShop.onclick=()=>{shopOverlay.classList.remove('open');};
+collectionOpen.onclick=()=>{renderCollection();collectionOverlay.classList.add('open');};
+closeCollection.onclick=()=>{collectionOverlay.classList.remove('open');};
+heroOpen.onclick=()=>{renderHeroGrid();heroOverlay.classList.add('open');};
+closeHero.onclick=()=>{heroOverlay.classList.remove('open');};
+buyHeart.onclick=()=>{
+ if(g.l>=MAXHP){
+  showToast('❤️ Máu đã đầy rồi!');
+ }else if(g.gold>=30){
+  g.gold-=30; g.l++; sndCoin(); draw();
+ }else{
+  showToast('💰 Không đủ vàng!');
+ }
+};
+buyFullHeal.onclick=()=>{
+ if(g.l>=MAXHP){showToast('❤️ Máu đã đầy rồi!');return;}
+ if(g.gold>=60){
+  g.gold-=60; g.l=MAXHP; sndCoin(); draw();
+ }else{
+  showToast('💰 Không đủ vàng!');
+ }
+};
+buyDouble.onclick=()=>{
+ if(g.doubleNext){showToast('⚡ Đã kích hoạt nhân đôi cho câu tới rồi!');return;}
+ if(g.gold>=25){
+  g.gold-=25; g.doubleNext=true; sndCoin();
+  draw();
+  showToast('⚡ Câu trả lời đúng tiếp theo sẽ được x2 vàng!');
+ }else{
+  showToast('💰 Không đủ vàng!');
+ }
+};
+buyHint.onclick=()=>{
+ if(hintUsed){showToast('💡 Đã dùng gợi ý ở câu này rồi!');return;}
+ if(g.gold>=15){
+  g.gold-=15; hintUsed=true; sndCoin();
+  [...answers.children].forEach(b=>{
+   if(+b.dataset.val!==ans)b.style.opacity='.35';
+  });
+  stats.querySelector('span:nth-child(4)').textContent=`💰 ${g.gold}`;
+  saveGame();
+ }else{
+  showToast('💰 Không đủ vàng!');
+ }
+};
+
+// ---------- Confetti ----------
+function confettiBurst(){
+ const wrap=document.createElement('div');
+ wrap.className='confettiWrap';
+ document.body.appendChild(wrap);
+ const emojis=['🥥','✨','⭐','🎉','👑','🟡'];
+ for(let i=0;i<60;i++){
+  const c=document.createElement('div');
+  c.className='confetti';
+  c.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  c.style.left=Math.random()*100+'vw';
+  const dur=2.5+Math.random()*2;
+  c.style.animationDuration=dur+'s';
+  c.style.animationDelay=(Math.random()*1.5)+'s';
+  c.style.fontSize=(16+Math.random()*20)+'px';
+  wrap.appendChild(c);
+ }
+ setTimeout(()=>wrap.remove(),5000);
+}
+
+function showWin(){
+ try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+ document.body.innerHTML=`
+ <div class="win">
+  <h1>👑 HIỆP SĨ DỪA ĐÃ CHINH PHỤC BẢNG CỬU CHƯƠNG!</h1>
+  <p style="font-size:22px">⭐ Tổng điểm: ${g.xp} &nbsp;|&nbsp; 💰 Vàng: ${g.gold}</p>
+  <button onclick="location.reload()" style="font-size:24px;padding:12px 24px;border-radius:12px;border:none;background:#ffd54f;cursor:pointer">🔄 Chơi lại</button>
+ </div>`;
+ confettiBurst();
+}
+
+bgMusic.volume = 0.35;
+let musicStarted=false;
+function ensureMusicPlaying(){
+ if(!musicStarted){
+  musicStarted=true;
+  bgMusic.currentTime = 0;
+ }
+ if(bgMusic.paused){
+  bgMusic.play().catch(()=>{});
+ }
+}
+
+// ---------- Nút tắt/mở nhạc nền ----------
+let muted=false;
+muteBtn.onclick=()=>{
+ muted=!muted;
+ bgMusic.muted=muted;
+ muteBtn.textContent=muted?'🔇':'🔊';
+};
+
+// ---------- Nếu có tiến trình đã lưu, hiện gợi ý tiếp tục trên màn hình giới thiệu ----------
+const hadSave=loadGame();
+if(hadSave){
+ const isBossSaved=g.t===BOSS_LEVEL;
+ continueHint.textContent=`📌 Có tiến trình đã lưu: Level ${isBossSaved?'👑 Cuối':g.t} · 💰${g.gold} · ⭐${g.xp}`;
+ resetSave.style.display='inline-block';
+}
+resetSave.onclick=()=>{
+ try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+ location.reload();
+};
+
+// Chỉ bắt đầu vẽ màn chơi sau khi bé bấm "Bắt đầu" ở màn hình giới thiệu
+startGame.onclick=()=>{
+ introOverlay.style.display='none';
+ ensureMusicPlaying();
+ draw();
+};
+</script>
+</body></html>
