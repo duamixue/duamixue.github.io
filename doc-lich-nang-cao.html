@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📅 Đọc Lịch – Nâng Cao</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700;900&display=swap');
+
+  :root {
+    --bg: #0a0f1e; --card: #111827;
+    --accent1: #fbbf24; --accent2: #f472b6; --accent3: #34d399; --accent4: #ef4444;
+    --correct: #10b981; --wrong: #ef4444; --text: #f1f5f9; --sub: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 15% 15%, #1e3a5f22 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 85%, #3b0764 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 0%, #0f172a 0%, transparent 80%);
+    z-index: -2;
+  }
+  .stars { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .star { position: absolute; background: white; border-radius: 50%; animation: tw 2.5s infinite alternate ease-in-out; }
+  @keyframes tw { from{opacity:.15;transform:scale(1)} to{opacity:.95;transform:scale(1.4)} }
+
+  header { text-align: center; padding: 28px 20px 10px; }
+  .music-toggle {
+    margin-top: 12px; padding: 7px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06); color: var(--sub); font-size: 12px; font-weight: 700; cursor: pointer;
+    transition: all .2s;
+  }
+  .music-toggle.on { background: rgba(52,211,153,.15); color: #34d399; border-color: rgba(52,211,153,.4); }
+  .music-toggle:hover { transform: scale(1.05); }
+  .badge {
+    display: inline-block; background: linear-gradient(120deg, #fbbf24, #ef4444);
+    border-radius: 50px; padding: 5px 18px; font-size: 12px; font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Baloo 2', cursive; font-size: clamp(30px, 6.5vw, 54px); font-weight: 800;
+    background: linear-gradient(130deg, #fbbf24 0%, #f472b6 45%, #34d399 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.15; margin-bottom: 8px;
+  }
+  .subtitle { color: var(--sub); font-size: 16px; font-weight: 600; }
+
+  /* ── Mascot ── */
+  .mascot-box { max-width: 420px; margin: 6px auto 4px; text-align: center; padding: 0 20px; }
+  .stats-line { font-size: 12px; font-weight: 700; color: var(--sub); margin-top: 10px; }
+  .badge-collection { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top: 10px; }
+  .collect-badge {
+    width: 34px; height: 34px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+    font-size: 16px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); opacity:.5;
+  }
+  .collect-badge.owned { opacity:1; background: rgba(251,191,36,.15); border-color: rgba(251,191,36,.4); }
+  .mascot-stars { font-size: 15px; letter-spacing: 3px; margin-bottom: 4px; }
+  .mascot-emoji { font-size: 52px; line-height: 1; margin-bottom: 2px; animation: mascotBounce 2.2s infinite ease-in-out; }
+  @keyframes mascotBounce { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-8px) rotate(3deg)} }
+  .mascot-name { font-family:'Baloo 2',cursive; font-weight:700; color:var(--accent2); font-size:15px; margin-bottom:6px; }
+  .mascot-quote {
+    display:inline-block; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+    border-radius: 16px; padding: 10px 16px; font-size: 14px; font-weight:600; color: var(--text);
+    font-style: italic;
+  }
+
+  /* ── Mode select screen ── */
+  .mode-screen { max-width: 640px; margin: 10px auto 40px; padding: 0 20px; }
+  .mode-title { text-align:center; font-family:'Baloo 2',cursive; font-size:20px; font-weight:700; color:var(--accent3); margin-bottom:18px; }
+  .mode-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .mode-card {
+    background: rgba(255,255,255,.05); border: 2px solid rgba(255,255,255,.09);
+    border-radius: 20px; padding: 18px 20px; text-align: left; cursor: pointer;
+    transition: all .2s ease; display:flex; align-items:center; gap:14px;
+  }
+  .mode-card:hover { border-color: var(--accent1); background: rgba(255,255,255,.08); transform: translateY(-2px); }
+  .mode-icon { font-size: 30px; flex-shrink:0; }
+  .mode-name { font-family:'Baloo 2',cursive; font-size:18px; font-weight:700; color:var(--text); }
+  .mode-desc { font-size:13px; color:var(--sub); font-weight:600; margin-top:2px; }
+
+  .month-panel { display:none; margin-top:16px; }
+  .month-panel.show { display:block; animation: slideIn .3s ease; }
+  .month-grid { display:grid; grid-template-columns: repeat(4,1fr); gap:8px; margin-top:10px; }
+  .month-btn {
+    background: rgba(255,255,255,.06); border:2px solid rgba(255,255,255,.1);
+    border-radius:12px; padding:12px 4px; color:var(--text); font-family:'Baloo 2',cursive;
+    font-size:14px; font-weight:700; cursor:pointer; transition:all .2s; line-height:1.6;
+  }
+  .month-btn br { content: ''; display: block; }
+  .month-btn:hover { border-color: var(--accent2); background: rgba(255,255,255,.1); }
+  .back-link { display:inline-block; margin-top:14px; color:var(--sub); font-size:14px; font-weight:700; cursor:pointer; }
+  .back-link:hover { color: var(--accent1); }
+
+  /* ── Progress ── */
+  .progress-wrap { max-width: 580px; margin: 14px auto 6px; padding: 0 20px; }
+  .progress-info { display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; color: var(--sub); margin-bottom: 8px; }
+  .progress-bar { height: 9px; background: rgba(255,255,255,.08); border-radius: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #fbbf24, #f472b6); border-radius: 10px; transition: width .5s ease; width: 0%; }
+
+  .score-strip { display: flex; justify-content: center; gap: 12px; max-width: 580px; margin: 10px auto 16px; padding: 0 16px; }
+  .score-box { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 12px 16px; text-align: center; flex: 1; }
+  .score-box .val { font-family: 'Baloo 2', cursive; font-size: 30px; font-weight: 800; line-height: 1; }
+  .score-box .lbl { font-size: 12px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+  .vc { color: var(--correct); } .vw { color: var(--wrong); } .vq { color: var(--accent1); }
+
+  .dot-row { display: flex; flex-wrap: wrap; justify-content: center; align-items:center; gap: 4px; margin-bottom: 16px; padding: 0 20px; }
+  .dot {
+    width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center; font-size:11px; transition: all .3s; flex-shrink:0;
+  }
+  .dot.ok { background: rgba(16,185,129,.25); }
+  .dot.no { background: rgba(239,68,68,.2); }
+  .dot.cur { background: rgba(251,191,36,.25); box-shadow: 0 0 8px var(--accent1); font-size:13px; }
+  .dot.castle { background: transparent; font-size:18px; width:auto; margin-left:2px; }
+
+  .card { max-width: 580px; margin: 0 auto; padding: 0 16px 48px; }
+  .question-card {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09);
+    border-radius: 28px; padding: 24px 24px 24px; text-align: center;
+    backdrop-filter: blur(12px); animation: slideIn .4s ease;
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+  .badge-row-top { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom: 10px; }
+  .stage-badge {
+    display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:50px;
+    font-size:12px; font-weight:800; letter-spacing:1px;
+    background: rgba(167,139,250,.15); color:#a78bfa; border:1px solid rgba(167,139,250,.3);
+  }
+  .stage-badge.levelup { animation: stagePulse .6s ease 2; }
+  @keyframes stagePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
+  .golden-badge {
+    display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:50px;
+    font-size:12px; font-weight:800; letter-spacing:1px;
+    background: rgba(251,191,36,.2); color:#fbbf24; border:1px solid rgba(251,191,36,.5);
+    animation: goldenGlow 1s infinite alternate;
+  }
+  @keyframes goldenGlow { from{box-shadow:0 0 4px rgba(251,191,36,.3)} to{box-shadow:0 0 14px rgba(251,191,36,.7)} }
+  .question-card.golden {
+    border-color: rgba(251,191,36,.6); box-shadow: 0 0 0 2px rgba(251,191,36,.25), 0 0 30px rgba(251,191,36,.2);
+  }
+  .mascot-strip {
+    display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom: 12px;
+    font-size: 14px; font-weight:700; color: var(--text); background: rgba(255,255,255,.04);
+    border-radius: 14px; padding: 8px 14px;
+  }
+  .mascot-strip-emoji { font-size:20px; animation: mascotNod 2s infinite ease-in-out; }
+  @keyframes mascotNod { 0%,100%{transform:rotate(0)} 50%{transform:rotate(-8deg)} }
+
+  .q-label { font-size: 13px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .q-task-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .q-task {
+    font-family: 'Baloo 2', cursive; font-size: 23px; font-weight: 800; color: var(--accent1);
+    letter-spacing: .2px; line-height: 1.45; min-height: 1.45em;
+  }
+  .type-cursor { display:inline-block; color: var(--accent2); font-weight:800; animation: blinkCursor .8s steps(1) infinite; }
+  @keyframes blinkCursor { 50%{ opacity:0; } }
+  .speak-btn {
+    flex-shrink:0; width: 38px; height: 38px; border-radius: 50%; border: 2px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.07); font-size: 18px; cursor: pointer; display:flex; align-items:center; justify-content:center;
+    transition: all .2s;
+  }
+  .speak-btn:hover { background: rgba(251,191,36,.15); border-color: var(--accent1); transform: scale(1.08); }
+  .speak-btn:active { transform: scale(.94); }
+
+  /* ── Calendar ── */
+  .cal-wrap { margin: 16px 0 20px; }
+  .cal-title { font-family: 'Baloo 2', cursive; font-size: 19px; font-weight: 700; color: var(--accent3); margin-bottom: 12px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-width: 460px; margin: 0 auto; }
+  .cal-head { font-size: 12px; font-weight: 800; color: var(--sub); padding: 6px 0; text-transform: uppercase; }
+  .cal-head.sun { color: #f87171; } .cal-head.sat { color: #fb923c; }
+  .cal-day {
+    aspect-ratio: 1; display: flex; flex-direction:column; align-items: center; justify-content: center;
+    border-radius: 10px; background: rgba(255,255,255,.05); border: 2px solid transparent; gap:1px;
+  }
+  .cal-day.blank { background: transparent; }
+  .d-num { font-family: 'Baloo 2', cursive; font-size: 16px; font-weight: 700; color: var(--text); line-height:1; }
+  .d-icon { font-size: 10px; line-height:1; }
+  .cal-day.sun .d-num { color: #f87171; } .cal-day.sat .d-num { color: #fb923c; }
+  .cal-day.today {
+    background: rgba(251,191,36,.18); border-color: var(--accent1);
+    box-shadow: 0 0 14px rgba(251,191,36,.35); animation: pulseDay 1.4s infinite ease-in-out;
+  }
+  .cal-day.today .d-num { color: var(--accent1); }
+  @keyframes pulseDay { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+
+  .hint-row { display: flex; justify-content: center; flex-wrap:wrap; gap: 14px; padding: 4px 20px 10px; font-size: 13px; font-weight: 600; color: var(--sub); }
+  .hint-item { display:flex; align-items:center; gap:5px; }
+  .hint-dot { width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--accent1); background: rgba(251,191,36,.15); }
+
+  /* ── Answers ── */
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ans-btn {
+    background: rgba(255,255,255,.07); border: 2px solid rgba(255,255,255,.13);
+    border-radius: 15px; padding: 15px 8px; font-family: 'Baloo 2', cursive; font-size: 18px;
+    font-weight: 700; color: var(--text); cursor: pointer; transition: all .2s ease; line-height: 1.3;
+  }
+  .ans-btn:hover:not(:disabled) { background: rgba(255,255,255,.12); border-color: var(--accent1); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(251,191,36,.2); }
+  .ans-btn.correct { background: rgba(16,185,129,.2); border-color: var(--correct); color: var(--correct); animation: popG .4s ease; }
+  .ans-btn.wrong { background: rgba(239,68,68,.15); border-color: var(--wrong); color: var(--wrong); animation: shk .4s ease; }
+  .ans-btn:disabled { cursor: default; }
+  @keyframes popG { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
+  @keyframes shk { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  .feedback {
+    margin-top: 16px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+    gap: 6px; font-size: 17px; font-weight: 700; border-radius: 13px; padding: 12px 14px; opacity: 0; transition: opacity .3s;
+  }
+  .feedback.show { opacity: 1; }
+  .feedback.ok { background: rgba(16,185,129,.14); color: var(--correct); }
+  .feedback.no { background: rgba(239,68,68,.12); color: var(--wrong); }
+
+  .explain-box {
+    margin-top: 10px; text-align:left; font-size: 14px; line-height:1.5; font-weight:600;
+    color: var(--sub); background: rgba(255,255,255,.03); border-radius: 12px; padding: 12px 14px;
+    opacity:0; transition:opacity .3s;
+  }
+  .explain-box.show { opacity:1; }
+  .explain-box b { color: var(--accent1); }
+
+  .next-btn {
+    display: block; width: 100%; margin-top: 14px; padding: 17px;
+    background: linear-gradient(135deg, #fbbf24, #f472b6); border: none; border-radius: 15px;
+    font-family: 'Baloo 2', cursive; font-size: 19px; font-weight: 700; color: white;
+    cursor: pointer; opacity: 0; pointer-events: none; transition: all .3s;
+  }
+  .next-btn.show { opacity: 1; pointer-events: auto; animation: popIn .3s ease; }
+  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(251,191,36,.35); }
+  @keyframes popIn { from{transform:scale(.92)} to{transform:scale(1)} }
+
+  /* ── Result ── */
+  .result-screen { display: none; max-width: 560px; margin: 0 auto; padding: 0 16px 60px; text-align: center; }
+  .result-screen.show { display: block; animation: slideIn .5s ease; }
+  .cert-label {
+    font-size: 12px; font-weight: 800; letter-spacing: 3px; color: var(--accent1);
+    margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed rgba(251,191,36,.3);
+    display:inline-block;
+  }
+  .trophy { font-size: 80px; margin-bottom: 14px; animation: bop 1s infinite alternate; }
+  @keyframes bop { from{transform:translateY(0)} to{transform:translateY(-12px)} }
+  .result-title {
+    font-family: 'Baloo 2', cursive; font-size: 38px; font-weight: 800;
+    background: linear-gradient(135deg, #fbbf24, #f472b6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;
+  }
+  .result-sub { color: var(--sub); font-size: 17px; font-weight: 600; margin-bottom: 22px; }
+  .result-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .stat-box { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 18px; padding: 18px 10px; }
+  .stat-box .num { font-family: 'Baloo 2', cursive; font-size: 40px; font-weight: 800; line-height: 1; }
+  .stat-box .txt { font-size: 13px; font-weight: 700; color: var(--sub); margin-top: 4px; }
+
+  .result-stats-extra { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom: 18px; }
+  .extra-stat {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
+    padding: 8px 14px; font-size: 13px; font-weight: 700; color: var(--sub);
+  }
+  .extra-stat b { color: var(--text); }
+  .badge-row { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom: 14px; }
+  .new-badge-row { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom: 26px; }
+  .new-badge {
+    background: rgba(251,191,36,.18); border: 1px solid rgba(251,191,36,.5); border-radius: 14px;
+    padding: 10px 16px; font-size:13px; font-weight:800; color: var(--accent1);
+    animation: goldenGlow 1s infinite alternate;
+  }
+  .earned-badge {
+    background: rgba(251,191,36,.12); border:1px solid rgba(251,191,36,.3); border-radius:14px;
+    padding: 10px 16px; font-size:13px; font-weight:800; color: var(--accent1);
+  }
+
+  .restart-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .restart-btn {
+    display: inline-block; padding: 16px 30px; background: linear-gradient(135deg, #fbbf24, #f472b6);
+    border: none; border-radius: 50px; font-family: 'Baloo 2', cursive; font-size: 17px; font-weight: 700;
+    color: white; cursor: pointer; transition: all .2s;
+  }
+  .restart-btn.secondary { background: rgba(255,255,255,.08); color: var(--text); }
+  .restart-btn:hover { transform: scale(1.05); box-shadow: 0 14px 36px rgba(251,191,36,.25); }
+
+  .confetti-piece { position: fixed; top: -20px; pointer-events: none; z-index: 999; border-radius: 2px; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+  #quiz-screen { display:none; }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<header>
+  <div class="badge">🎮 Trò chơi vui nhộn</div>
+  <h1>🌈 Vương Quốc Lịch</h1>
+  <p class="subtitle">Mèo Lịch cần bé giúp một việc quan trọng!</p>
+  <button class="music-toggle" id="music-toggle" onclick="toggleMusic()" title="Bật/tắt nhạc nền">🔈 Nhạc nền: Tắt</button>
+</header>
+
+<audio id="bg-music" src="Peter-and-the-Wolf.mp3" loop preload="auto"></audio>
+
+<div class="mascot-box" id="mascot-box">
+  <div class="mascot-stars">⭐⭐⭐⭐⭐</div>
+  <div class="mascot-emoji">🐱</div>
+  <div class="mascot-name">Mèo Lịch</div>
+  <div class="mascot-quote">"Meo meo! Mình vừa làm rơi hết các ngày trong lịch rồi! Bé giúp mình tìm lại từng ngày nhé — mỗi câu đúng là một ngày được tìm thấy! 🗓️✨"</div>
+  <div class="stats-line" id="stats-line"></div>
+  <div class="badge-collection" id="badge-collection"></div>
+</div>
+
+<!-- ═══ MÀN CHỌN CHẾ ĐỘ ═══ -->
+<div class="mode-screen" id="mode-screen">
+  <div class="mode-title">Hôm nay mình sẽ chơi gì nhỉ? 🎈</div>
+  <div class="mode-grid" id="mode-grid"></div>
+  <div class="month-panel" id="month-panel">
+    <div class="mode-title" style="font-size:16px;">🌍 Chọn 1 tháng để khám phá</div>
+    <div class="month-grid" id="month-grid"></div>
+    <div class="back-link" onclick="hideMonthPanel()">← Quay lại</div>
+  </div>
+</div>
+
+<!-- ═══ MÀN LÀM BÀI ═══ -->
+<div id="quiz-screen">
+  <div class="dot-row" id="dot-row"></div>
+
+  <div class="card">
+    <div class="question-card" id="qcard">
+      <div class="badge-row-top">
+        <div class="stage-badge" id="stage-badge">⭐ Cấp 1: Nhận biết Ngày, Thứ</div>
+        <div class="golden-badge" id="golden-badge" style="display:none;">⭐ Câu Vàng!</div>
+      </div>
+      <div class="mascot-strip" id="mascot-strip"><span class="mascot-strip-emoji" id="mascot-strip-emoji">🐱</span><span id="mascot-strip-text">Cố lên nào!</span></div>
+      <div class="q-label" id="q-label">Câu 1</div>
+      <div class="q-task-row">
+        <div class="q-task" id="q-task"></div>
+        <button class="speak-btn" id="speak-btn" onclick="replaySpeak()" title="Đọc to câu hỏi">🔊</button>
+      </div>
+      <div class="cal-wrap">
+        <div class="cal-title" id="cal-title">Tháng 1 · 2026</div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+      <div class="hint-row">
+        <div class="hint-item"><div class="hint-dot"></div><span>Hôm nay</span></div>
+        <div class="hint-item"><span>🎂</span><span>Sinh nhật</span></div>
+        <div class="hint-item"><span>🎉</span><span>Ngày lễ</span></div>
+      </div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="explain-box" id="explain-box"></div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info"><span id="prog-text">Câu 1 / 24</span><span id="prog-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+  </div>
+  <div class="score-strip">
+    <div class="score-box"><div class="val vq" id="sc-q">1</div><div class="lbl">Câu số</div></div>
+    <div class="score-box"><div class="val vc" id="sc-ok">0</div><div class="lbl">Đúng</div></div>
+    <div class="score-box"><div class="val vw" id="sc-no">0</div><div class="lbl">Sai</div></div>
+  </div>
+</div>
+
+<!-- ═══ MÀN KẾT QUẢ ═══ -->
+<div class="result-screen" id="result-screen">
+  <div class="cert-label">🎓 CHỨNG NHẬN HOÀN THÀNH</div>
+  <div class="trophy" id="trophy">🏆</div>
+  <div class="result-title" id="r-title">Xuất sắc!</div>
+  <div class="result-sub" id="r-sub">Kết quả rất tốt!</div>
+  <div class="result-stats">
+    <div class="stat-box"><div class="num vc" id="r-ok">0</div><div class="txt">✅ Đúng</div></div>
+    <div class="stat-box"><div class="num vw" id="r-no">0</div><div class="txt">❌ Sai</div></div>
+    <div class="stat-box"><div class="num" style="color:#34d399" id="r-pct">0%</div><div class="txt">🎯 Tỉ lệ</div></div>
+  </div>
+  <div class="result-stats-extra" id="result-stats-extra"></div>
+  <div class="badge-row" id="badge-row"></div>
+  <div class="new-badge-row" id="new-badge-row"></div>
+  <div class="restart-row">
+    <button class="restart-btn" onclick="restartSameMode()">🔄 Chơi lại chế độ này</button>
+    <button class="restart-btn secondary" onclick="goToModeSelect()">🏠 Chọn chế độ khác</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════ LỚP LƯU TRỮ TIẾN TRÌNH (localStorage) ══════════════════════
+const STORAGE_KEY = 'docLichNangCao_v1';
+function defaultProgress(){
+  return {
+    totalGamesPlayed:0, totalCorrect:0, totalQuestions:0, bestStreak:0, goldenCollected:0,
+    lastPlayedDate:null, playStreakDays:0, weakStats:{}, badges:{}
+  };
+}
+function loadProgress(){
+  try{
+    const raw=window.localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultProgress();
+    return Object.assign(defaultProgress(), JSON.parse(raw));
+  }catch(e){ return defaultProgress(); }
+}
+function saveProgress(){
+  try{ window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }catch(e){}
+}
+function diffDays(a,b){ return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000); }
+function updateDailyStreak(dateStrOverride){
+  const today=dateStrOverride || new Date().toISOString().slice(0,10);
+  if(progress.lastPlayedDate===today){ /* đã tính hôm nay rồi */ }
+  else if(progress.lastPlayedDate && diffDays(progress.lastPlayedDate, today)===1){ progress.playStreakDays+=1; }
+  else { progress.playStreakDays=1; }
+  progress.lastPlayedDate=today;
+}
+function recordWeakStat(genId, wasWrong){
+  if(!progress.weakStats[genId]) progress.weakStats[genId]={wrong:0,total:0};
+  progress.weakStats[genId].total++;
+  if(wasWrong) progress.weakStats[genId].wrong++;
+}
+function getWeakestIds(poolAll, topN){
+  return poolAll.map(id=>{
+      const st=progress.weakStats[id]||{wrong:0,total:0};
+      const rate = st.total>=2 ? st.wrong/st.total : -1;
+      return {id, rate};
+    })
+    .filter(c=>c.rate>0)
+    .sort((a,b)=>b.rate-a.rate)
+    .slice(0,topN)
+    .map(c=>c.id);
+}
+
+const BADGE_DEFS = [
+  {id:'expert90', icon:'🏅', label:'Chuyên gia lịch'},
+  {id:'streak20', icon:'🔥', label:'Chuỗi 20 câu'},
+  {id:'stage5master', icon:'👑', label:'Bậc thầy Tổng hợp'},
+  {id:'goldenHunter', icon:'🌟', label:'Săn Sao (10 câu vàng)'},
+  {id:'dedicated3', icon:'📅', label:'Chăm chỉ 3 ngày'},
+  {id:'scholar10', icon:'🎓', label:'Học giả (10 ván)'}
+];
+function evaluateBadges(sessionPct){
+  const newly=[];
+  function tryUnlock(id, cond){ if(cond && !progress.badges[id]){ progress.badges[id]=true; newly.push(id); } }
+  tryUnlock('expert90', sessionPct>=90);
+  tryUnlock('streak20', maxStreak>=20);
+  tryUnlock('stage5master', stageTotal[5]>0 && stageCorrect[5]===stageTotal[5]);
+  tryUnlock('goldenHunter', progress.goldenCollected>=10);
+  tryUnlock('dedicated3', progress.playStreakDays>=3);
+  tryUnlock('scholar10', progress.totalGamesPlayed>=10);
+  return newly;
+}
+function renderStatsLine(){
+  const el=document.getElementById('stats-line');
+  if(!el) return;
+  el.textContent = `🔥 ${progress.playStreakDays} ngày liên tiếp  ·  🎮 ${progress.totalGamesPlayed} ván đã chơi  ·  🌟 ${progress.goldenCollected} sao vàng`;
+}
+function renderBadgeCollection(){
+  const wrap=document.getElementById('badge-collection');
+  if(!wrap) return;
+  wrap.innerHTML='';
+  BADGE_DEFS.forEach(b=>{
+    const owned=!!progress.badges[b.id];
+    const el=document.createElement('div');
+    el.className='collect-badge'+(owned?' owned':'');
+    el.title=b.label;
+    el.textContent = owned ? b.icon : '❓';
+    wrap.appendChild(el);
+  });
+}
+
+// ══════════════════════ CORE LOGIC (đã kiểm thử kỹ) ══════════════════════
+const YEAR = 2026;
+const WEEKDAY_BY_GETDAY = ['Chủ Nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+const WEEKDAY_HEAD = ['T2','T3','T4','T5','T6','T7','CN'];
+const MONTH_NAMES = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6',
+                      'Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+const HOLIDAYS = {
+  1:{day:1,  icon:'🎉', name:'Tết Dương lịch'},
+  2:{day:14, icon:'💝', name:'Lễ Valentine'},
+  3:{day:8,  icon:'🌸', name:'Quốc tế Phụ nữ'},
+  4:{day:30, icon:'🇻🇳', name:'Giải phóng miền Nam'},
+  5:{day:1,  icon:'🎉', name:'Quốc tế Lao động'},
+  6:{day:1,  icon:'🎈', name:'Quốc tế Thiếu nhi'},
+  8:{day:19, icon:'🇻🇳', name:'Cách mạng Tháng Tám'},
+  9:{day:2,  icon:'🇻🇳', name:'Quốc khánh'},
+  10:{day:20,icon:'🌺', name:'Phụ nữ Việt Nam'},
+  11:{day:20,icon:'🍎', name:'Nhà giáo Việt Nam'},
+  12:{day:25,icon:'🎄', name:'Giáng sinh'}
+};
+// ── Cấp độ theo NHÓM KỸ NĂNG (không còn theo số lượng câu đếm cứng) ──
+const STAGE_INFO = {
+  1:{icon:'⭐', label:'Nhận biết Ngày, Thứ'},
+  2:{icon:'⭐⭐', label:'Hôm qua – Ngày mai'},
+  3:{icon:'⭐⭐⭐', label:'Tuần & Cuối tuần'},
+  4:{icon:'⭐⭐⭐⭐', label:'Cộng – Trừ ngày'},
+  5:{icon:'👑', label:'Bài toán tổng hợp'}
+};
+const STAGE_GROUPS = {
+  1:['weekday','daysinmonth','birthday','holiday'],
+  2:['nextday','prevday'],
+  3:['weeknum','weekendcount'],
+  4:['addsmall','addbig','addhuge','weeksahead'],
+  5:['remainmonth','nextsunday','nextmonday','daystosunday','nextweekweekday','saturdaysremain']
+};
+const STAGE_OF_ID = {};
+Object.entries(STAGE_GROUPS).forEach(([stage,ids])=>ids.forEach(id=>STAGE_OF_ID[id]=Number(stage)));
+const STAGE_MASCOT = {1:'🐱',2:'😺',3:'😸',4:'😻',5:'🤴'};
+const CORRECT_MSGS = ['🎉 Tuyệt quá!','🌟 Giỏi lắm!','🥳 Chính xác rồi!','⭐ Bạn siêu thật!','😍 Xuất sắc!','👏 Quá giỏi!'];
+const WRONG_RETRY_MSGS = ['🤗 Chưa đúng, thử lại nhé!','💡 Gần rồi, thử ô khác xem!','😊 Đừng nản, chọn lại nào!','🌈 Chưa đúng đâu, thử tiếp xem!'];
+const COMBO_MSGS = {5:'🔥 Combo 5 câu liền!',10:'⚡ Combo 10, không thể cản phá!',15:'🌟 Combo 15, siêu đỉnh!',20:'👑 Combo 20, huyền thoại!'};
+const GOLDEN_MSGS = ['🌟 Câu Vàng chính xác! Thưởng lớn cho bé!','✨ Tuyệt vời, bé vừa ăn Câu Vàng!'];
+
+// ── Lời thoại Mèo Lịch xuyên suốt game ──
+const MASCOT_START = ['🐱 Mình bắt đầu tìm ngày nhé!','🐱 Cùng khám phá lịch nào!','🐱 Bé sẵn sàng chưa?'];
+const MASCOT_GENERIC = ['🐱 Bé làm tốt lắm!','🐱 Xem kỹ lịch rồi chọn nhé!','🐱 Mèo tin bé làm được!','🐱 Cố lên, sắp giỏi hơn rồi!','🐱 Từng ngày một thôi nào!'];
+const MASCOT_FUNFACTS = ['🐱 Bạn biết không, một tuần có 7 ngày đó!','😹 Mèo ngủ tới 12-16 tiếng một ngày lận!','🐱 Một năm có 12 tháng, y như 12 con giáp!','😸 Chủ Nhật là ngày Mèo thích nhất, được nghỉ ngơi!','🐱 Thứ Hai là ngày đầu tuần làm việc đó bé!','😽 Mèo Lịch thích nhất là tháng có ngày lễ!'];
+const MASCOT_QUIET = ['🐾 ...','😽 (đang lặng lẽ cổ vũ bé)','🐱 (dán mắt vào lịch)','😺 (vẫy đuôi chờ đợi)'];
+const MASCOT_STREAK = n=>[`🔥 ${n} câu liền luôn, siêu giỏi!`,`🐱 Bạn đang thắng lớn đó!`,`⚡ Đúng liên tiếp ${n} câu rồi!`];
+const MASCOT_ALMOST_DONE = ['🐱 Sắp xong rồi, cố lên!','🐱 Gần tìm hết ngày rồi!'];
+const MASCOT_LAST = ['🐱 Câu cuối cùng, cố lên nhé!','🐱 Chỉ còn 1 ngày nữa thôi!'];
+let lastMascotLine='';
+function getMascotLine(index, total, curStreak){
+  const remain=total-index;
+  let line;
+  if(curStreak>=3) line=pickRandom(MASCOT_STREAK(curStreak));
+  else if(remain===1) line=pickRandom(MASCOT_LAST);
+  else if(remain<=3) line=pickRandom(MASCOT_ALMOST_DONE);
+  else if(index===0) line=pickRandom(MASCOT_START);
+  else {
+    const roll=Math.random();
+    line = roll<0.3 ? pickRandom(MASCOT_QUIET) : roll<0.55 ? pickRandom(MASCOT_FUNFACTS) : pickRandom(MASCOT_GENERIC);
+  }
+  if(line===lastMascotLine && index>0 && remain>3 && curStreak<3){
+    const alt=pickRandom(MASCOT_GENERIC);
+    if(alt!==lastMascotLine) line=alt;
+  }
+  lastMascotLine=line;
+  return line;
+}
+function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function daysInMonth(month){ return new Date(YEAR, month, 0).getDate(); }
+function dateOf(month, day){ return new Date(YEAR, month-1, day); }
+function addDays(date, n){ const d=new Date(date.getTime()); d.setDate(d.getDate()+n); return d; }
+function mondayIndex(date){ return (date.getDay()+6)%7; }
+function weekdayName(date){ return WEEKDAY_BY_GETDAY[date.getDay()]; }
+function fmtDateRel(date, refMonth){
+  const m=date.getMonth()+1, d=date.getDate();
+  return (m===refMonth) ? ('Ngày '+d) : ('Ngày '+d+', '+MONTH_NAMES[m-1]);
+}
+function shuffle(a){ a=[...a]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function randInt(min,max){ return min+Math.floor(Math.random()*(max-min+1)); }
+
+function genOptions(kind, correctVal, ctx={}){
+  const wrongPool=new Set();
+  function add(v){ if(v!==correctVal) wrongPool.add(v); }
+  if(kind==='weekday'){
+    shuffle(WEEKDAY_BY_GETDAY).forEach(w=>{ if(wrongPool.size<6) add(w); });
+  } else if(kind==='count'){
+    const base=parseInt(correctVal); const {min=0,max=31,unit='ngày'}=ctx;
+    [1,-1,2,-2,3,-3,4,-4].forEach(o=>{ if(wrongPool.size>=6) return; const v=base+o; if(v>=min&&v<=max) add(v+' '+unit); });
+  } else if(kind==='week'){
+    const base=parseInt(correctVal.replace('Tuần ','')); [1,-1,2,-2,3].forEach(o=>{ if(wrongPool.size>=6) return; const v=base+o; if(v>=1&&v<=6) add('Tuần '+v); });
+  } else if(kind==='date'){
+    const {answerDate, refMonth}=ctx;
+    [1,-1,2,-2,3,-3,4,-4,5,-5].forEach(o=>{ if(wrongPool.size>=6) return; add(fmtDateRel(addDays(answerDate,o), refMonth)); });
+  }
+  while(wrongPool.size<3){
+    if(kind==='weekday') add(WEEKDAY_BY_GETDAY[randInt(0,6)]);
+    else if(kind==='count'){ const {min=0,max=31,unit='ngày'}=ctx; add(randInt(min,max)+' '+unit); }
+    else if(kind==='week') add('Tuần '+randInt(1,6));
+    else if(kind==='date'){ add(fmtDateRel(addDays(ctx.answerDate, randInt(-8,8)), ctx.refMonth)); }
+  }
+  const chosenWrongs=shuffle([...wrongPool]).slice(0,3);
+  return shuffle([correctVal, ...chosenWrongs]);
+}
+
+function pickDecorations(month, dim, avoidDays){
+  let bday; do{ bday=randInt(1,dim); } while(avoidDays.includes(bday));
+  return bday;
+}
+
+const GENERATORS = {
+  weekday(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    const answer=weekdayName(dateOf(month,today));
+    return {level:1, id:'weekday', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'📅 Hôm nay là Thứ mấy?',
+      answer, optKind:'weekday', optCtx:{},
+      explain:`Ngày ${today} ${MONTH_NAMES[month-1].toLowerCase()} là <b>${answer}</b>.`};
+  },
+  daysinmonth(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    const answer=dim+' ngày';
+    return {level:1, id:'daysinmonth', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'🗓️ Tháng này có bao nhiêu ngày?',
+      answer, optKind:'count', optCtx:{min:28,max:31,unit:'ngày'},
+      explain:`${MONTH_NAMES[month-1]} có <b>${dim} ngày</b>.`};
+  },
+  nextday(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    if(dim<2) return null;
+    const today=randInt(1,dim-1); const bday=pickDecorations(month,dim,[today]);
+    const answer='Ngày '+(today+1);
+    return {level:1, id:'nextday', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'➡️ Ngày mai là ngày mấy?',
+      answer, optKind:'date', optCtx:{answerDate:dateOf(month,today+1), refMonth:month},
+      explain:`Ngày liền sau ngày ${today} là <b>ngày ${today+1}</b>.`};
+  },
+  prevday(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    if(dim<2) return null;
+    const today=randInt(2,dim); const bday=pickDecorations(month,dim,[today]);
+    const answer='Ngày '+(today-1);
+    return {level:1, id:'prevday', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'⬅️ Hôm qua là ngày mấy?',
+      answer, optKind:'date', optCtx:{answerDate:dateOf(month,today-1), refMonth:month},
+      explain:`Ngày liền trước ngày ${today} là <b>ngày ${today-1}</b>.`};
+  },
+  birthday(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    const answer='Ngày '+bday;
+    return {level:1, id:'birthday', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'🎂 Sinh nhật là ngày mấy?',
+      answer, optKind:'date', optCtx:{answerDate:dateOf(month,bday), refMonth:month},
+      explain:`Biểu tượng 🎂 nằm ở ô <b>ngày ${bday}</b>.`};
+  },
+  holiday(month){
+    const h=HOLIDAYS[month]; if(!h) return null;
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today,h.day]);
+    const answer='Ngày '+h.day;
+    return {level:1, id:'holiday', month, dim, firstMon, today, bday, holiday:h,
+      task:`${h.icon} Ngày lễ "${h.name}" là ngày mấy?`,
+      answer, optKind:'date', optCtx:{answerDate:dateOf(month,h.day), refMonth:month},
+      explain:`${h.name} rơi vào <b>ngày ${h.day}</b> ${MONTH_NAMES[month-1].toLowerCase()}.`};
+  },
+  remainmonth(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    if(dim<2) return null;
+    const today=randInt(1,dim-1); const bday=pickDecorations(month,dim,[today]);
+    const remain=dim-today; const answer=remain+' ngày';
+    return {level:2, id:'remainmonth', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'⏳ Còn mấy ngày nữa hết tháng?',
+      answer, optKind:'count', optCtx:{min:0,max:31,unit:'ngày'},
+      explain:`Tháng có ${dim} ngày, hôm nay là ngày ${today}, nên còn ${dim} − ${today} = <b>${remain} ngày</b> nữa.`};
+  },
+  addsmall(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const N=randInt(2,5); if(dim-N<1) return null;
+    const today=randInt(1,dim-N); const bday=pickDecorations(month,dim,[today]);
+    const result=today+N; const answer='Ngày '+result;
+    return {level:2, id:'addsmall', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:`➕ ${N} ngày nữa là ngày mấy?`,
+      answer, optKind:'date', optCtx:{answerDate:dateOf(month,result), refMonth:month},
+      explain:`Ngày ${today} + ${N} ngày = <b>ngày ${result}</b>.`};
+  },
+  weeknum(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    const rowIndex=Math.floor((firstMon+today-1)/7)+1; const answer='Tuần '+rowIndex;
+    return {level:2, id:'weeknum', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'📆 Đây là tuần thứ mấy?',
+      answer, optKind:'week', optCtx:{},
+      explain:`Ngày ${today} nằm ở hàng <b>tuần thứ ${rowIndex}</b> trong lịch tháng.`};
+  },
+  weekendcount(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    let count=0; for(let d=1; d<=dim; d++){ const dow=dateOf(month,d).getDay(); if(dow===0||dow===6) count++; }
+    const answer=count+' ngày';
+    return {level:2, id:'weekendcount', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'🎉 Tháng có mấy ngày cuối tuần?',
+      answer, optKind:'count', optCtx:{min:6,max:10,unit:'ngày'},
+      explain:`Đếm tất cả Thứ 7 và Chủ Nhật trong tháng: có <b>${count} ngày</b>.`};
+  },
+  nextsunday(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    let d=1; while(addDays(dateOf(month,today),d).getDay()!==0) d++;
+    const resultDate=addDays(dateOf(month,today),d); const answer=fmtDateRel(resultDate, month);
+    return {level:3, id:'nextsunday', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'📅 Chủ Nhật tới là ngày nào?',
+      answer, optKind:'date', optCtx:{answerDate:resultDate, refMonth:month},
+      explain:`Từ ngày ${today} (${weekdayName(dateOf(month,today))}), đếm tới Chủ Nhật gần nhất mất ${d} ngày → <b>${answer}</b>.`};
+  },
+  nextmonday(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    let d=1; while(addDays(dateOf(month,today),d).getDay()!==1) d++;
+    const resultDate=addDays(dateOf(month,today),d); const answer=fmtDateRel(resultDate, month);
+    return {level:3, id:'nextmonday', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'📅 Thứ Hai tới là ngày nào?',
+      answer, optKind:'date', optCtx:{answerDate:resultDate, refMonth:month},
+      explain:`Từ ngày ${today} (${weekdayName(dateOf(month,today))}), đếm tới Thứ Hai gần nhất mất ${d} ngày → <b>${answer}</b>.`};
+  },
+  addbig(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const N=randInt(6,10); const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    const resultDate=addDays(dateOf(month,today),N); const answer=fmtDateRel(resultDate, month);
+    const remain=dim-today; let explain;
+    if(N>remain){ const spill=N-remain; explain=`Tháng ${month} còn ${remain} ngày nữa hết tháng, nên dư ${spill} ngày sang ${MONTH_NAMES[resultDate.getMonth()]}, ra <b>${answer}</b>.`; }
+    else explain=`Ngày ${today} + ${N} ngày = <b>${answer}</b>.`;
+    return {level:3, id:'addbig', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:`➕ ${N} ngày nữa là ngày mấy?`,
+      answer, optKind:'date', optCtx:{answerDate:resultDate, refMonth:month}, explain};
+  },
+  daystosunday(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    let d=1; while(addDays(dateOf(month,today),d).getDay()!==0) d++;
+    const answer=d+' ngày';
+    return {level:3, id:'daystosunday', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'🔢 Còn mấy ngày nữa đến Chủ Nhật?',
+      answer, optKind:'count', optCtx:{min:1,max:7,unit:'ngày'},
+      explain:`Hôm nay là ${weekdayName(dateOf(month,today))}. Đếm tới Chủ Nhật mất <b>${d} ngày</b>.`};
+  },
+  nextweekweekday(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    const targetDow=randInt(0,6); const todayDate=dateOf(month,today);
+    const mIdx=mondayIndex(todayDate); const mondayOfWeek=addDays(todayDate,-mIdx);
+    const offsetFromMonday=(targetDow+6)%7; const resultDate=addDays(mondayOfWeek, 7+offsetFromMonday);
+    const answer=fmtDateRel(resultDate, month);
+    return {level:4, id:'nextweekweekday', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:`📅 ${WEEKDAY_BY_GETDAY[targetDow]} tuần sau là ngày nào?`,
+      answer, optKind:'date', optCtx:{answerDate:resultDate, refMonth:month},
+      explain:`Tuần này bắt đầu Thứ 2 ngày ${mondayOfWeek.getDate()}. Tuần sau, ${WEEKDAY_BY_GETDAY[targetDow]} sẽ là <b>${answer}</b>.`};
+  },
+  addhuge(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const N=randInt(11,20); const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    const resultDate=addDays(dateOf(month,today),N); const answer=fmtDateRel(resultDate, month);
+    const remain=dim-today; let explain;
+    if(N>remain){ const spill=N-remain; explain=`Tháng ${month} còn ${remain} ngày nữa hết tháng, nên dư ${spill} ngày sang ${MONTH_NAMES[resultDate.getMonth()]}, ra <b>${answer}</b>.`; }
+    else explain=`Ngày ${today} + ${N} ngày = <b>${answer}</b>.`;
+    return {level:4, id:'addhuge', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:`➕ ${N} ngày nữa là ngày mấy?`,
+      answer, optKind:'date', optCtx:{answerDate:resultDate, refMonth:month}, explain};
+  },
+  weeksahead(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const weeks=randInt(2,3); const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    const resultDate=addDays(dateOf(month,today), weeks*7); const answer=fmtDateRel(resultDate, month);
+    return {level:4, id:'weeksahead', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:`🗓️ ${weeks} tuần nữa là ngày mấy?`,
+      answer, optKind:'date', optCtx:{answerDate:resultDate, refMonth:month},
+      explain:`${weeks} tuần = ${weeks*7} ngày. Ngày ${today} + ${weeks*7} ngày = <b>${answer}</b>.`};
+  },
+  saturdaysremain(month){
+    const dim=daysInMonth(month), firstMon=mondayIndex(dateOf(month,1));
+    const today=randInt(1,dim); const bday=pickDecorations(month,dim,[today]);
+    let count=0; for(let d=today; d<=dim; d++){ if(dateOf(month,d).getDay()===6) count++; }
+    const answer=count+' ngày';
+    return {level:4, id:'saturdaysremain', month, dim, firstMon, today, bday, holiday:HOLIDAYS[month],
+      task:'📊 Còn mấy ngày Thứ 7 nữa?',
+      answer, optKind:'count', optCtx:{min:0,max:5,unit:'ngày'},
+      explain:`Đếm các Thứ 7 từ ngày ${today} đến ngày ${dim}: có <b>${count} ngày</b>.`};
+  }
+};
+
+const POOL_L1=['weekday','daysinmonth','nextday','prevday','birthday','holiday'];
+const POOL_L2=['remainmonth','addsmall','weeknum','weekendcount'];
+const POOL_L3=['nextsunday','nextmonday','addbig','daystosunday'];
+const POOL_L4=['nextweekweekday','addhuge','weeksahead','saturdaysremain'];
+const POOL_ALL=[...POOL_L1,...POOL_L2,...POOL_L3,...POOL_L4];
+
+function tagStage(genId, s){ if(s) s.stage=STAGE_OF_ID[genId]||1; return s; }
+
+function buildOne(genId, forceMonth){
+  for(let attempt=0; attempt<8; attempt++){
+    const month=forceMonth||randInt(1,12);
+    const s=GENERATORS[genId](month);
+    if(s) return tagStage(genId, s);
+    if(forceMonth) continue;
+  }
+  return null;
+}
+// Chia đều các câu theo THỨ TỰ 5 cấp kỹ năng (dễ → tổng hợp), tránh "nhảy cóc" độ khó
+function pickN(pool, n){
+  let ids=[];
+  while(ids.length<n){ ids=ids.concat(shuffle(pool)); }
+  return shuffle(ids.slice(0,n));
+}
+function buildFullTest(){
+  const plan=[
+    {stage:1, n:5}, {stage:2, n:5}, {stage:3, n:4}, {stage:4, n:5}, {stage:5, n:5}
+  ];
+  const ids=plan.flatMap(p=>pickN(STAGE_GROUPS[p.stage], p.n));
+  return ids.map(id=>{
+    let s=buildOne(id);
+    if(!s){
+      const stage=STAGE_OF_ID[id];
+      for(const alt of STAGE_GROUPS[stage]){ s=buildOne(alt); if(s) break; }
+    }
+    return s;
+  });
+}
+function buildForMonth(month, count){
+  const results=[]; let guard=0;
+  while(results.length<count && guard<500){
+    guard++;
+    const id=POOL_ALL[randInt(0,POOL_ALL.length-1)];
+    const s=GENERATORS[id](month);
+    if(s) results.push(tagStage(id, s));
+  }
+  return results;
+}
+
+// ══════════════════════ CHẾ ĐỘ ══════════════════════
+function buildReviewTest(){
+  const weakIds=getWeakestIds(POOL_ALL, 5);
+  if(weakIds.length===0){
+    return Array.from({length:16}, ()=>buildOne(POOL_ALL[randInt(0,POOL_ALL.length-1)]));
+  }
+  const perId=Math.max(2, Math.floor(16/weakIds.length));
+  let ids=[];
+  weakIds.forEach(id=>{ for(let i=0;i<perId;i++) ids.push(id); });
+  while(ids.length<16) ids.push(weakIds[randInt(0,weakIds.length-1)]);
+  return shuffle(ids).slice(0,16).map(id=>buildOne(id)).filter(Boolean);
+}
+const MODES = {
+  full:   { icon:'🎁', name:'Khám phá lịch', desc:'Chơi đủ mọi dạng câu hỏi!', build: ()=>buildFullTest() },
+  review: { icon:'🔁', name:'Ôn lại câu sai', desc:'Luyện đúng chỗ bé hay nhầm', build: ()=>buildReviewTest() },
+  weekday:{ icon:'🐥', name:'Thứ mấy nhỉ?', desc:'Đoán xem hôm nay là thứ mấy!', build: ()=>shuffle(Array.from({length:12},()=>buildOne('weekday'))) },
+  prevnext:{icon:'⏪', name:'Hôm qua – Hôm nay – Ngày mai', desc:'Tìm ngày liền kề thật nhanh!', build: ()=>shuffle(Array.from({length:12},(_,i)=>buildOne(i%2===0?'nextday':'prevday'))) },
+  month:  { icon:'📅', name:'Khám phá từng tháng', desc:'Chọn 1 tháng để chơi thật kỹ', needsMonth:true },
+  hundred:{ icon:'🏆', name:'Siêu thử thách', desc:'Bạn có vượt qua được không?', build: ()=>Array.from({length:100},()=>buildOne(POOL_ALL[randInt(0,POOL_ALL.length-1)])) }
+};
+let currentModeKey='full';
+let lastMonth=null;
+let scenarios=[];
+let current=0, correct=0, wrong=0, resolved=false, firstMissed=false, streak=0, maxStreak=0, prevStage=0;
+let stageCorrect={1:0,2:0,3:0,4:0,5:0}, stageTotal={1:0,2:0,3:0,4:0,5:0};
+let isGoldenQuestion=false;
+let quizStartTime=0, goldenThisGame=0, highestStageThisGame=1;
+
+// ── Khởi tạo tiến trình đã lưu (localStorage) ──
+let progress=loadProgress();
+updateDailyStreak();
+evaluateBadges(0);
+saveProgress();
+renderStatsLine();
+renderBadgeCollection();
+
+// ── Stars nền ──
+(()=>{
+  const w=document.getElementById('stars');
+  for(let i=0;i<70;i++){
+    const s=document.createElement('div'); s.className='star';
+    const sz=Math.random()*2.2+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${1.8+Math.random()*3}s;animation-delay:${Math.random()*4}s`;
+    w.appendChild(s);
+  }
+})();
+
+// ── Âm thanh (Web Audio, không cần file) ──
+let audioCtx;
+function ensureAudioCtx(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+function beep(freq, duration, type, vol, delay){
+  try{
+    const ctx=ensureAudioCtx(); const osc=ctx.createOscillator(); const gain=ctx.createGain();
+    osc.type=type; osc.frequency.value=freq; gain.gain.value=vol;
+    osc.connect(gain); gain.connect(ctx.destination);
+    const t=ctx.currentTime+(delay||0);
+    osc.start(t); gain.gain.exponentialRampToValueAtTime(0.001, t+duration); osc.stop(t+duration+0.05);
+  }catch(e){}
+}
+function playTing(){ beep(880,0.12,'sine',0.22,0); beep(1318.5,0.16,'sine',0.18,0.08); }
+function playOops(){ beep(220,0.18,'sawtooth',0.15,0); beep(160,0.22,'sawtooth',0.13,0.12); }
+function playVictory(){ [523.25,659.25,783.99,1046.5].forEach((f,i)=>beep(f,0.18,'triangle',0.2,i*0.12)); }
+
+// ── Nhạc nền: tự giảm âm 1 giây trước khi đọc câu hỏi, tăng lại sau khi đọc xong ──
+const BG_MUSIC_VOLUME=0.35;
+let musicEnabled=false, musicStarted=false;
+const bgMusic=document.getElementById('bg-music');
+bgMusic.volume=0;
+bgMusic.addEventListener('error', ()=>{ console.log('Không tải được nhạc nền (kiểm tra file Peter-and-the-Wolf.mp3 có cùng thư mục với file HTML không).'); });
+
+function fadeMusic(target, duration){
+  if(!bgMusic) return;
+  const start=bgMusic.volume;
+  const t0=performance.now();
+  function step(now){
+    if(typeof now!=='number') now=performance.now();
+    const t=Math.min(1, (now-t0)/duration);
+    const v=start+(target-start)*t;
+    bgMusic.volume = Number.isFinite(v) ? v : target;
+    if(t<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function toggleMusic(){
+  musicEnabled=!musicEnabled;
+  const btn=document.getElementById('music-toggle');
+  if(musicEnabled){
+    btn.textContent='🔊 Nhạc nền: Bật'; btn.classList.add('on');
+    musicStarted=true;
+    fadeMusic(BG_MUSIC_VOLUME, 600);
+    bgMusic.play().catch(()=>{ musicStarted=false; fadeMusic(0,200); });
+  } else {
+    btn.textContent='🔈 Nhạc nền: Tắt'; btn.classList.remove('on');
+    fadeMusic(0, 400);
+    setTimeout(()=>{ if(!musicEnabled) bgMusic.pause(); }, 450);
+  }
+}
+
+// ── Hiệu ứng gõ chữ kiểu hoạt hình ──
+let typeTimer=null;
+function typeText(el, text, speed){
+  if(typeTimer){ clearInterval(typeTimer); typeTimer=null; }
+  el.innerHTML='<span class="typed-part"></span><span class="type-cursor">✏️</span>';
+  const span=el.querySelector('.typed-part');
+  let i=0;
+  typeTimer=setInterval(()=>{
+    i++;
+    span.textContent=text.slice(0,i);
+    if(i>=text.length){ clearInterval(typeTimer); typeTimer=null; }
+  }, speed||30);
+}
+
+// ── Đọc to câu hỏi bằng giọng nói tiếng Việt ──
+let currentTaskText='';
+let viVoice=null;
+function loadViVoice(){
+  if(!('speechSynthesis' in window)) return;
+  const voices=window.speechSynthesis.getVoices();
+  viVoice=voices.find(v=>v.lang && v.lang.toLowerCase().startsWith('vi')) || null;
+}
+if('speechSynthesis' in window){
+  loadViVoice();
+  window.speechSynthesis.onvoiceschanged=loadViVoice;
+}
+function speakVN(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const cleanText=text.replace(/[\u{1F1E6}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\uFE0F]/gu,'').trim();
+
+    // Nhạc nền giảm âm trước 1 giây rồi mới bắt đầu đọc
+    if(musicEnabled && musicStarted) fadeMusic(0, 900);
+
+    setTimeout(()=>{
+      const u=new SpeechSynthesisUtterance(cleanText);
+      u.lang='vi-VN'; u.rate=0.88; u.pitch=1.05;
+      if(viVoice) u.voice=viVoice;
+      const restoreMusic=()=>{ if(musicEnabled && musicStarted) fadeMusic(BG_MUSIC_VOLUME, 800); };
+      u.onend=restoreMusic; u.onerror=restoreMusic;
+      window.speechSynthesis.speak(u);
+    }, 1000);
+  }catch(e){}
+}
+function replaySpeak(){ speakVN(currentTaskText); }
+
+// ── Xây danh sách chế độ ──
+function buildModeGrid(){
+  const grid=document.getElementById('mode-grid');
+  grid.innerHTML='';
+  const weakCount=getWeakestIds(POOL_ALL, 5).length;
+  Object.entries(MODES).forEach(([key,m])=>{
+    const card=document.createElement('div');
+    card.className='mode-card';
+    let desc=m.desc;
+    if(key==='review') desc = weakCount>0 ? `Luyện ${weakCount} dạng bé hay nhầm` : 'Chưa có dữ liệu, sẽ luyện làm quen!';
+    card.innerHTML=`<div class="mode-icon">${m.icon}</div><div><div class="mode-name">${m.name}</div><div class="mode-desc">${desc}</div></div>`;
+    card.onclick=()=>selectMode(key);
+    grid.appendChild(card);
+  });
+  const mgrid=document.getElementById('month-grid');
+  mgrid.innerHTML='';
+  const MONTH_ICONS = ['❄️','💝','🌸','🌷','🌈','☀️','🏖️','🌻','🍂','🎃','🍁','🎄'];
+  MONTH_NAMES.forEach((name,i)=>{
+    const btn=document.createElement('button');
+    btn.className='month-btn'; btn.innerHTML=`${MONTH_ICONS[i]}<br>Tháng ${i+1}`;
+    btn.onclick=()=>startMonthMode(i+1);
+    mgrid.appendChild(btn);
+  });
+}
+buildModeGrid();
+
+function selectMode(key){
+  if(MODES[key].needsMonth){
+    document.getElementById('month-panel').classList.add('show');
+    document.getElementById('mode-grid').style.display='none';
+    return;
+  }
+  currentModeKey=key;
+  scenarios=MODES[key].build();
+  startQuiz();
+}
+function startMonthMode(month){
+  currentModeKey='month';
+  lastMonth=month;
+  scenarios=buildForMonth(month, 16);
+  startQuiz();
+}
+function hideMonthPanel(){ document.getElementById('month-panel').classList.remove('show'); document.getElementById('mode-grid').style.display='grid'; }
+
+function goToModeSelect(){
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('mode-screen').style.display='block';
+  document.getElementById('mascot-box').style.display='block';
+  evaluateBadges(0); saveProgress();
+  renderStatsLine(); renderBadgeCollection(); buildModeGrid();
+  hideMonthPanel();
+}
+function restartSameMode(){
+  scenarios = currentModeKey==='month' ? buildForMonth(lastMonth, 16) : MODES[currentModeKey].build();
+  startQuiz();
+}
+
+// ── Bắt đầu quiz ──
+function startQuiz(){
+  current=0; correct=0; wrong=0; streak=0; maxStreak=0; prevStage=0;
+  stageCorrect={1:0,2:0,3:0,4:0,5:0}; stageTotal={1:0,2:0,3:0,4:0,5:0};
+  quizStartTime=Date.now(); goldenThisGame=0; highestStageThisGame=1;
+  scenarios.forEach(s=>{ if(s) stageTotal[s.stage]++; });
+  document.getElementById('mode-screen').style.display='none';
+  document.getElementById('mascot-box').style.display='none';
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('quiz-screen').style.display='block';
+  buildDots();
+  render();
+}
+
+function buildDots(){
+  const row=document.getElementById('dot-row');
+  const total=scenarios.length;
+  if(total>30){ row.style.display='none'; return; }
+  row.style.display='flex';
+  row.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div'); d.className='dot'+(i===0?' cur':''); d.id='d'+i;
+    if(i===0) d.textContent='🐱';
+    row.appendChild(d);
+  }
+  const castle=document.createElement('div'); castle.className='dot castle'; castle.textContent='🏰'; row.appendChild(castle);
+}
+function setDotState(idx, state){
+  const d=document.getElementById('d'+idx);
+  if(!d) return;
+  d.className='dot '+state;
+  d.textContent = state==='cur' ? '🐱' : (state==='ok'||state==='no') ? '⭐' : '';
+}
+
+// ── Vẽ lịch ──
+function drawCalendar(s){
+  document.getElementById('cal-title').textContent=`${MONTH_NAMES[s.month-1]} · ${YEAR}`;
+  const grid=document.getElementById('cal-grid'); grid.innerHTML='';
+  WEEKDAY_HEAD.forEach((w,i)=>{
+    const h=document.createElement('div');
+    h.className='cal-head'+(w==='CN'?' sun':w==='T7'?' sat':''); h.textContent=w; grid.appendChild(h);
+  });
+  for(let i=0;i<s.firstMon;i++){ const b=document.createElement('div'); b.className='cal-day blank'; grid.appendChild(b); }
+  for(let d=1; d<=s.dim; d++){
+    const dow=dateOf(s.month,d).getDay();
+    const cell=document.createElement('div');
+    let cls='cal-day';
+    if(dow===0) cls+=' sun'; else if(dow===6) cls+=' sat';
+    if(d===s.today) cls+=' today';
+    cell.className=cls;
+    let icon='';
+    if(s.holiday && d===s.holiday.day) icon=s.holiday.icon;
+    else if(d===s.bday) icon='🎂';
+    cell.innerHTML=`<span class="d-num">${d}</span>`+(icon?`<span class="d-icon">${icon}</span>`:'');
+    grid.appendChild(cell);
+  }
+}
+
+// ── Render câu hỏi ──
+function render(){
+  const s=scenarios[current];
+  resolved=false; firstMissed=false;
+  const total=scenarios.length;
+
+  // ── Cấp độ theo NHÓM KỸ NĂNG (gắn liền với câu hỏi, không còn đếm cứng theo số câu) ──
+  const curStage=s.stage||1;
+  highestStageThisGame=Math.max(highestStageThisGame, curStage);
+  const si=STAGE_INFO[curStage];
+  const sb=document.getElementById('stage-badge');
+  sb.textContent=`${si.icon} Cấp ${curStage}: ${si.label}`;
+  if(curStage>prevStage && prevStage>0){
+    sb.classList.remove('levelup'); void sb.offsetWidth; sb.classList.add('levelup');
+  }
+  prevStage=curStage;
+
+  // ── Mèo Lịch đổi biểu cảm theo cấp đang chơi ──
+  document.getElementById('mascot-strip-emoji').textContent=STAGE_MASCOT[curStage]||'🐱';
+  document.getElementById('mascot-strip-text').textContent=getMascotLine(current, total, streak);
+
+  // ── Câu hỏi vàng bất ngờ (không phải câu đầu tiên, ~18% cơ hội) ──
+  isGoldenQuestion = current>0 && Math.random()<0.18;
+  const qcard=document.getElementById('qcard');
+  qcard.classList.toggle('golden', isGoldenQuestion);
+  document.getElementById('golden-badge').style.display = isGoldenQuestion ? 'inline-flex' : 'none';
+
+  document.getElementById('q-label').textContent=`Câu ${current+1}`;
+  currentTaskText=s.task;
+  typeText(document.getElementById('q-task'), s.task, 28);
+  speakVN(s.task);
+  document.getElementById('prog-text').textContent=`Câu ${current+1} / ${total}`;
+  const pct=Math.round(current/total*100);
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('sc-q').textContent=current+1;
+  document.getElementById('sc-ok').textContent=correct;
+  document.getElementById('sc-no').textContent=wrong;
+
+  if(total<=30){
+    setDotState(current, 'cur');
+  }
+
+  drawCalendar(s);
+
+  const opts=genOptions(s.optKind, s.answer, s.optCtx);
+  const wrap=document.getElementById('answers'); wrap.innerHTML='';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button'); btn.className='ans-btn'; btn.textContent=opt;
+    btn.onclick=()=>check(btn,opt,s.answer,s.explain);
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback'; document.getElementById('feedback').textContent='';
+  document.getElementById('explain-box').className='explain-box'; document.getElementById('explain-box').innerHTML='';
+  qcard.style.animation='none'; requestAnimationFrame(()=>{ qcard.style.animation='slideIn .4s ease'; });
+}
+
+function check(btn,chosen,answer,explain){
+  if(resolved || btn.disabled) return;
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if(musicEnabled && musicStarted) fadeMusic(BG_MUSIC_VOLUME, 500);
+  const s=scenarios[current];
+  const fb=document.getElementById('feedback');
+
+  if(chosen===answer){
+    resolved=true;
+    document.querySelectorAll('.ans-btn').forEach(b=>{ b.disabled=true; });
+    btn.classList.add('correct');
+    let isCombo=false;
+    recordWeakStat(s.id, firstMissed);
+    if(isGoldenQuestion){ goldenThisGame++; progress.goldenCollected++; }
+    if(!firstMissed){
+      correct++; streak++; maxStreak=Math.max(maxStreak,streak); stageCorrect[s.stage]++;
+      isCombo = streak>0 && streak%5===0;
+      if(scenarios.length<=30) setDotState(current, 'ok');
+    } else {
+      if(scenarios.length<=30) setDotState(current, 'no');
+    }
+    const isSpecial = isCombo || isGoldenQuestion;
+    if(isGoldenQuestion) fb.textContent=pickRandom(GOLDEN_MSGS);
+    else if(isCombo) fb.textContent=COMBO_MSGS[streak] || `🔥 Combo ${streak} câu!`;
+    else fb.textContent=pickRandom(CORRECT_MSGS);
+    fb.className='feedback show ok';
+    if(isSpecial){ playVictory(); comboBurst(); } else { playTing(); confetti(); }
+    const eb=document.getElementById('explain-box');
+    eb.innerHTML='💡 '+explain; eb.className='explain-box show';
+    document.getElementById('sc-ok').textContent=correct; document.getElementById('sc-no').textContent=wrong;
+    setTimeout(nextQuestion, 2500);
+  } else {
+    btn.disabled=true; btn.classList.add('wrong');
+    if(!firstMissed){
+      firstMissed=true; wrong++; streak=0;
+      playOops();
+      document.getElementById('sc-no').textContent=wrong;
+      if(scenarios.length<=30) setDotState(current, 'no');
+    }
+    fb.className='feedback show no'; fb.textContent=pickRandom(WRONG_RETRY_MSGS);
+  }
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=scenarios.length){ showResult(); return; }
+  render();
+}
+
+function computeBadges(pct){
+  const badges=[];
+  if(pct>=90) badges.push('🏅 Chuyên gia lịch');
+  if(maxStreak>=8) badges.push(`🔥 Chuỗi ${maxStreak} câu đúng liên tiếp`);
+  if(stageTotal[5]>0 && stageCorrect[5]===stageTotal[5]) badges.push('👑 Bậc thầy Bài Toán Tổng Hợp');
+  if(stageTotal[4]>0 && stageCorrect[4]===stageTotal[4] && stageTotal[5]===0) badges.push('💪 Chinh phục Cộng – Trừ ngày');
+  if(badges.length===0) badges.push('🎯 Đã hoàn thành bài luyện tập');
+  return badges;
+}
+
+function formatElapsed(ms){
+  const s=Math.round(ms/1000);
+  const m=Math.floor(s/60), rs=s%60;
+  return m>0 ? `${m} phút ${rs} giây` : `${rs} giây`;
+}
+
+function showResult(){
+  document.getElementById('quiz-screen').style.display='none';
+  const rs=document.getElementById('result-screen'); rs.classList.add('show');
+  const total=scenarios.length;
+  const pct=Math.round(correct/total*100);
+  document.getElementById('r-ok').textContent=correct;
+  document.getElementById('r-no').textContent=wrong;
+  document.getElementById('r-pct').textContent=pct+'%';
+  let tr='🏆',ti='Xuất sắc!',su='Kết quả rất tốt!';
+  if(pct>=90){tr='🥇';ti='Thiên tài!';su='Gần như tuyệt đối!';}
+  else if(pct>=70){tr='🥈';ti='Rất giỏi!';su='Cố thêm chút là hoàn hảo!';}
+  else if(pct>=50){tr='🥉';ti='Tốt lắm!';su='Luyện thêm xem lịch nhé!';}
+  else{tr='📚';ti='Cần luyện thêm!';su='Thử lại lần nữa nhé!';}
+  document.getElementById('trophy').textContent=tr;
+  document.getElementById('r-title').textContent=ti;
+  document.getElementById('r-sub').textContent=su;
+
+  // ── Cập nhật tiến trình lưu trữ vĩnh viễn ──
+  progress.totalGamesPlayed++;
+  progress.totalCorrect+=correct;
+  progress.totalQuestions+=total;
+  progress.bestStreak=Math.max(progress.bestStreak, maxStreak);
+  const newlyUnlocked=evaluateBadges(pct);
+  saveProgress();
+
+  // ── Thống kê mở rộng ──
+  const elapsed=formatElapsed(Date.now()-quizStartTime);
+  const extraWrap=document.getElementById('result-stats-extra'); extraWrap.innerHTML='';
+  const extras=[
+    ['⏱️','Thời gian', elapsed],
+    ['🌟','Câu Vàng', goldenThisGame+' câu'],
+    ['🔥','Chuỗi dài nhất', maxStreak+' câu'],
+    ['🏅','Cấp cao nhất', STAGE_INFO[highestStageThisGame].icon+' Cấp '+highestStageThisGame],
+  ];
+  extras.forEach(([icon,label,val])=>{
+    const el=document.createElement('div'); el.className='extra-stat';
+    el.innerHTML=`${icon} ${label}: <b>${val}</b>`;
+    extraWrap.appendChild(el);
+  });
+
+  const badgeRow=document.getElementById('badge-row'); badgeRow.innerHTML='';
+  computeBadges(pct).forEach(b=>{ const el=document.createElement('div'); el.className='earned-badge'; el.textContent=b; badgeRow.appendChild(el); });
+
+  // ── Huy hiệu VĨNH VIỄN mới mở khóa lần này ──
+  const newRow=document.getElementById('new-badge-row'); newRow.innerHTML='';
+  newlyUnlocked.forEach(id=>{
+    const def=BADGE_DEFS.find(b=>b.id===id);
+    if(!def) return;
+    const el=document.createElement('div'); el.className='new-badge';
+    el.textContent=`🆕 ${def.icon} Mới mở khóa: ${def.label}`;
+    newRow.appendChild(el);
+  });
+
+  if(pct>=70){ playVictory(); for(let i=0;i<6;i++) setTimeout(confetti,i*350); }
+}
+
+function comboBurst(){
+  for(let i=0;i<3;i++) setTimeout(confetti, i*150);
+}
+function confetti(){
+  const colors=['#fbbf24','#f472b6','#34d399','#60a5fa','#a78bfa','#fb923c'];
+  for(let i=0;i<16;i++){
+    const c=document.createElement('div'); c.className='confetti-piece';
+    const sz=7+Math.random()*8;
+    c.style.cssText=`left:${10+Math.random()*80}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.4+Math.random()*1.4}s;animation-delay:${Math.random()*0.3}s;`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+}
+</script>
+</body>
+</html>

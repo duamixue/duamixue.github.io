@@ -1,0 +1,505 @@
+[
+  {
+    "title": "Game4Dua English",
+    "file": "Game4Dua_EN.html",
+    "emoji": "🌟",
+    "subject": "Tiếng Anh",
+    "type": "Trò chơi",
+    "grade": "6–10 tuổi",
+    "gradeLevel": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "desc": "Trò chơi học tiếng Anh vui nhộn dành cho trẻ em. Bay cùng emoji, chọn đáp án đúng và ghi điểm cao nhất!",
+    "date": "2025",
+    "color": "linear-gradient(135deg,#0a2a0a,#1a3a1a)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Dino Run Mixue",
+    "file": "mixue_dino_run.html",
+    "emoji": "🦕",
+    "subject": "Giải trí",
+    "type": "Trò chơi",
+    "grade": "Mọi lứa tuổi",
+    "gradeLevel": [],
+    "desc": "Cùng chú khủng long Mixue vượt chướng ngại vật! Nhảy thật cao, chạy thật xa và lập kỷ lục mới.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a0a0a,#2a1010)",
+    "featured": true,
+    "essential": false,
+    "mood": [
+      "Thư giãn",
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Truy Tìm Kho Báu",
+    "file": "truy-tim-kho-bau.html",
+    "emoji": "🗺️",
+    "subject": "Giải trí",
+    "type": "Trò chơi",
+    "grade": "8–10 tuổi",
+    "gradeLevel": [
+      3,
+      4,
+      5
+    ],
+    "desc": "Giải mã bản đồ bí ẩn, vượt qua các thử thách và tìm ra kho báu ẩn giấu. Cuộc phiêu lưu bắt đầu!",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a1200,#2a1e00)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Khám phá",
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Brain Burst",
+    "file": "BrainBurst_v2_back.html",
+    "emoji": "🧠",
+    "subject": "Tư duy",
+    "type": "Trò chơi",
+    "grade": "8–10 tuổi",
+    "gradeLevel": [
+      3,
+      4,
+      5
+    ],
+    "desc": "Thử thách não bộ với loạt câu đố bùng nổ! Phản xạ nhanh, tư duy nhạy — ai dám thử?",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a0a2a,#0d0820)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "IQ Game Dừa & Mixue",
+    "file": "iq-game-dua-music.html",
+    "emoji": "🌴",
+    "subject": "Tư duy",
+    "type": "Trò chơi",
+    "grade": "9–10 tuổi",
+    "gradeLevel": [
+      4,
+      5
+    ],
+    "desc": "Trò chơi IQ đặc biệt mang thương hiệu Dừa & Mixue — đo trí tuệ qua các thử thách hình học và logic.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a10,#0f2a18)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "IQ & Tư Duy Sáng Tạo",
+    "file": "bai-tap-iq-tu-duy.html",
+    "emoji": "🧩",
+    "subject": "Tư duy",
+    "type": "Luyện tập",
+    "grade": "6–8 tuổi",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Chuỗi bài tập kích thích IQ và tư duy sáng tạo — hình học, suy luận, tìm điểm khác biệt.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a0a2a,#0d0820)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách",
+      "Sáng tạo"
+    ]
+  },
+  {
+    "title": "Thám Hiểm Đại Dương",
+    "file": "tham-hiem-dai-duong.html",
+    "emoji": "🌊",
+    "subject": "Khoa học",
+    "type": "Trò chơi",
+    "grade": "6–8 tuổi",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Lặn sâu vào lòng đại dương huyền bí, khám phá sinh vật biển kỳ lạ và bí mật dưới đáy nước.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#001a2a,#002a3a)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Hệ Mặt Trời",
+    "file": "he-mat-troi.html",
+    "emoji": "🪐",
+    "subject": "Khoa học",
+    "type": "Khám phá",
+    "grade": "Lớp 3–5",
+    "gradeLevel": [
+      3,
+      4,
+      5
+    ],
+    "desc": "Bay qua 8 hành tinh, khám phá vũ trụ bao la và những bí ẩn của Hệ Mặt Trời kỳ diệu.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#06081a,#0a0c2a)",
+    "featured": true,
+    "essential": false,
+    "mood": [
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Khoa Học Thiên Nhiên",
+    "file": "bai-tap-khoa-hoc-thien-nhien.html",
+    "emoji": "🌿",
+    "subject": "Khoa học",
+    "type": "Khám phá",
+    "grade": "Lớp 2–4",
+    "gradeLevel": [
+      2,
+      3,
+      4
+    ],
+    "desc": "Khám phá thế giới tự nhiên kỳ diệu — cây cối, động vật, thời tiết và các hiện tượng thiên nhiên.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a08,#0f2010)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Bảng Chữ Cái Tiếng Việt",
+    "file": "chu-cai.html",
+    "emoji": "🔤",
+    "subject": "Tiếng Việt",
+    "type": "Bài học",
+    "grade": "Mầm non – Lớp 1",
+    "gradeLevel": [
+      0,
+      1
+    ],
+    "desc": "Học thuộc 29 chữ cái Tiếng Việt qua hình ảnh sinh động và phát âm chuẩn — nền tảng đầu tiên cho bé.",
+    "date": "2025",
+    "color": "linear-gradient(135deg,#0a1f1a,#091828)",
+    "featured": false,
+    "essential": true,
+    "mood": [
+      "Thư giãn",
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Số Đếm 0–10",
+    "file": "so-dem-0-10.html",
+    "emoji": "🔢",
+    "subject": "Toán",
+    "type": "Bài học",
+    "grade": "Mầm non – Lớp 1",
+    "gradeLevel": [
+      0,
+      1
+    ],
+    "desc": "Làm quen với các con số từ 0 đến 10 qua hình ảnh trực quan, vui nhộn — bước đầu tiên vào thế giới toán học.",
+    "date": "2025",
+    "color": "linear-gradient(135deg,#0e1a2a,#091520)",
+    "featured": false,
+    "essential": true,
+    "mood": [
+      "Thư giãn"
+    ]
+  },
+  {
+    "title": "Số Đếm 11–20",
+    "file": "so-dem-11-20.html",
+    "emoji": "🔡",
+    "subject": "Toán",
+    "type": "Bài học",
+    "grade": "Lớp 1",
+    "gradeLevel": [
+      1
+    ],
+    "desc": "Tiếp nối hành trình số đếm từ 11 đến 20 — nhận biết, đếm và so sánh số trong phạm vi hai chữ số.",
+    "date": "2025",
+    "color": "linear-gradient(135deg,#0d1a2e,#0a1020)",
+    "featured": false,
+    "essential": true,
+    "mood": [
+      "Thư giãn",
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Sáng Tạo Hình Ảnh",
+    "file": "bai-tap-sang-tao-hinh-anh.html",
+    "emoji": "🎨",
+    "subject": "Nghệ thuật",
+    "type": "Thực hành",
+    "grade": "6–10 tuổi",
+    "gradeLevel": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "desc": "Vẽ, tô màu và sáng tạo không giới hạn — rèn luyện tư duy thẩm mỹ và khả năng biểu đạt hình ảnh.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a0a10,#200a18)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Sáng tạo",
+      "Thư giãn"
+    ]
+  },
+  {
+    "title": "Xem Giờ – Kho Kim Giây",
+    "file": "xem-gio-kho-kim-giay.html",
+    "emoji": "🕒",
+    "subject": "Toán",
+    "type": "Bài học",
+    "grade": "Lớp 2–3",
+    "gradeLevel": [
+      2,
+      3
+    ],
+    "desc": "Học xem giờ trên đồng hồ kim — nhận biết kim giờ, kim phút, kim giây qua các tình huống vui nhộn.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a140a,#241c0d)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Hiệp Sĩ Dừa – Phép Chia",
+    "file": "Hiep_Si_Dua_Phep_Chia.html",
+    "emoji": "⚔️",
+    "subject": "Toán",
+    "type": "Trò chơi",
+    "grade": "Lớp 3",
+    "gradeLevel": [
+      3
+    ],
+    "desc": "Hóa thân hiệp sĩ Dừa, chinh phục các thử thách phép chia để giải cứu vương quốc số học.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a2a,#0d2436)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Hiệp Sĩ Dừa – Cộng Trừ",
+    "file": "Hiep_Si_Dua_Cong_Tru.html",
+    "emoji": "🛡️",
+    "subject": "Toán",
+    "type": "Trò chơi",
+    "grade": "Lớp 1–2",
+    "gradeLevel": [
+      1,
+      2
+    ],
+    "desc": "Hiệp sĩ Dừa luyện phép cộng trừ qua từng trận đấu — nhanh tay, chính xác để chiến thắng.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a1a,#0d2626)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Bảng Cửu Chương – Phiên Bản Siêu Anh Hùng",
+    "file": "bang-cuu-chuong-superhero.html",
+    "emoji": "🦸",
+    "subject": "Toán",
+    "type": "Luyện tập",
+    "grade": "Lớp 2–3",
+    "gradeLevel": [
+      2,
+      3
+    ],
+    "desc": "Luyện bảng cửu chương cùng các siêu anh hùng — có màn Boss cực khó, số nhân ngẫu nhiên. Dành cho bé đã nắm cơ bản, muốn thử thách.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a0a0a,#260d0d)",
+    "featured": true,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Tư Duy Khủng Long",
+    "file": "bai-tap-tuduy-phong-cach-khung-long.html",
+    "emoji": "🦕",
+    "subject": "Tư duy",
+    "type": "Luyện tập",
+    "grade": "6–8 tuổi",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Rèn tư duy logic qua chủ đề khủng long — tìm điểm khác biệt, ghép hình, suy luận vui nhộn.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a1408,#241d0a)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách",
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Tư Duy Block Blast",
+    "file": "bai-tap-tuduy-phong-cach-block-blast.html",
+    "emoji": "🧱",
+    "subject": "Tư duy",
+    "type": "Trò chơi",
+    "grade": "8–10 tuổi",
+    "gradeLevel": [
+      3,
+      4,
+      5
+    ],
+    "desc": "Xếp khối, phá hàng, luyện phản xạ và tư duy không gian theo phong cách Block Blast.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#120a1a,#1a0d26)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Tự Nhiên & Xã Hội (Lớp 1–3)",
+    "file": "bai-tap-tu-nhien-xa-hoi-lop-1-3.html",
+    "emoji": "🌱",
+    "subject": "Khoa học",
+    "type": "Bài học",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Khám phá thế giới xung quanh — cây cối, con người, môi trường sống qua bài học Tự nhiên và Xã hội.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a10,#0d2616)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Bài Tập Tổng Hợp 6–10 Tuổi – Đề 2",
+    "file": "bai-tap-tonghop-be-6-10-tuoi-de2.html",
+    "emoji": "📘",
+    "subject": "Tổng hợp",
+    "type": "Bài tập",
+    "grade": "6–10 tuổi",
+    "gradeLevel": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "desc": "Bộ đề ôn tập tổng hợp thứ hai cho bé 6–10 tuổi — Toán, Tiếng Việt và tư duy logic.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a141a,#0d1c26)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Bài Tập Tổng Hợp 6–10 Tuổi",
+    "file": "bai-tap-tonghop-be-6-10-tuoi-de1.html",
+    "emoji": "📗",
+    "subject": "Tổng hợp",
+    "type": "Bài tập",
+    "grade": "6–10 tuổi",
+    "gradeLevel": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "desc": "Bộ bài tập tổng hợp cho bé 6–10 tuổi — ôn luyện toàn diện nhiều môn học một lúc.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a14,#0d2619)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Đạo Đức (Lớp 1–3)",
+    "file": "bai-tap-dao-duc-lop-1-3.html",
+    "emoji": "💛",
+    "subject": "Đạo đức",
+    "type": "Bài học",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Những bài học nhẹ nhàng về lễ phép, trung thực, yêu thương và biết ơn dành cho lứa tuổi tiểu học.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a1a0a,#26260d)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thư giãn"
+    ]
+  },
+  {
+    "title": "Bảng Cửu Chương – Phiên Bản Nhí",
+    "file": "bang-cuu-chuong-x.html",
+    "emoji": "🐣",
+    "subject": "Toán",
+    "type": "Luyện tập",
+    "grade": "Lớp 2",
+    "gradeLevel": [
+      2
+    ],
+    "desc": "Luyện bảng cửu chương từ 1 đến 9 theo thứ tự, nhẹ nhàng dễ hiểu — phù hợp cho bé mới bắt đầu học nhân.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a2a,#0d2626)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thư giãn"
+    ]
+  }
+]
