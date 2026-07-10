@@ -501,5 +501,192 @@
     "mood": [
       "Thư giãn"
     ]
+  },
+  {
+    "title": "Bài Tập Âm Nhạc (Lớp 1–3)",
+    "file": "bai-tap-am-nhac-lop-1-3.html",
+    "emoji": "🎵",
+    "subject": "Âm nhạc",
+    "type": "Bài học",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Làm quen nốt nhạc, giai điệu và nhịp điệu qua các bài tập âm nhạc vui nhộn dành cho bé tiểu học.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a0a1a,#260d26)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Sáng tạo",
+      "Thư giãn"
+    ]
+  },
+  {
+    "title": "Bài Tập Mỹ Thuật (Lớp 1–3)",
+    "file": "bai-tap-my-thuat-lop-1-3.html",
+    "emoji": "🖌️",
+    "subject": "Nghệ thuật",
+    "type": "Thực hành",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Vẽ, phối màu và sáng tạo hình ảnh — bài tập mỹ thuật giúp bé rèn con mắt thẩm mỹ từ nhỏ.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a0e0a,#26140d)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Sáng tạo"
+    ]
+  },
+  {
+    "title": "Bài Tập Tin Học (Lớp 1–3)",
+    "file": "bai-tap-tin-hoc-lop-1-3.html",
+    "emoji": "💻",
+    "subject": "Tin học",
+    "type": "Bài học",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Những khái niệm tin học đầu tiên — máy tính, bàn phím, chuột và an toàn khi dùng thiết bị.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1420,#0d1c2c)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Bài Tập Tiếng Việt (Lớp 1–3)",
+    "file": "bai-tap-tieng-viet-lop-1-3.html",
+    "emoji": "📚",
+    "subject": "Tiếng Việt",
+    "type": "Bài học",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Ôn luyện chính tả, từ vựng và câu văn — bộ bài tập Tiếng Việt nền tảng cho bé tiểu học.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a1c,#0d2428)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Bài Tập Tiếng Anh (Lớp 1–3)",
+    "file": "bai-tap-tieng-anh-lop-1-3.html",
+    "emoji": "🔤",
+    "subject": "Tiếng Anh",
+    "type": "Bài học",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Từ vựng và câu tiếng Anh cơ bản qua hình ảnh minh họa sinh động, dễ nhớ cho bé mới bắt đầu.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a0e,#0d2614)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách",
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Hiệp Sĩ Dừa – Đếm Tiền",
+    "file": "Hiep_Si_Dua_Dem_Tien.html",
+    "emoji": "💰",
+    "subject": "Toán",
+    "type": "Trò chơi",
+    "grade": "Lớp 2–3",
+    "gradeLevel": [
+      2,
+      3
+    ],
+    "desc": "Hiệp sĩ Dừa luyện kỹ năng đếm tiền, tính toán mua bán qua các thử thách vui nhộn.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1a1608,#26200d)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Bài Tập Toán (Lớp 1–3)",
+    "file": "bai-tap-toan-lop-1-3.html",
+    "emoji": "🔢",
+    "subject": "Toán",
+    "type": "Bài học",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Cộng trừ, so sánh số và bài toán đố cơ bản — ôn luyện Toán nền tảng cho bé tiểu học.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0e1a2a,#091520)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Flappy Dừa & Mixue",
+    "file": "flappy_dua_mixue.html",
+    "emoji": "🥥",
+    "subject": "Giải trí",
+    "type": "Trò chơi",
+    "grade": "Mọi lứa tuổi",
+    "gradeLevel": [],
+    "desc": "Phiên bản Flappy Bird phiên bản nhà mình — hóa thân Dừa và Mixue bay lượn, né chướng ngại vật, ghi điểm cao nhất!",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a14,#0d2619)",
+    "featured": true,
+    "essential": false,
+    "mood": [
+      "Thư giãn",
+      "Thử thách"
+    ]
+  },
+  {
+    "title": "Đọc Lịch – Nâng Cao",
+    "file": "doc-lich-nang-cao.html",
+    "emoji": "📅",
+    "subject": "Toán",
+    "type": "Luyện tập",
+    "grade": "Lớp 3–5",
+    "gradeLevel": [
+      3,
+      4,
+      5
+    ],
+    "desc": "Vương quốc Lịch — luyện xem lịch, tính ngày tháng và các bài toán về thời gian nâng cao.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#14101a,#1c1626)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách"
+    ]
   }
 ]
