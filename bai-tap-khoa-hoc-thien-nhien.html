@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌿 Khoa Học & Thiên Nhiên</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&family=Inconsolata:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:  #0D2818;
+  --canopy:  #1A3D26;
+  --moss:    #2D5A3D;
+  --fern:    #3D7A52;
+  --leaf:    #5BA870;
+  --mint:    #A8D5B5;
+  --cream:   #F5F0E8;
+  --sand:    #E8DFC8;
+  --bark:    #8B6F4E;
+  --sun:     #F2C14E;
+  --sky:     #7EC8E3;
+  --coral:   #E8715A;
+  --ink:     #1A1208;
+  --mist:    rgba(255,255,255,0.06);
+  --correct: #4CAF50;
+  --wrong:   #E57373;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--forest);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(61,122,82,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(13,40,24,0.8) 0%, transparent 60%);
+  min-height: 100vh;
+  color: var(--cream);
+  padding: 0 0 60px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* texture overlay */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='none'/%3E%3Ccircle cx='1' cy='1' r='0.5' fill='rgba(255,255,255,0.03)'/%3E%3C/svg%3E");
+}
+
+.page { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 16px; }
+
+/* ── HERO ── */
+.hero {
+  padding: 52px 0 36px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 36px;
+}
+.hero-left {}
+.hero-eyebrow {
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--leaf);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block; width: 24px; height: 2px;
+  background: var(--leaf);
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1.0;
+  color: var(--cream);
+  letter-spacing: -1px;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--sun);
+}
+.hero-sub {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  color: var(--mint);
+  line-height: 1.6;
+  max-width: 440px;
+}
+.hero-right {
+  text-align: right;
+}
+.hero-badge {
+  display: inline-block;
+  border: 1.5px solid rgba(168,213,181,0.3);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.8rem;
+  color: var(--mint);
+  line-height: 1.8;
+  background: var(--mist);
+}
+
+/* ── HUD BAR ── */
+.hud {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.hud-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--canopy);
+  border: 1px solid rgba(168,213,181,0.15);
+  border-radius: 50px;
+  padding: 8px 16px;
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.82rem; font-weight: 700;
+  color: var(--mint);
+}
+.hud-pill .v {
+  font-size: 1.1rem;
+  color: var(--cream);
+}
+.hud-pill.pts .v { color: var(--sun); }
+.hud-pill.ok  .v { color: #81C784; }
+
+/* ── SECTION ── */
+.section { margin-bottom: 44px; }
+.sec-label {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.sec-tag {
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 4px;
+}
+.tag-plant  { background: rgba(91,168,112,0.25); color: #81C784; border: 1px solid rgba(91,168,112,0.4); }
+.tag-animal { background: rgba(242,193,78,0.2);  color: #FFD54F; border: 1px solid rgba(242,193,78,0.35); }
+.tag-sky    { background: rgba(126,200,227,0.2);  color: #80DEEA; border: 1px solid rgba(126,200,227,0.35); }
+.tag-body   { background: rgba(232,113,90,0.2);  color: #EF9A9A; border: 1px solid rgba(232,113,90,0.35); }
+.tag-eco    { background: rgba(168,213,181,0.15); color: #A5D6A7; border: 1px solid rgba(168,213,181,0.3); }
+
+.sec-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--cream);
+}
+.sec-count {
+  margin-left: auto;
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.75rem; color: var(--fern);
+}
+
+/* ── GRID ── */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(266px, 1fr)); gap: 14px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--canopy);
+  border: 1px solid rgba(168,213,181,0.12);
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+  transition: transform .18s, border-color .2s, box-shadow .2s;
+  overflow: hidden;
+}
+.card::after {
+  content: '';
+  position: absolute; inset: 0; border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+.card:hover { transform: translateY(-2px); border-color: rgba(168,213,181,0.28); box-shadow: 0 8px 28px rgba(0,0,0,0.3); }
+.card.correct { border-color: rgba(76,175,80,0.6); background: rgba(27,62,34,0.9); }
+.card.wrong   { border-color: rgba(229,115,115,0.5); background: rgba(62,27,27,0.9); }
+.card.revealed{ border-color: rgba(126,200,227,0.4); }
+
+.card-id {
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.5px;
+  color: var(--fern); text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.card-icon { font-size: 2.4rem; margin-bottom: 10px; line-height: 1; }
+.card-q {
+  font-size: 0.96rem; font-weight: 500;
+  color: var(--cream); line-height: 1.6;
+  margin-bottom: 14px; white-space: pre-line;
+}
+.card-hint {
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.75rem; color: var(--fern);
+  margin-bottom: 10px;
+}
+
+/* ── OPTIONS ── */
+.opts { display: flex; flex-wrap: wrap; gap: 7px; }
+.opt {
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: 1px solid rgba(168,213,181,0.2);
+  background: rgba(255,255,255,0.04);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; font-weight: 700;
+  color: var(--mint); cursor: pointer;
+  transition: all .15s;
+}
+.opt:hover:not(:disabled) {
+  border-color: var(--leaf);
+  background: rgba(91,168,112,0.15);
+  color: #C8F0D4;
+  transform: translateY(-1px);
+}
+.opt.ok  { background: rgba(76,175,80,0.3); border-color: #4CAF50; color: #C8F0D4; }
+.opt.no  { background: rgba(229,115,115,0.25); border-color: #E57373; color: #FFCDD2; }
+.opt:disabled { cursor: default; }
+
+/* ── FILL ── */
+.fill-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.fill-in {
+  padding: 8px 14px; border-radius: 8px;
+  border: 1px solid rgba(168,213,181,0.25);
+  background: rgba(255,255,255,0.05);
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--cream); width: 160px; outline: none;
+  transition: border-color .2s, background .2s;
+}
+.fill-in::placeholder { color: var(--fern); }
+.fill-in:focus { border-color: var(--leaf); background: rgba(91,168,112,0.08); }
+.fill-in.ok  { border-color: #4CAF50; background: rgba(76,175,80,0.12); }
+.fill-in.no  { border-color: #E57373; background: rgba(229,115,115,0.1); }
+
+.go-btn {
+  padding: 8px 16px; border-radius: 8px;
+  border: 1px solid var(--leaf);
+  background: rgba(91,168,112,0.2);
+  color: #C8F0D4;
+  font-family: 'Inconsolata', monospace; font-size: 0.85rem; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+}
+.go-btn:hover:not(:disabled) { background: rgba(91,168,112,0.35); transform: translateY(-1px); }
+.go-btn:disabled { opacity: .4; cursor: default; }
+
+/* ── REVEAL ── */
+.reveal-btn {
+  padding: 8px 14px; border-radius: 8px;
+  border: 1px dashed rgba(126,200,227,0.35);
+  background: transparent;
+  font-family: 'Inconsolata', monospace; font-size: 0.8rem; font-weight: 700;
+  color: var(--sky); cursor: pointer; transition: all .15s; margin-top: 6px;
+}
+.reveal-btn:hover { background: rgba(126,200,227,0.1); }
+
+.ans-box {
+  margin-top: 10px; padding: 10px 14px;
+  background: rgba(126,200,227,0.08);
+  border: 1px solid rgba(126,200,227,0.25);
+  border-radius: 8px;
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.88rem; font-weight: 700;
+  color: var(--sky); display: none; animation: fadeUp .25s;
+}
+.ans-box.show { display: block; }
+
+/* ── FEEDBACK ── */
+.fb { margin-top: 9px; font-size: 0.84rem; font-weight: 700; display: none; animation: fadeUp .2s; font-family: 'Inconsolata', monospace; }
+.fb.show { display: block; }
+.fb.ok { color: #81C784; }
+.fb.no { color: #EF9A9A; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none} }
+
+/* ── ODD ONE OUT GRID ── */
+.odd-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.odd-item {
+  font-size: 2rem;
+  width: 50px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  border: 1px solid rgba(168,213,181,0.15);
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: transform .15s, border-color .15s, background .15s;
+}
+.odd-item:hover { transform: scale(1.12); border-color: var(--leaf); background: rgba(91,168,112,0.12); }
+.odd-item.picked-ok { border-color: #4CAF50; background: rgba(76,175,80,0.2); outline: 2px solid #4CAF50; }
+.odd-item.picked-no { border-color: #E57373; background: rgba(229,115,115,0.15); }
+.odd-item.show-ok   { border-color: #4CAF50; background: rgba(76,175,80,0.2); }
+
+/* ── PATTERN ── */
+.pat-row {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; justify-content: center;
+  background: rgba(0,0,0,0.2); border-radius: 10px;
+  padding: 12px; margin-bottom: 12px; font-size: 1.9rem;
+}
+.pat-blank {
+  width: 44px; height: 44px;
+  border-radius: 8px; border: 1.5px dashed var(--leaf);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; background: rgba(91,168,112,0.08);
+  color: var(--leaf);
+}
+.pat-blank.done { border-style: solid; border-color: #4CAF50; background: rgba(76,175,80,0.12); }
+.pat-arrow { color: var(--fern); font-size: 1rem; }
+
+/* ── SUBMIT ── */
+.submit-area { text-align: center; margin: 40px 0 16px; }
+.submit-btn {
+  padding: 14px 44px; border-radius: 10px;
+  border: 1.5px solid var(--leaf);
+  background: linear-gradient(135deg, var(--moss), var(--fern));
+  color: var(--cream);
+  font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700;
+  cursor: pointer; letter-spacing: .5px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: transform .18s, box-shadow .18s;
+}
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.4); }
+
+/* ── RESULT ── */
+.result {
+  margin: 24px auto 0; max-width: 480px;
+  background: var(--canopy);
+  border: 1px solid rgba(168,213,181,0.2);
+  border-radius: 20px;
+  padding: 40px 28px;
+  text-align: center;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.5);
+  display: none;
+}
+.result.show { display: block; animation: fadeUp .4s; }
+.res-icon { font-size: 4rem; margin-bottom: 12px; }
+.res-genus {
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--leaf); margin-bottom: 8px;
+}
+.res-title {
+  font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800;
+  color: var(--cream); margin-bottom: 6px;
+}
+.res-pts {
+  font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800;
+  color: var(--sun); margin: 8px 0 4px;
+}
+.res-sub { font-family: 'Inconsolata', monospace; font-size: 0.85rem; color: var(--mint); }
+.res-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); margin: 18px 0 14px; overflow: hidden; }
+.res-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--leaf), var(--sun)); transition: width 1s ease; }
+.retry-btn {
+  padding: 11px 28px; border-radius: 8px;
+  border: 1px solid rgba(168,213,181,0.3);
+  background: rgba(91,168,112,0.15);
+  color: var(--mint);
+  font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; transition: all .15s; margin-top: 6px;
+}
+.retry-btn:hover { background: rgba(91,168,112,0.28); }
+
+@media(max-width:540px){
+  .hero { grid-template-columns: 1fr; }
+  .hero-right { display: none; }
+  .grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 2rem; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Bài tập hôm nay · Bé 6–8 tuổi</div>
+    <h1>Khoa Học<br>&amp; <em>Thiên Nhiên</em></h1>
+    <p class="hero-sub">Khám phá thế giới xung quanh — từ rừng cây, bầu trời đến cơ thể bé. Quan sát, suy nghĩ, và khám phá!</p>
+  </div>
+  <div class="hero-right">
+    <div class="hero-badge">
+      Loài: Homo sapiens 🧑‍🔬<br>
+      Môi trường: Tự nhiên 🌿<br>
+      Cấp độ: Khám phá ⭐<br>
+      Tổng câu: 20 câu
+    </div>
+  </div>
+</div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="hud-pill pts">🌱 Điểm: <span class="v" id="h-pts">0</span></div>
+  <div class="hud-pill ok">✅ Đúng: <span class="v" id="h-ok">0</span></div>
+  <div class="hud-pill">📊 Tổng: <span class="v" id="h-tot">/ 0</span></div>
+</div>
+
+<!-- S1: Thực vật -->
+<div class="section">
+  <div class="sec-label">
+    <span class="sec-tag tag-plant">🌿 Thực vật</span>
+    <span class="sec-name">Cây cối & Hoa lá</span>
+    <span class="sec-count" id="cnt-s1"></span>
+  </div>
+  <div class="grid" id="g-s1"></div>
+</div>
+
+<!-- S2: Động vật -->
+<div class="section">
+  <div class="sec-label">
+    <span class="sec-tag tag-animal">🦁 Động vật</span>
+    <span class="sec-name">Thế giới động vật</span>
+    <span class="sec-count" id="cnt-s2"></span>
+  </div>
+  <div class="grid" id="g-s2"></div>
+</div>
+
+<!-- S3: Bầu trời & Thời tiết -->
+<div class="section">
+  <div class="sec-label">
+    <span class="sec-tag tag-sky">☁️ Bầu trời</span>
+    <span class="sec-name">Thời tiết & Vũ trụ</span>
+    <span class="sec-count" id="cnt-s3"></span>
+  </div>
+  <div class="grid" id="g-s3"></div>
+</div>
+
+<!-- S4: Cơ thể người -->
+<div class="section">
+  <div class="sec-label">
+    <span class="sec-tag tag-body">❤️ Cơ thể</span>
+    <span class="sec-name">Cơ thể con người</span>
+    <span class="sec-count" id="cnt-s4"></span>
+  </div>
+  <div class="grid" id="g-s4"></div>
+</div>
+
+<!-- S5: Hệ sinh thái -->
+<div class="section">
+  <div class="sec-label">
+    <span class="sec-tag tag-eco">🌍 Hệ sinh thái</span>
+    <span class="sec-name">Môi trường & Sinh thái</span>
+    <span class="sec-count" id="cnt-s5"></span>
+  </div>
+  <div class="grid" id="g-s5"></div>
+</div>
+
+<!-- SUBMIT -->
+<div class="submit-area">
+  <button class="submit-btn" onclick="submitAll()">🔬 Xem kết quả khám phá!</button>
+</div>
+
+<!-- RESULT -->
+<div class="result" id="result">
+  <div class="res-icon" id="r-icon">🏆</div>
+  <div class="res-genus">Kết quả · Nhà khoa học nhí</div>
+  <div class="res-title" id="r-title">Xuất sắc!</div>
+  <div class="res-pts" id="r-pts">0</div>
+  <div class="res-bar"><div class="res-bar-fill" id="r-bar" style="width:0%"></div></div>
+  <div class="res-sub" id="r-sub">Bé làm đúng 0 / 0 câu</div>
+  <button class="retry-btn" onclick="restartAll()">🔄 Khám phá lại!</button>
+</div>
+
+</div><!-- .page -->
+
+<script>
+/* ───── STATE ───── */
+let answered = {}, nCorrect = 0, nTotal = 0;
+
+/* ───── DATA ───── */
+const s1 = [
+  { id:'P1', icon:'🌻', type:'choice',
+    q:'Cây hướng dương nổi tiếng vì điều gì đặc biệt?',
+    opts:['Luôn hướng về Mặt Trăng','Luôn hướng về Mặt Trời','Mọc ngược chiều gió','Chỉ nở vào ban đêm'],
+    ans:'Luôn hướng về Mặt Trời' },
+  { id:'P2', icon:'🌳', type:'choice',
+    q:'Phần nào của cây hút nước và muối khoáng từ đất?',
+    opts:['Lá','Thân','Rễ','Hoa'],
+    ans:'Rễ' },
+  { id:'P3', icon:'🍃', type:'choice',
+    q:'Lá cây có màu xanh vì có chứa chất gì?',
+    opts:['Nước','Diệp lục','Đường','Muối'],
+    ans:'Diệp lục' },
+  { id:'P4', icon:'🌱', type:'fill',
+    q:'Hạt giống cần gì để nảy mầm?\n(điền 1 trong các thứ cần thiết)',
+    ans:'nước', hint:'nước / đất / ánh sáng' },
+];
+
+const s2 = [
+  { id:'A1', icon:'🦋', type:'choice',
+    q:'Vòng đời của bướm đúng thứ tự là:',
+    opts:['Trứng → Nhộng → Sâu → Bướm',
+          'Trứng → Sâu → Nhộng → Bướm',
+          'Sâu → Trứng → Nhộng → Bướm',
+          'Nhộng → Trứng → Sâu → Bướm'],
+    ans:'Trứng → Sâu → Nhộng → Bướm' },
+  { id:'A2', type:'oddone',
+    q:'Con nào là động vật máu lạnh?',
+    items:['🐊','🐸','🐍','🦎','🐶'],
+    odd:'🐶',
+    ans:'🐶 Chó — động vật máu nóng',
+    hint:'Máu lạnh = nhiệt độ thay đổi theo môi trường' },
+  { id:'A3', icon:'🐟', type:'choice',
+    q:'Cá thở bằng gì khi ở dưới nước?',
+    opts:['Phổi','Mang','Da','Miệng'],
+    ans:'Mang' },
+  { id:'A4', icon:'🦅', type:'fill',
+    q:'Chim dùng bộ phận nào để bay?',
+    ans:'cánh', hint:'(cánh / lông vũ)' },
+];
+
+const s3 = [
+  { id:'S1', type:'pattern',
+    q:'Các pha Mặt Trăng theo thứ tự:',
+    pats:['🌑','🌒','🌓','?','🌕'],
+    opts:['🌙','🌔','⭐','🌛'],
+    ans:'🌔',
+    hint:'Mặt Trăng đang tròn dần...' },
+  { id:'S2', icon:'🌦️', type:'choice',
+    q:'Cầu vồng xuất hiện khi nào?',
+    opts:['Khi trời nắng to','Sau cơn mưa, có ánh nắng','Khi trời nhiều mây','Ban đêm có trăng'],
+    ans:'Sau cơn mưa, có ánh nắng' },
+  { id:'S3', icon:'⚡', type:'choice',
+    q:'Sấm sét thường xuất hiện cùng với thời tiết nào?',
+    opts:['Nắng','Tuyết','Bão giông','Sương mù'],
+    ans:'Bão giông' },
+  { id:'S4', icon:'🌍', type:'choice',
+    q:'Trái Đất quay quanh Mặt Trời hết bao lâu?',
+    opts:['1 ngày','1 tháng','1 năm','10 năm'],
+    ans:'1 năm' },
+];
+
+const s4 = [
+  { id:'B1', icon:'❤️', type:'choice',
+    q:'Tim của người có nhiệm vụ gì?',
+    opts:['Tiêu hoá thức ăn','Bơm máu đi khắp cơ thể','Lọc không khí','Kiểm soát suy nghĩ'],
+    ans:'Bơm máu đi khắp cơ thể' },
+  { id:'B2', icon:'🦴', type:'choice',
+    q:'Bộ xương của người giúp ích gì?',
+    opts:['Tạo ra máu và nâng đỡ cơ thể','Tiêu hoá thức ăn','Giúp nhìn thấy','Giúp nghe được'],
+    ans:'Tạo ra máu và nâng đỡ cơ thể' },
+  { id:'B3', icon:'🫁', type:'fill',
+    q:'Người thở bằng bộ phận nào?',
+    ans:'phổi', hint:'(phổi)' },
+  { id:'B4', icon:'🧠', type:'choice',
+    q:'Não người nằm ở đâu trong cơ thể?',
+    opts:['Trong ngực','Trong đầu','Trong bụng','Trong tay'],
+    ans:'Trong đầu' },
+];
+
+const s5 = [
+  { id:'E1', type:'oddone',
+    q:'Thứ nào KHÔNG thuộc về môi trường tự nhiên?',
+    items:['🌊','🌲','🏔️','🌸','🏭'],
+    odd:'🏭',
+    ans:'🏭 Nhà máy — do con người tạo ra',
+    hint:'Cái nào không xuất hiện trong tự nhiên?' },
+  { id:'E2', icon:'☀️', type:'choice',
+    q:'Thực vật cần gì để quang hợp tạo ra thức ăn?',
+    opts:['Ánh sáng, nước, CO₂','Ánh sáng, muối, O₂','Nước, đường, oxy','Đất, gió, mưa'],
+    ans:'Ánh sáng, nước, CO₂' },
+  { id:'E3', icon:'♻️', type:'choice',
+    q:'Tại sao không nên vứt rác ra sông, suối?',
+    opts:['Vì rác có giá trị','Vì gây ô nhiễm và hại sinh vật','Vì tốn công nhặt lại','Vì cá sẽ ăn hết'],
+    ans:'Vì gây ô nhiễm và hại sinh vật' },
+  { id:'E4', icon:'🌡️', type:'fill',
+    q:'Hiện tượng Trái Đất ngày càng nóng lên gọi là gì?\n(2 từ)',
+    ans:'nóng lên toàn cầu', hint:'(nóng lên toàn cầu / biến đổi khí hậu)' },
+];
+
+/* ───── RENDER ───── */
+function esc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+function card(id, html){
+  const d = document.createElement('div');
+  d.className='card'; d.id='card-'+id;
+  d.innerHTML = html; return d;
+}
+function fbEl(id){ return `<div class="fb" id="fb-${id}"></div>`; }
+
+function rChoice(q, g){
+  nTotal++;
+  const btns = q.opts.map(o =>
+    `<button class="opt" onclick="doChoice('${q.id}','${esc(o)}','${esc(q.ans)}',this)">${o}</button>`
+  ).join('');
+  g.appendChild(card(q.id,`
+    <div class="card-id">${q.id}</div>
+    ${q.icon?`<div class="card-icon">${q.icon}</div>`:''}
+    <div class="card-q">${q.q}</div>
+    ${q.hint?`<div class="card-hint">// ${q.hint}</div>`:''}
+    <div class="opts">${btns}</div>${fbEl(q.id)}`));
+}
+
+function rFill(q, g){
+  nTotal++;
+  g.appendChild(card(q.id,`
+    <div class="card-id">${q.id}</div>
+    ${q.icon?`<div class="card-icon">${q.icon}</div>`:''}
+    <div class="card-q">${q.q}</div>
+    ${q.hint?`<div class="card-hint">// ${q.hint}</div>`:''}
+    <div class="fill-row">
+      <input class="fill-in" id="inp-${q.id}" placeholder="Đáp án..." onkeydown="if(event.key==='Enter')doFill('${q.id}','${esc(q.ans)}')"/>
+      <button class="go-btn" id="btn-${q.id}" onclick="doFill('${q.id}','${esc(q.ans)}')">→ OK</button>
+    </div>${fbEl(q.id)}`));
+}
+
+function rOdd(q, g){
+  nTotal++;
+  const items = q.items.map(it =>
+    `<div class="odd-item" onclick="doOdd('${q.id}','${esc(it)}','${esc(q.odd)}',this)">${it}</div>`
+  ).join('');
+  g.appendChild(card(q.id,`
+    <div class="card-id">${q.id}</div>
+    <div class="card-q">${q.q}</div>
+    ${q.hint?`<div class="card-hint">// ${q.hint}</div>`:''}
+    <div class="odd-grid">${items}</div>${fbEl(q.id)}`));
+}
+
+function rPattern(q, g){
+  nTotal++;
+  const pats = q.pats.map(p =>
+    p==='?' ? `<div class="pat-blank" id="blank-${q.id}">?</div>`
+            : `<span>${p}</span>`
+  ).join('<span class="pat-arrow">›</span>');
+  const btns = q.opts.map(o =>
+    `<button class="opt" onclick="doPat('${q.id}','${esc(o)}','${esc(q.ans)}',this)">${o}</button>`
+  ).join('');
+  g.appendChild(card(q.id,`
+    <div class="card-id">${q.id}</div>
+    <div class="card-q">${q.q}</div>
+    ${q.hint?`<div class="card-hint">// ${q.hint}</div>`:''}
+    <div class="pat-row">${pats}</div>
+    <div class="opts">${btns}</div>${fbEl(q.id)}`));
+}
+
+/* ───── CHECK ───── */
+function upd(ok){
+  if(ok) nCorrect++;
+  document.getElementById('h-pts').textContent = nCorrect*10;
+  document.getElementById('h-ok').textContent  = nCorrect;
+}
+function showFb(id, ok, ans){
+  const el = document.getElementById('fb-'+id);
+  el.textContent = ok ? '✓ Đúng rồi! Bé thật xuất sắc!' : '✗ Chưa đúng! Đáp án: '+ans;
+  el.className = 'fb show '+(ok?'ok':'no');
+}
+
+function doChoice(id, chosen, ans, btn){
+  if(answered[id]) return; answered[id]=true;
+  const c = document.getElementById('card-'+id);
+  c.querySelectorAll('.opt').forEach(b=>{ b.disabled=true; if(b.textContent.trim()===ans) b.classList.add('ok'); });
+  const ok = chosen===ans;
+  if(!ok) btn.classList.add('no'); c.classList.add(ok?'correct':'wrong');
+  showFb(id, ok, ans); upd(ok);
+}
+
+function doFill(id, ans){
+  if(answered[id]) return;
+  const inp = document.getElementById('inp-'+id);
+  const val = inp.value.trim().toLowerCase();
+  if(!val) return;
+  answered[id]=true;
+  inp.disabled=true; document.getElementById('btn-'+id).disabled=true;
+  const ok = val===ans.toLowerCase() || ans.toLowerCase().includes(val) || val.includes(ans.toLowerCase().split(' ')[0]);
+  inp.classList.add(ok?'ok':'no');
+  document.getElementById('card-'+id).classList.add(ok?'correct':'wrong');
+  showFb(id, ok, ans); upd(ok);
+}
+
+function doOdd(id, chosen, odd, el){
+  if(answered[id]) return; answered[id]=true;
+  const c = document.getElementById('card-'+id);
+  c.querySelectorAll('.odd-item').forEach(d=>{ d.onclick=null; });
+  const ok = chosen===odd;
+  el.classList.add(ok?'picked-ok':'picked-no');
+  if(!ok){
+    const correct = Array.from(c.querySelectorAll('.odd-item')).find(d=>d.textContent.trim()===odd);
+    if(correct) correct.classList.add('show-ok');
+  }
+  c.classList.add(ok?'correct':'wrong');
+  showFb(id, ok, document.querySelector(`#card-${id} .odd-item.picked-ok, #card-${id} .odd-item.show-ok`)?.textContent || odd);
+  upd(ok);
+}
+
+function doPat(id, chosen, ans, btn){
+  if(answered[id]) return; answered[id]=true;
+  const c = document.getElementById('card-'+id);
+  c.querySelectorAll('.opt').forEach(b=>{ b.disabled=true; if(b.textContent.trim()===ans) b.classList.add('ok'); });
+  const ok = chosen===ans;
+  if(!ok) btn.classList.add('no');
+  const blank = document.getElementById('blank-'+id);
+  if(blank){ blank.textContent=ans; blank.classList.add('done'); }
+  c.classList.add(ok?'correct':'wrong');
+  showFb(id, ok, ans); upd(ok);
+}
+
+/* ───── SUBMIT ───── */
+function submitAll(){
+  const pct = nTotal>0 ? nCorrect/nTotal : 0;
+  let icon, title;
+  if(pct>=.9){icon='🏆';title='Nhà Khoa Học Xuất Sắc!';}
+  else if(pct>=.75){icon='🌿';title='Nhà Thám Hiểm Giỏi!';}
+  else if(pct>=.55){icon='🔬';title='Học Sinh Chăm Chỉ!';}
+  else {icon='💪';title='Cố Lên, Nhà Khoa Học!';}
+  document.getElementById('r-icon').textContent  = icon;
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-pts').textContent   = nCorrect*10+' điểm';
+  document.getElementById('r-sub').textContent   = `Bé làm đúng ${nCorrect} / ${nTotal} câu`;
+  const bar = document.getElementById('r-bar');
+  bar.style.width = '0%';
+  setTimeout(()=>{ bar.style.width = (pct*100)+'%'; }, 50);
+  const res = document.getElementById('result');
+  res.classList.add('show');
+  res.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ───── RESTART ───── */
+function restartAll(){
+  answered={}; nCorrect=0; nTotal=0;
+  document.getElementById('h-pts').textContent='0';
+  document.getElementById('h-ok').textContent='0';
+  document.getElementById('result').classList.remove('show');
+  ['g-s1','g-s2','g-s3','g-s4','g-s5'].forEach(id=>document.getElementById(id).innerHTML='');
+  init();
+}
+
+/* ───── INIT ───── */
+function init(){
+  const g1=document.getElementById('g-s1');
+  s1.forEach(q=>q.type==='choice'?rChoice(q,g1):rFill(q,g1));
+
+  const g2=document.getElementById('g-s2');
+  s2.forEach(q=>{ if(q.type==='choice') rChoice(q,g2); else if(q.type==='oddone') rOdd(q,g2); else rFill(q,g2); });
+
+  const g3=document.getElementById('g-s3');
+  s3.forEach(q=>q.type==='pattern'?rPattern(q,g3):rChoice(q,g3));
+
+  const g4=document.getElementById('g-s4');
+  s4.forEach(q=>q.type==='choice'?rChoice(q,g4):rFill(q,g4));
+
+  const g5=document.getElementById('g-s5');
+  s5.forEach(q=>{ if(q.type==='choice') rChoice(q,g5); else if(q.type==='oddone') rOdd(q,g5); else rFill(q,g5); });
+
+  document.getElementById('h-tot').textContent='/ '+(nTotal*10);
+  ['s1','s2','s3','s4','s5'].forEach((s,i)=>{
+    const counts=[s1,s2,s3,s4,s5];
+    document.getElementById('cnt-'+s).textContent=counts[i].length+' câu';
+  });
+}
+init();
+</script>
+</body>
+</html>

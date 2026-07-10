@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chuyến Tàu Chữ Cái - Phần 1: Miền Quê (Premium)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#6FC3F0; --sky-mid:#A9E0F7; --sky-bottom:#E9F8FF;
+    --sun:#FFD75E; --sun-glow:#FFEFB0;
+    --grass1:#79C24B; --grass2:#5DA838; --grass3:#487F2B;
+    --wood:#9A6B3E; --wood-dark:#7A5230; --wood-light:#C99A66;
+    --cream:#FFF8E9; --ink:#3E2723; --ink-soft:#5D4533;
+    --gold:#FFC94A; --gold-dark:#E8A92B;
+    --pink:#FF8F70; --red:#E85C4A; --blue:#3E8FD0;
+    --locked:#B9C7CE;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;font-family:'Quicksand',sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none;}
+  body{
+    background:linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid) 38%, var(--sky-bottom) 62%);
+    position:relative; height:100vh; width:100vw;
+  }
+  #scene{position:absolute; inset:0; overflow:hidden;}
+
+  /* SUN */
+  .sun{
+    position:absolute; top:6%; left:8%; width:90px; height:90px; border-radius:50%;
+    background:radial-gradient(circle, var(--sun) 55%, var(--sun-glow) 100%);
+    box-shadow:0 0 50px 20px rgba(255,215,94,0.45);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+
+  /* CLOUDS */
+  .cloud{position:absolute; opacity:.95; filter:drop-shadow(0 4px 4px rgba(0,0,0,.05));}
+  .cloud svg{width:100%;height:100%;display:block;}
+  .cloud.c1{top:9%; width:140px; height:60px; animation: drift 38s linear infinite;}
+  .cloud.c2{top:16%; width:100px; height:45px; animation: drift 50s linear infinite; animation-delay:-10s;}
+  .cloud.c3{top:5%; width:120px; height:50px; animation: drift 44s linear infinite; animation-delay:-25s;}
+  @keyframes drift{from{transform:translateX(-160px);} to{transform:translateX(110vw);}}
+
+  /* KITE */
+  .kite-wrap{position:absolute; top:10%; right:10%; width:90px; animation: bob 3.2s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-14px) rotate(3deg);}}
+  .kite-string{position:absolute; top:80px; left:45px; width:2px; height:38vh; background:rgba(90,70,40,.4); transform-origin:top;}
+
+  /* HILLS / GRASS */
+  .hill{position:absolute; bottom:0; left:0; width:100%; }
+  .hill svg{width:100%; display:block;}
+
+  /* TRACK ANIMATION */
+  .track{position:absolute; bottom:9%; left:0; width:100%; height:18px;
+    background:repeating-linear-gradient(90deg, var(--wood-dark) 0 16px, transparent 16px 40px);
+    border-top:4px solid #4A3018; border-bottom:4px solid #4A3018;
+  }
+  .track.moving {
+    animation: moveTrack 0.4s linear infinite;
+  }
+  @keyframes moveTrack {
+    from { background-position-x: 0px; }
+    to { background-position-x: -40px; }
+  }
+
+  /* TOP BAR */
+  #topbar{position:relative; z-index:5; padding:14px 18px 6px; display:flex; flex-direction:column; gap:8px; align-items:center;}
+  #title{font-family:'Fredoka',sans-serif; color:var(--ink); font-size:clamp(18px,3vw,26px); font-weight:700; text-shadow:0 2px 0 #fff8;}
+  #title small{display:block; font-family:'Quicksand'; font-weight:600; font-size:13px; color:var(--ink-soft); text-align:center;}
+
+  #progress{display:flex; gap:6px; flex-wrap:wrap; justify-content:center; max-width:96vw;}
+  .dot{
+    width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Fredoka'; font-weight:600; font-size:14px; color:#fff; background:var(--locked);
+    border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,.15); cursor:default; transition:.25s;
+  }
+  .dot.done{background:linear-gradient(160deg, var(--gold), var(--gold-dark)); cursor:pointer;}
+  .dot.current{background:linear-gradient(160deg, var(--pink), var(--red)); cursor:pointer; transform:scale(1.15);
+    box-shadow:0 0 0 4px rgba(255,143,112,.35);}
+
+  /* STAGE / TRAIN CAR */
+  #stage-wrap{position:relative; z-index:4; height:calc(100vh - 150px); display:flex; align-items:center; justify-content:center;}
+  #car{
+    position:relative; width:min(420px,86vw); height:min(440px,62vh);
+    background:linear-gradient(160deg, var(--cream), #FFEFCB);
+    border:6px solid var(--wood-dark); border-radius:34px;
+    box-shadow:0 18px 0 -6px rgba(0,0,0,.12), 0 10px 30px rgba(0,0,0,.18);
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    padding:16px 14px 10px;
+  }
+  #car::before, #car::after{ /* wheels */
+    content:''; position:absolute; bottom:-26px; width:46px; height:46px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #6b4a2c, #3a2614 75%); border:5px solid #2a1a0c;
+  }
+  #car::before{left:34px;} #car::after{right:34px;}
+  
+  /* WHEELS ROTATION */
+  #car.rolling::before, #car.rolling::after {
+    animation: spinWheels 0.4s linear infinite;
+  }
+  @keyframes spinWheels {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* SMOOTH TRAIN MOVEMENT ANIMATIONS */
+  @keyframes slideLeftOut {
+    0% { transform: translateX(0) scale(1); opacity: 1; }
+    100% { transform: translateX(-100vw) scale(0.85); opacity: 0; }
+  }
+  @keyframes slideRightIn {
+    0% { transform: translateX(100vw) scale(0.85); opacity: 0; }
+    100% { transform: translateX(0) scale(1); opacity: 1; }
+  }
+  .slide-out { animation: slideLeftOut 0.4s ease-in forwards; }
+  .slide-in { animation: slideRightIn 0.45s cubic-bezier(.25, 1, 0.5, 1) forwards; }
+
+  .letters-display{display:flex; gap:14px; align-items:center; justify-content:center; margin-bottom:2px;}
+  .letters-display .up, .letters-display .low{
+    font-family:'Fredoka',sans-serif; font-weight:700; color:var(--ink); line-height:1;
+  }
+  .letters-display .up{font-size:clamp(80px,16vw,110px);}
+  .letters-display .low{font-size:clamp(62px,12vw,84px); color:var(--red); align-self:flex-end; margin-bottom:4px;}
+
+  .stage-area{flex:1; width:100%; display:flex; align-items:center; justify-content:center; position:relative;}
+  .animal-btn{background:none; border:none; cursor:pointer; padding:0; width:60%; max-width:200px; aspect-ratio:1/1; position:relative; touch-action:manipulation;}
+  .animal-btn svg{width:100%; height:100%; display:block; filter:drop-shadow(0 6px 8px rgba(0,0,0,.18));}
+  .animal-btn.locked-anim{animation: idlebounce 2.4s ease-in-out infinite;}
+  @keyframes idlebounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+  .animal-btn:active{transform:scale(.93);}
+  .hint{position:absolute; top:-6px; right:6px; background:var(--gold); color:var(--ink); font-family:'Fredoka';
+    font-size:11px; font-weight:600; padding:4px 9px; border-radius:14px; box-shadow:0 2px 4px rgba(0,0,0,.2);
+    animation: hintpulse 1.6s ease-in-out infinite;}
+  @keyframes hintpulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+  .word-label{font-family:'Fredoka'; font-weight:600; font-size:clamp(18px,4vw,24px); color:var(--ink-soft); margin-top:4px; text-align:center;}
+
+  .controls{display:flex; gap:10px; align-items:center; justify-content:center; margin-top:8px; min-height:40px;}
+  .btn{
+    font-family:'Fredoka'; font-weight:600; font-size:14px; border:none; border-radius:20px; padding:9px 16px;
+    cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.18); transition:.15s; display:flex; align-items:center; gap:6px;
+  }
+  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.18);}
+  .btn.replay{background:var(--blue); color:#fff;}
+  .btn.next{background:linear-gradient(160deg,#7AD17A,#4AAE4A); color:#fff;}
+  .btn.hidden{display:none;}
+
+  /* Parent Control UI */
+  .btn.reset-data {
+    position: absolute; bottom: 12px; left: 12px; z-index: 10;
+    background: rgba(62, 39, 35, 0.15); color: var(--ink);
+    font-size: 11px; padding: 5px 10px; border-radius: 10px; box-shadow: none;
+  }
+  .btn.reset-data:hover { background: var(--red); color: #fff; }
+
+  /* mini queued train behind */
+  .queue{position:absolute; z-index:3; bottom:11.5%; left:0; width:100%; display:flex; justify-content:center; gap:4px; pointer-events:none;}
+  .queue .mini{width:30px; height:24px; border-radius:6px; background:var(--wood-light); border:2px solid var(--wood-dark); opacity:.35; transition: 0.3s;}
+  .queue .mini.active { background: var(--pink); opacity: 0.9; box-shadow: 0 0 6px var(--red); }
+  .queue .mini.done { background: var(--gold); opacity: 0.7; }
+
+  /* confetti */
+  .confetti-piece{position:fixed; top:-10px; width:9px; height:9px; border-radius:2px; z-index:50; pointer-events:none;}
+
+  /* end screen */
+  #endscreen{position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center;
+    background:rgba(40,70,40,.55); backdrop-filter: blur(2px);}
+  #endscreen .card{background:var(--cream); border-radius:28px; padding:28px 22px; text-align:center; max-width:88vw;
+    border:6px solid var(--wood-dark); box-shadow:0 12px 30px rgba(0,0,0,.3);}
+  #endscreen h2{font-family:'Fredoka'; color:var(--ink); margin:6px 0;}
+  #endscreen p{color:var(--ink-soft); font-weight:600;}
+  #endscreen svg{width:140px;}
+
+  /* TREES */
+  .tree{position:absolute; bottom:8%; pointer-events:none; z-index:2;}
+  .tree svg{display:block;}
+  .tree.sway{animation: treeSway 3.5s ease-in-out infinite;}
+  .tree.sway2{animation: treeSway 4.2s ease-in-out infinite; animation-delay:-1.8s;}
+  @keyframes treeSway{0%,100%{transform-origin:bottom center; transform:rotate(-2deg);}50%{transform:rotate(2.5deg);}}
+
+  /* BIRDS */
+  .bird-fly{position:absolute; pointer-events:none; z-index:3;}
+  .bird-fly.b1{top:22%; animation: flyAcross 22s linear infinite; animation-delay:0s;}
+  .bird-fly.b2{top:14%; animation: flyAcross 30s linear infinite; animation-delay:-9s;}
+  .bird-fly.b3{top:28%; animation: flyAcross 26s linear infinite; animation-delay:-18s;}
+  @keyframes flyAcross{
+    0%{transform:translateX(-80px) scaleX(1);}
+    49%{transform:translateX(110vw) scaleX(1);}
+    50%{transform:translateX(110vw) scaleX(-1); opacity:0;}
+    51%{transform:translateX(110vw) scaleX(-1); opacity:1;}
+    100%{transform:translateX(-80px) scaleX(-1);}
+  }
+  .bird-fly.b2{animation-direction:normal;}
+
+  @media (max-height:680px){
+    #car{height:58vh;}
+  }
+</style>
+</head>
+<body>
+
+<div id="scene">
+  <div class="sun"></div>
+  <div class="cloud c1"><svg viewBox="0 0 200 90"><ellipse cx="60" cy="55" rx="55" ry="32" fill="#fff"/><ellipse cx="115" cy="40" rx="42" ry="28" fill="#fff"/><ellipse cx="150" cy="58" rx="34" ry="22" fill="#fff"/></svg></div>
+  <div class="cloud c2"><svg viewBox="0 0 200 90"><ellipse cx="60" cy="55" rx="55" ry="32" fill="#fff"/><ellipse cx="115" cy="40" rx="42" ry="28" fill="#fff"/></svg></div>
+  <div class="cloud c3"><svg viewBox="0 0 200 90"><ellipse cx="60" cy="55" rx="50" ry="28" fill="#fff"/><ellipse cx="120" cy="45" rx="38" ry="24" fill="#fff"/></svg></div>
+
+  <div class="kite-wrap">
+    <svg viewBox="0 0 100 100"><polygon points="50,4 90,46 50,96 10,46" fill="#FF8F70" stroke="#3E2723" stroke-width="3"/><polygon points="50,4 90,46 50,46" fill="#FFC94A"/><polygon points="50,46 10,46 50,96" fill="#E85C4A"/><circle cx="50" cy="46" r="3" fill="#3E2723"/></svg>
+    <div class="kite-string"></div>
+  </div>
+
+  <div class="hill">
+    <svg viewBox="0 0 1440 260" preserveAspectRatio="none">
+      <path d="M0,160 C200,90 380,210 620,140 C860,80 1020,200 1440,120 L1440,260 L0,260 Z" fill="#487F2B" opacity=".55"/>
+      <path d="M0,200 C220,140 420,230 700,170 C980,120 1180,230 1440,170 L1440,260 L0,260 Z" fill="#5DA838" opacity=".7"/>
+      <path d="M0,230 C260,190 500,250 760,210 C1040,170 1220,240 1440,210 L1440,260 L0,260 Z" fill="#79C24B"/>
+    </svg>
+  </div>
+  <div class="track" id="railroad"></div>
+  <div class="queue" id="queue"></div>
+
+  <!-- TREES -->
+  <!-- Cây bên trái -->
+  <div class="tree sway" style="left:3%; bottom:12%;">
+    <svg width="64" height="120" viewBox="0 0 64 120">
+      <rect x="27" y="70" width="10" height="50" rx="4" fill="#7A5230"/>
+      <ellipse cx="32" cy="52" rx="24" ry="26" fill="#5DA838"/>
+      <ellipse cx="32" cy="36" rx="18" ry="20" fill="#79C24B"/>
+      <ellipse cx="32" cy="22" rx="13" ry="15" fill="#87D44F"/>
+    </svg>
+  </div>
+  <div class="tree sway2" style="left:11%; bottom:12%;">
+    <svg width="48" height="90" viewBox="0 0 48 90">
+      <rect x="20" y="52" width="8" height="38" rx="3" fill="#9A6B3E"/>
+      <ellipse cx="24" cy="40" rx="18" ry="20" fill="#4AAE4A"/>
+      <ellipse cx="24" cy="26" rx="13" ry="15" fill="#5DC84D"/>
+    </svg>
+  </div>
+  <!-- Cây bên phải -->
+  <div class="tree sway" style="right:4%; bottom:12%; animation-delay:-0.8s;">
+    <svg width="70" height="130" viewBox="0 0 70 130">
+      <rect x="30" y="76" width="10" height="54" rx="4" fill="#7A5230"/>
+      <ellipse cx="35" cy="56" rx="26" ry="28" fill="#487F2B"/>
+      <ellipse cx="35" cy="38" rx="20" ry="22" fill="#5DA838"/>
+      <ellipse cx="35" cy="22" rx="14" ry="16" fill="#79C24B"/>
+    </svg>
+  </div>
+  <div class="tree sway2" style="right:13%; bottom:12%; animation-delay:-2.4s;">
+    <svg width="52" height="100" viewBox="0 0 52 100">
+      <rect x="22" y="60" width="8" height="40" rx="3" fill="#9A6B3E"/>
+      <ellipse cx="26" cy="46" rx="20" ry="22" fill="#5DA838"/>
+      <ellipse cx="26" cy="30" rx="14" ry="16" fill="#79C24B"/>
+    </svg>
+  </div>
+  <!-- Bụi cây nhỏ rải rác -->
+  <div class="tree" style="left:25%; bottom:11%;">
+    <svg width="36" height="60" viewBox="0 0 36 60">
+      <rect x="15" y="36" width="6" height="24" rx="2" fill="#9A6B3E"/>
+      <ellipse cx="18" cy="28" rx="14" ry="16" fill="#4AAE4A"/>
+      <ellipse cx="18" cy="16" rx="10" ry="12" fill="#6FCC48"/>
+    </svg>
+  </div>
+  <div class="tree" style="right:28%; bottom:11%;">
+    <svg width="40" height="66" viewBox="0 0 40 66">
+      <rect x="17" y="40" width="6" height="26" rx="2" fill="#7A5230"/>
+      <ellipse cx="20" cy="30" rx="16" ry="18" fill="#5DA838"/>
+      <ellipse cx="20" cy="16" rx="11" ry="13" fill="#87D44F"/>
+    </svg>
+  </div>
+
+  <!-- FLYING BIRDS -->
+  <div class="bird-fly b1">
+    <svg width="40" height="22" viewBox="0 0 40 22">
+      <path d="M0,11 Q10,2 20,11 Q30,2 40,11" stroke="#3E2723" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="bird-fly b2">
+    <svg width="30" height="16" viewBox="0 0 30 16">
+      <path d="M0,8 Q7.5,1 15,8 Q22.5,1 30,8" stroke="#5D4533" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="bird-fly b3">
+    <svg width="34" height="18" viewBox="0 0 34 18">
+      <path d="M0,9 Q8.5,1 17,9 Q25.5,1 34,9" stroke="#3E2723" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
+
+<div id="topbar">
+  <div id="title">🚂 Chuyến Tàu Chữ Cái <small>Phần 1 · Miền Quê · 15 chữ cái</small></div>
+  <div id="progress"></div>
+</div>
+
+<div id="stage-wrap">
+  <div id="car"></div>
+</div>
+
+<button class="btn reset-data" id="resetStorageBtn">⚙️ Xóa lịch sử chơi</button>
+
+<div id="endscreen">
+  <div class="card">
+    <svg viewBox="0 0 200 200"><ellipse cx="100" cy="120" rx="55" ry="60" fill="#9A6B3E"/><ellipse cx="100" cy="120" rx="55" ry="60" fill="none" stroke="#3E2723" stroke-width="5"/><circle cx="80" cy="105" r="8" fill="#3E2723"/><circle cx="120" cy="105" r="8" fill="#3E2723"/><path d="M78,138 Q100,155 122,138" stroke="#3E2723" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M55,70 Q100,40 145,70" stroke="#3E2723" stroke-width="6" fill="none"/></svg>
+    <h2>Hoan hô! 🎉</h2>
+    <p>Hai anh em mình đã giải cứu hết 15 con vật ở Miền Quê rồi!<br>Chuyến tàu sẽ dừng ở Ga Hà Nội nghỉ chân nhé.</p>
+    <button class="btn next" id="restartBtn" style="margin-top:10px;">🔁 Chơi lại Phần 1</button>
+  </div>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const LETTERS = [
+  {up:'A', low:'a', word:'Anh trai', say:'Chữ A. Anh trai.', svg:'coconutBro'},
+  {up:'Ă', low:'ă', word:'Con rắn', say:'Chữ Ă. Con rắn.', svg:'snake'},
+  {up:'Â', low:'â', word:'Con gấu', say:'Chữ Â. Con gấu.', svg:'bear'},
+  {up:'B', low:'b', word:'Con bò', say:'Chữ B. Con bò.', svg:'cow'},
+  {up:'C', low:'c', word:'Con cua', say:'Chữ C. Con cua.', svg:'crab'},
+  {up:'D', low:'d', word:'Con dê', say:'Chữ D. Con dê.', svg:'goat'},
+  {up:'Đ', low:'đ', word:'Con đà điểu', say:'Chữ Đ. Con đà điểu.', svg:'ostrich'},
+  {up:'E', low:'e', word:'Em bé', say:'Chữ E. Em bé.', svg:'baby'},
+  {up:'Ê', low:'ê', word:'Con ếch', say:'Chữ Ê. Con ếch.', svg:'frog'},
+  {up:'G', low:'g', word:'Con gà', say:'Chữ G. Con gà.', svg:'chicken'},
+  {up:'H', low:'h', word:'Hà mã', say:'Chữ H. Hà mã.', svg:'hippo'},
+  {up:'I', low:'i', word:'Con chim', say:'Chữ I. Con chim.', svg:'bird'},
+  {up:'K', low:'k', word:'Con khỉ', say:'Chữ K. Con khỉ.', svg:'monkey'},
+  {up:'L', low:'l', word:'Con lừa', say:'Chữ L. Con lừa.', svg:'donkey'},
+  {up:'M', low:'m', word:'Con mèo', say:'Chữ M. Con mèo.', svg:'cat'},
+];
+
+/* ---------------- SVG ANIMALS ---------------- */
+const INK = '#3E2723';
+function svgWrap(inner){return `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;}
+const ANIMALS = {
+  coconutBro: svgWrap(`
+    <ellipse cx="110" cy="100" rx="2" ry="2" fill="none"/>
+    <ellipse cx="110" cy="120" rx="58" ry="62" fill="#9A6B3E" stroke="${INK}" stroke-width="6"/>
+    <path d="M60,80 Q110,40 160,80" stroke="${INK}" stroke-width="6" fill="none"/>
+    <circle cx="88" cy="108" r="9" fill="${INK}"/>
+    <circle cx="132" cy="108" r="9" fill="${INK}"/>
+    <ellipse cx="110" cy="138" rx="10" ry="7" fill="${INK}"/>
+    <rect x="70" y="172" width="80" height="34" rx="14" fill="#5DA838" stroke="${INK}" stroke-width="5"/>
+    <ellipse cx="30" cy="178" rx="22" ry="14" fill="#B9B0A6" stroke="${INK}" stroke-width="4"/>
+    <circle cx="14" cy="172" r="4" fill="${INK}"/>
+    <path d="M52,176 Q44,168 36,176" stroke="${INK}" stroke-width="3" fill="none"/>
+  `),
+  snake: svgWrap(`
+    <path d="M40,180 C40,140 110,150 110,110 C110,75 50,80 50,45" stroke="#79C24B" stroke-width="30" fill="none" stroke-linecap="round"/>
+    <path d="M40,180 C40,140 110,150 110,110 C110,75 50,80 50,45" stroke="${INK}" stroke-width="36" fill="none" stroke-linecap="round" opacity="0" />
+    <circle cx="50" cy="45" r="20" fill="#79C24B" stroke="${INK}" stroke-width="5"/>
+    <circle cx="44" cy="38" r="4" fill="${INK}"/>
+    <path d="M50,30 L58,16 M50,30 L44,14" stroke="#E85C4A" stroke-width="3"/>
+    <path d="M55,175 Q70,190 85,178 Q70,185 60,178 Z" fill="#5DA838" stroke="${INK}" stroke-width="3"/>
+  `),
+  bear: svgWrap(`
+    <circle cx="70" cy="55" r="20" fill="#9A6B3E" stroke="${INK}" stroke-width="5"/>
+    <circle cx="150" cy="55" r="20" fill="#9A6B3E" stroke="${INK}" stroke-width="5"/>
+    <ellipse cx="110" cy="120" rx="68" ry="64" fill="#B98646" stroke="${INK}" stroke-width="6"/>
+    <ellipse cx="110" cy="138" rx="26" ry="20" fill="#E7CBA3" stroke="${INK}" stroke-width="4"/>
+    <circle cx="88" cy="105" r="8" fill="${INK}"/>
+    <circle cx="132" cy="105" r="8" fill="${INK}"/>
+    <ellipse cx="110" cy="130" rx="8" ry="6" fill="${INK}"/>
+  `),
+  cow: svgWrap(`
+    <ellipse cx="110" cy="130" rx="70" ry="55" fill="#fff" stroke="${INK}" stroke-width="6"/>
+    <ellipse cx="75" cy="115" rx="18" ry="14" fill="#3E2723"/>
+    <ellipse cx="140" cy="150" rx="20" ry="16" fill="#3E2723"/>
+    <ellipse cx="110" cy="95" rx="46" ry="38" fill="#fff" stroke="${INK}" stroke-width="6"/>
+    <path d="M88,62 Q92,42 78,40 M132,62 Q128,42 142,40" stroke="${INK}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="80" cy="62" rx="10" ry="14" fill="#F4D9CB" stroke="${INK}" stroke-width="3"/>
+    <ellipse cx="140" cy="62" rx="10" ry="14" fill="#F4D9CB" stroke="${INK}" stroke-width="3"/>
+    <ellipse cx="110" cy="108" rx="22" ry="16" fill="#F4D9CB" stroke="${INK}" stroke-width="4"/>
+    <circle cx="92" cy="86" r="7" fill="${INK}"/>
+    <circle cx="128" cy="86" r="7" fill="${INK}"/>
+    <circle cx="102" cy="110" r="3" fill="${INK}"/><circle cx="118" cy="110" r="3" fill="${INK}"/>
+  `),
+  crab: svgWrap(`
+    <ellipse cx="110" cy="130" rx="62" ry="44" fill="#E85C4A" stroke="${INK}" stroke-width="6"/>
+    <path d="M55,110 Q20,80 30,50 Q55,60 64,95" fill="#E85C4A" stroke="${INK}" stroke-width="5"/>
+    <path d="M165,110 Q200,80 190,50 Q165,60 156,95" fill="#E85C4A" stroke="${INK}" stroke-width="5"/>
+    <circle cx="42" cy="58" r="14" fill="#E85C4A" stroke="${INK}" stroke-width="4"/>
+    <circle cx="178" cy="58" r="14" fill="#E85C4A" stroke="${INK}" stroke-width="4"/>
+    <circle cx="88" cy="118" r="9" fill="#fff" stroke="${INK}" stroke-width="3"/>
+    <circle cx="132" cy="118" r="9" fill="#fff" stroke="${INK}" stroke-width="3"/>
+    <circle cx="88" cy="118" r="4" fill="${INK}"/><circle cx="132" cy="118" r="4" fill="${INK}"/>
+    <path d="M60,170 L40,190 M85,178 L70,198 M135,178 L150,198 M160,170 L180,190" stroke="${INK}" stroke-width="6" stroke-linecap="round" fill="none"/>
+  `),
+  goat: svgWrap(`
+    <ellipse cx="110" cy="135" rx="60" ry="50" fill="#E7CBA3" stroke="${INK}" stroke-width="6"/>
+    <ellipse cx="110" cy="92" rx="38" ry="34" fill="#F4DEC0" stroke="${INK}" stroke-width="6"/>
+    <path d="M92,62 Q86,40 96,30 M128,62 Q134,40 124,30" stroke="${INK}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="78" cy="80" rx="9" ry="13" fill="#F4DEC0" stroke="${INK}" stroke-width="4"/>
+    <ellipse cx="142" cy="80" rx="9" ry="13" fill="#F4DEC0" stroke="${INK}" stroke-width="4"/>
+    <circle cx="96" cy="92" r="6" fill="${INK}"/><circle cx="124" cy="92" r="6" fill="${INK}"/>
+    <path d="M110,108 Q98,140 110,150 Q122,140 110,108 Z" fill="#fff" stroke="${INK}" stroke-width="3"/>
+  `),
+  ostrich: svgWrap(`
+    <ellipse cx="110" cy="155" rx="48" ry="36" fill="#3E2723"/>
+    <path d="M105,150 C95,90 80,70 95,30" stroke="#3E2723" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <circle cx="98" cy="26" r="16" fill="#3E2723"/>
+    <path d="M88,24 L62,18 L88,32 Z" fill="#FFC94A" stroke="${INK}" stroke-width="2"/>
+    <circle cx="104" cy="20" r="3" fill="#fff"/>
+    <path d="M70,180 L60,205 M150,180 L160,205" stroke="${INK}" stroke-width="8" stroke-linecap="round"/>
+    <path d="M150,140 Q175,150 172,120" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>
+  `),
+  baby: svgWrap(`
+    <ellipse cx="110" cy="150" rx="58" ry="48" fill="#FFE6C7" stroke="${INK}" stroke-width="6"/>
+    <circle cx="110" cy="80" r="44" fill="#FFE6C7" stroke="${INK}" stroke-width="6"/>
+    <path d="M76,52 Q110,28 144,52 Q140,40 110,38 Q80,40 76,52" fill="#5D4533"/>
+    <circle cx="92" cy="84" r="6" fill="${INK}"/><circle cx="128" cy="84" r="6" fill="${INK}"/>
+    <path d="M98,100 Q110,108 122,100" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="74" cy="98" r="9" fill="#FFB3A0" opacity=".7"/><circle cx="146" cy="98" r="9" fill="#FFB3A0" opacity=".7"/>
+    <path d="M85,150 a25,18 0 0,0 50,0" fill="#fff" stroke="${INK}" stroke-width="4"/>
+  `),
+  frog: svgWrap(`
+    <ellipse cx="110" cy="145" rx="62" ry="44" fill="#79C24B" stroke="${INK}" stroke-width="6"/>
+    <circle cx="72" cy="92" r="22" fill="#79C24B" stroke="${INK}" stroke-width="5"/>
+    <circle cx="148" cy="92" r="22" fill="#79C24B" stroke="${INK}" stroke-width="5"/>
+    <circle cx="72" cy="92" r="9" fill="${INK}"/><circle cx="148" cy="92" r="9" fill="${INK}"/>
+    <path d="M70,150 Q110,172 150,150" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="55" cy="175" rx="20" ry="10" fill="#5DA838" stroke="${INK}" stroke-width="4"/>
+    <ellipse cx="165" cy="175" rx="20" ry="10" fill="#5DA838" stroke="${INK}" stroke-width="4"/>
+  `),
+  chicken: svgWrap(`
+    <ellipse cx="110" cy="140" rx="55" ry="48" fill="#fff" stroke="${INK}" stroke-width="6"/>
+    <circle cx="150" cy="90" r="30" fill="#fff" stroke="${INK}" stroke-width="6"/>
+    <path d="M140,62 Q146,42 132,42 Q140,52 132,60 M150,58 Q156,38 168,44" fill="#E85C4A" stroke="${INK}" stroke-width="3"/>
+    <path d="M178,92 L198,98 L178,104 Z" fill="#FFC94A" stroke="${INK}" stroke-width="3"/>
+    <path d="M150,108 Q146,122 158,122 Q156,112 150,108" fill="#E85C4A" stroke="${INK}" stroke-width="3"/>
+    <circle cx="160" cy="84" r="5" fill="${INK}"/>
+    <path d="M70,150 Q40,140 35,165 Q55,168 70,160" fill="#FFC94A" stroke="${INK}" stroke-width="4"/>
+    <path d="M85,188 L78,205 M135,188 L142,205" stroke="#FFC94A" stroke-width="6" stroke-linecap="round"/>
+  `),
+  hippo: svgWrap(`
+    <ellipse cx="110" cy="135" rx="70" ry="55" fill="#C4A1B9" stroke="${INK}" stroke-width="6"/>
+    <ellipse cx="68" cy="100" rx="13" ry="14" fill="#C4A1B9" stroke="${INK}" stroke-width="5"/>
+    <ellipse cx="152" cy="100" rx="13" ry="14" fill="#C4A1B9" stroke="${INK}" stroke-width="5"/>
+    <circle cx="78" cy="118" r="7" fill="${INK}"/><circle cx="142" cy="118" r="7" fill="${INK}"/>
+    <path d="M60,150 Q110,180 160,150 Q150,170 110,172 Q70,170 60,150 Z" fill="#fff" stroke="${INK}" stroke-width="5"/>
+    <rect x="85" y="155" width="10" height="14" fill="#fff" stroke="${INK}" stroke-width="2"/>
+    <rect x="125" y="155" width="10" height="14" fill="#fff" stroke="${INK}" stroke-width="2"/>
+    <ellipse cx="78" cy="138" rx="5" ry="4" fill="#8C6A82"/><ellipse cx="142" cy="138" rx="5" ry="4" fill="#8C6A82"/>
+  `),
+  bird: svgWrap(`
+    <ellipse cx="100" cy="130" rx="50" ry="42" fill="#3E8FD0" stroke="${INK}" stroke-width="6"/>
+    <circle cx="148" cy="92" r="26" fill="#3E8FD0" stroke="${INK}" stroke-width="6"/>
+    <path d="M172,92 L196,86 L196,100 Z" fill="#FFC94A" stroke="${INK}" stroke-width="3"/>
+    <circle cx="156" cy="84" r="5" fill="${INK}"/>
+    <path d="M70,130 Q40,120 30,142 Q55,148 75,140" fill="#3E8FD0" stroke="${INK}" stroke-width="4"/>
+    <path d="M50,150 Q20,170 18,150 Q35,150 50,150" fill="#fff" stroke="${INK}" stroke-width="3"/>
+    <path d="M85,172 L78,192 M115,172 L122,192" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+  `),
+  monkey: svgWrap(`
+    <ellipse cx="110" cy="140" rx="58" ry="50" fill="#9A6B3E" stroke="${INK}" stroke-width="6"/>
+    <circle cx="60" cy="110" r="22" fill="#9A6B3E" stroke="${INK}" stroke-width="5"/>
+    <circle cx="160" cy="110" r="22" fill="#9A6B3E" stroke="${INK}" stroke-width="5"/>
+    <ellipse cx="110" cy="148" rx="34" ry="30" fill="#F4DEC0" stroke="${INK}" stroke-width="5"/>
+    <circle cx="95" cy="138" r="7" fill="${INK}"/><circle cx="125" cy="138" r="7" fill="${INK}"/>
+    <path d="M98,160 Q110,168 122,160" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>
+  `),
+  donkey: svgWrap(`
+    <ellipse cx="110" cy="140" rx="58" ry="48" fill="#B9ACA0" stroke="${INK}" stroke-width="6"/>
+    <ellipse cx="105" cy="92" rx="34" ry="30" fill="#B9ACA0" stroke="${INK}" stroke-width="6"/>
+    <ellipse cx="65" cy="60" rx="11" ry="26" fill="#B9ACA0" stroke="${INK}" stroke-width="5" transform="rotate(-20 65 60)"/>
+    <ellipse cx="130" cy="58" rx="11" ry="26" fill="#B9ACA0" stroke="${INK}" stroke-width="5" transform="rotate(15 130 58)"/>
+    <circle cx="92" cy="90" r="6" fill="${INK}"/><circle cx="118" cy="90" r="6" fill="${INK}"/>
+    <ellipse cx="78" cy="112" rx="18" ry="14" fill="#5D4533" stroke="${INK}" stroke-width="4"/>
+    <path d="M62,72 Q72,52 90,58" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/>
+  `),
+  cat: svgWrap(`
+    <ellipse cx="110" cy="145" rx="56" ry="46" fill="#E8A92B" stroke="${INK}" stroke-width="6"/>
+    <circle cx="110" cy="92" r="38" fill="#E8A92B" stroke="${INK}" stroke-width="6"/>
+    <path d="M82,68 L70,40 L96,60 Z" fill="#E8A92B" stroke="${INK}" stroke-width="5"/>
+    <path d="M138,68 L150,40 L124,60 Z" fill="#E8A92B" stroke="${INK}" stroke-width="5"/>
+    <path d="M90,90 Q98,98 106,90 M114,90 Q122,98 130,90" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="110" cy="104" rx="6" ry="5" fill="${INK}"/>
+    <path d="M60,100 L30,96 M60,108 L28,112 M160,100 L190,96 M160,108 L192,112" stroke="${INK}" stroke-width="2"/>
+    <path d="M160,170 Q190,180 178,150" stroke="#E8A92B" stroke-width="14" fill="none" stroke-linecap="round"/>
+  `),
+};
+
+/* ---------------- STATE MANAGEMENT ---------------- */
+let current = 0;
+let maxUnlocked = 0;
+let rescued = new Array(LETTERS.length).fill(false);
+
+// Tải dữ liệu cũ từ bộ nhớ LocalStorage nếu có
+if (localStorage.getItem('tau_hoa_rescued')) {
+  try {
+    rescued = JSON.parse(localStorage.getItem('tau_hoa_rescued'));
+    maxUnlocked = parseInt(localStorage.getItem('tau_hoa_maxUnlocked')) || 0;
+    current = parseInt(localStorage.getItem('tau_hoa_current')) || 0;
+  } catch(e) {
+    console.error("Lập trình lưu trữ có lỗi, khởi tạo lại từ đầu.", e);
+  }
+}
+
+const carEl = document.getElementById('car');
+const progressEl = document.getElementById('progress');
+const queueEl = document.getElementById('queue');
+const railroadEl = document.getElementById('railroad');
+
+function saveData() {
+  localStorage.setItem('tau_hoa_rescued', JSON.stringify(rescued));
+  localStorage.setItem('tau_hoa_maxUnlocked', maxUnlocked);
+  localStorage.setItem('tau_hoa_current', current);
+}
+
+/* ---------------- NATIVE SYNTHETIC AUDIO (Web Audio API) ---------------- */
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+function playTone(freq, type, duration, delay = 0) {
+  try {
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+    gain.gain.setValueAtTime(0.12, audioCtx.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + delay + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime + delay);
+    osc.stop(audioCtx.currentTime + delay + duration);
+  } catch(e) {}
+}
+function playClickSound() {
+  playTone(450, 'triangle', 0.06);
+}
+function playRescueSound() {
+  playTone(523.25, 'sine', 0.1, 0);      // C5
+  playTone(659.25, 'sine', 0.1, 0.08);   // E5
+  playTone(783.99, 'sine', 0.1, 0.16);   // G5
+  playTone(1046.50, 'sine', 0.22, 0.24); // C6
+}
+
+/* ---------------- RENDER INTERFACE ---------------- */
+function buildProgress(){
+  progressEl.innerHTML = '';
+  LETTERS.forEach((l,i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot' + (rescued[i] ? ' done' : (i===current ? ' current' : ''));
+    d.textContent = l.up;
+    if(rescued[i] || i<=maxUnlocked){
+      d.style.cursor = 'pointer';
+      d.addEventListener('click', ()=>{ playClickSound(); goTo(i); });
+    }
+    progressEl.appendChild(d);
+  });
+}
+
+function buildQueue(){
+  queueEl.innerHTML='';
+  LETTERS.forEach((l, i) => {
+    const m = document.createElement('div');
+    m.className = 'mini' + (i === current ? ' active' : (rescued[i] ? ' done' : ''));
+    queueEl.appendChild(m);
+  });
+}
+
+function renderCar(animate){
+  const l = LETTERS[current];
+  const isRescued = rescued[current];
+  
+  carEl.innerHTML = `
+    <div class="letters-display">
+      <div class="up">${l.up}</div>
+      <div class="low">${l.low}</div>
+    </div>
+    <div class="stage-area">
+      <button class="animal-btn ${isRescued?'':'locked-anim'}" id="animalBtn" aria-label="Bấm để giải cứu">
+        ${!isRescued ? '<div class="hint">Bấm vào tôi!</div>' : ''}
+        ${ANIMALS[l.svg]}
+      </button>
+    </div>
+    <div class="word-label" id="wordLabel">${isRescued ? l.word : '❓ ❓ ❓'}</div>
+    <div class="controls">
+      <button class="btn replay ${isRescued?'':'hidden'}" id="replayBtn">🔊 Nghe lại</button>
+      <button class="btn next ${(isRescued && current < LETTERS.length-1)?'':'hidden'}" id="nextBtn">Toa tiếp theo →</button>
+    </div>
+  `;
+  
+  if(animate){
+    // Kích hoạt chuỗi chuyển động tàu hỏa cuộn chiếu sang trái mượt mà
+    carEl.classList.remove('slide-in');
+    carEl.classList.add('slide-out');
+    carEl.classList.add('rolling');
+    railroadEl.classList.add('moving');
+    
+    setTimeout(()=>{
+      carEl.classList.remove('slide-out');
+      carEl.classList.add('slide-in');
+      
+      setTimeout(()=>{
+        carEl.classList.remove('slide-in');
+        carEl.classList.remove('rolling');
+        railroadEl.classList.remove('moving');
+      }, 450);
+    }, 400);
+  }
+  
+  document.getElementById('animalBtn').addEventListener('click', onAnimalClick);
+  const rb = document.getElementById('replayBtn');
+  if(rb) rb.addEventListener('click', ()=>{ playClickSound(); speak(l.say); });
+  const nb = document.getElementById('nextBtn');
+  if(nb) nb.addEventListener('click', ()=>{ playClickSound(); goTo(current+1); });
+  
+  buildProgress(); 
+  buildQueue();
+}
+
+function goTo(i){
+  if(i<0 || i>=LETTERS.length) return;
+  if(i>maxUnlocked) return;
+  current = i;
+  saveData();
+  renderCar(true);
+}
+
+function onAnimalClick(){
+  initAudio();
+  const l = LETTERS[current];
+  if(rescued[current]){ speak(l.say); return; }
+  
+  rescued[current] = true;
+  if(current === maxUnlocked && current < LETTERS.length-1){ maxUnlocked = current+1; }
+  
+  saveData();
+  playRescueSound();
+  burstConfetti();
+  
+  document.getElementById('animalBtn').style.animation = 'rescuePop .6s cubic-bezier(.175, .885, .32, 1.275)';
+  
+  setTimeout(()=>{
+    renderCar(false);
+    speak(l.say);
+    
+    // Kiểm tra nếu bé đã hoàn thành xuất sắc giải cứu toàn bộ 15 toa tàu
+    if(current === LETTERS.length-1 && rescued.every(status => status === true)){
+      setTimeout(()=>{ 
+        document.getElementById('endscreen').style.display='flex'; 
+        playTone(523.25, 'sine', 0.15, 0);
+        playTone(659.25, 'sine', 0.15, 0.1);
+        playTone(783.99, 'sine', 0.15, 0.2);
+        playTone(1046.50, 'triangle', 0.5, 0.3);
+      }, 1500);
+    }
+  }, 350);
+}
+
+/* HIỆU ỨNG PHÁO HOA ĂN MỪNG */
+function burstConfetti(){
+  const colors = ['#FF8F70','#FFC94A','#79C24B','#3E8FD0','#E85C4A'];
+  const rect = document.getElementById('animalBtn').getBoundingClientRect();
+  for(let i=0;i<32;i++){
+    const p = document.createElement('div');
+    p.className='confetti-piece';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.left = (rect.left + rect.width/2 + (Math.random()-0.5)*40)+'px';
+    p.style.top = (rect.top + rect.height/2)+'px';
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);
+    const dx = (Math.random()-0.5)*280;
+    const dy = -(Math.random()*220+90);
+    const dur = 950+Math.random()*500;
+    p.animate([
+      {transform:p.style.transform+' translate(0,0)', opacity:1},
+      {transform:`rotate(${Math.random()*720}deg) translate(${dx}px, ${dy*-1}px)`, opacity:1, offset:0.4},
+      {transform:`rotate(${Math.random()*900}deg) translate(${dx*1.4}px, 260px)`, opacity:0}
+    ], {duration:dur, easing:'cubic-bezier(.1, .8, .25, 1)'});
+    setTimeout(()=>p.remove(), dur+50);
+  }
+}
+
+// Thêm keyframe động cho cú nảy bung tỏa lúc con vật được giải cứu
+const styleTag = document.createElement('style');
+styleTag.textContent = `@keyframes rescuePop{0%{transform:scale(1);}40%{transform:scale(1.28) rotate(-7deg);}70%{transform:scale(0.93) rotate(4deg);}100%{transform:scale(1);}}`;
+document.head.appendChild(styleTag);
+
+/* ---------------- SPEECH SYNTHESIS GIAO DIỆN GIỌNG ĐỌC ---------------- */
+let viVoice = null;
+function loadVoices(){
+  if(!('speechSynthesis' in window)) return;
+  const voices = speechSynthesis.getVoices();
+  viVoice = voices.find(v=>v.lang==='vi-VN') || voices.find(v=>v.lang && v.lang.startsWith('vi')) || null;
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
+  }
+}
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'vi-VN';
+  u.rate = 0.82; // Tốc độ đọc chậm vừa phải giúp các bé lớp 1 nghe rõ từng âm tiết
+  u.pitch = 1.15; // Tăng nhẹ cao độ để giọng đọc nghe vui tươi, thân thiện hơn với trẻ nhỏ
+  if(viVoice) u.voice = viVoice;
+  speechSynthesis.speak(u);
+}
+
+/* ---------------- GAME EVENT LISTENERS ---------------- */
+document.getElementById('restartBtn').addEventListener('click', ()=>{
+  playClickSound();
+  rescued = new Array(LETTERS.length).fill(false);
+  current = 0; maxUnlocked = 0;
+  saveData();
+  document.getElementById('endscreen').style.display='none';
+  renderCar(true);
+});
+
+document.getElementById('resetStorageBtn').addEventListener('click', ()=>{
+  initAudio();
+  playClickSound();
+  if(confirm("Bố mẹ có chắc chắn muốn xóa lịch sử chơi để bé học lại từ đầu không?")) {
+    localStorage.clear();
+    rescued = new Array(LETTERS.length).fill(false);
+    current = 0; maxUnlocked = 0;
+    renderCar(true);
+  }
+});
+
+/* ---------------- KHỞI CHẠY GAME ---------------- */
+renderCar(false);
+</script>
+</body>
+</html>

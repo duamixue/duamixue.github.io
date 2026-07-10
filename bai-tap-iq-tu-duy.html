@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 IQ & Tư Duy Nâng Cao</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0F0C29;
+    --bg2: #1a1540;
+    --card: #1e1a4a;
+    --card2: #252060;
+    --accent: #7C3AED;
+    --accent2: #A78BFA;
+    --gold: #F59E0B;
+    --gold2: #FDE68A;
+    --cyan: #06B6D4;
+    --green: #10B981;
+    --red: #EF4444;
+    --pink: #EC4899;
+    --text: #F0EEFF;
+    --muted: #8B83C0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(124,58,237,0.25) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(6,182,212,0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 40%, rgba(245,158,11,0.1) 0%, transparent 40%);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--text);
+  }
+
+  /* STARS BG */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 90%, rgba(255,255,255,0.4) 0%, transparent 100%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .max-w { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+
+  /* HEADER */
+  .header { text-align: center; padding: 40px 20px 20px; }
+  .header-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(6,182,212,0.3));
+    border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 50px;
+    padding: 6px 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-family: 'Lexend', sans-serif;
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #F59E0B, #A78BFA, #06B6D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p { color: var(--muted); margin-top: 10px; font-size: 1rem; }
+
+  /* SCORE */
+  .hud {
+    display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+    margin: 24px auto 30px; max-width: 560px;
+  }
+  .hud-item {
+    background: var(--card); border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 16px; padding: 12px 20px;
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 700; font-size: 0.95rem;
+  }
+  .hud-icon { font-size: 1.3rem; }
+  .hud-val { font-size: 1.3rem; font-weight: 900; }
+  .hud-val.gold { color: var(--gold); }
+  .hud-val.cyan { color: var(--cyan); }
+  .hud-val.green { color: var(--green); }
+  .hud-label { color: var(--muted); font-size: 0.8rem; }
+
+  /* SECTION */
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin: 32px 0 16px;
+    padding: 14px 20px;
+    border-radius: 16px;
+    border-left: 4px solid;
+    background: rgba(255,255,255,0.03);
+  }
+  .section-header.s1 { border-color: var(--gold); }
+  .section-header.s2 { border-color: var(--cyan); }
+  .section-header.s3 { border-color: var(--pink); }
+  .section-header.s4 { border-color: var(--green); }
+  .section-header .s-icon { font-size: 1.8rem; }
+  .section-header .s-title {
+    font-family: 'Lexend', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+  .section-header.s1 .s-title { color: var(--gold); }
+  .section-header.s2 .s-title { color: var(--cyan); }
+  .section-header.s3 .s-title { color: var(--pink); }
+  .section-header.s4 .s-title { color: var(--green); }
+  .section-header .s-desc { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+
+  /* GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(167,139,250,0.15);
+    border-radius: 20px;
+    padding: 22px;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--cyan));
+    border-radius: 20px 20px 0 0;
+    opacity: 0.6;
+  }
+  .card:hover { transform: translateY(-3px); border-color: rgba(167,139,250,0.4); box-shadow: 0 8px 30px rgba(124,58,237,0.2); }
+  .card.correct { border-color: var(--green); background: rgba(16,185,129,0.08); }
+  .card.correct::before { background: var(--green); opacity: 1; }
+  .card.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); }
+  .card.wrong::before { background: var(--red); opacity: 1; }
+  .card.revealed { border-color: var(--cyan); background: rgba(6,182,212,0.08); }
+
+  .card-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 50px;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .q-text {
+    font-size: 1rem; font-weight: 700; color: var(--text);
+    margin-bottom: 16px; line-height: 1.6; white-space: pre-line;
+  }
+  .q-hint { color: var(--muted); font-size: 0.85rem; font-weight: 400; }
+
+  /* VISUAL PATTERN */
+  .pattern-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    font-size: 1.6rem;
+    text-align: center;
+    letter-spacing: 8px;
+    line-height: 2;
+  }
+
+  /* OPTIONS */
+  .options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt-btn {
+    padding: 9px 16px; border-radius: 50px;
+    border: 1.5px solid rgba(167,139,250,0.3);
+    background: rgba(167,139,250,0.07);
+    font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all 0.18s; color: var(--text);
+  }
+  .opt-btn:hover:not(:disabled) {
+    border-color: var(--accent2); background: rgba(124,58,237,0.2);
+    color: var(--accent2); transform: scale(1.04);
+  }
+  .opt-btn.correct-opt { background: var(--green); border-color: var(--green); color: white; }
+  .opt-btn.wrong-opt { background: var(--red); border-color: var(--red); color: white; }
+  .opt-btn:disabled { cursor: default; }
+
+  /* FILL */
+  .fill-wrap { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .fill-input {
+    padding: 9px 16px; border-radius: 50px;
+    border: 1.5px solid rgba(167,139,250,0.3);
+    background: rgba(167,139,250,0.07);
+    font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700;
+    width: 150px; outline: none; transition: border-color 0.2s; color: var(--text);
+  }
+  .fill-input::placeholder { color: var(--muted); font-weight: 400; }
+  .fill-input:focus { border-color: var(--accent2); background: rgba(124,58,237,0.15); }
+  .fill-input.correct-input { border-color: var(--green); background: rgba(16,185,129,0.15); }
+  .fill-input.wrong-input { border-color: var(--red); background: rgba(239,68,68,0.15); }
+
+  .check-btn {
+    padding: 9px 18px; border-radius: 50px; border: none;
+    background: linear-gradient(135deg, var(--accent), #6D28D9);
+    color: white; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all 0.18s;
+    box-shadow: 0 3px 14px rgba(124,58,237,0.4);
+  }
+  .check-btn:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 5px 20px rgba(124,58,237,0.5); }
+  .check-btn:disabled { opacity: 0.45; cursor: default; }
+
+  /* REVEAL */
+  .reveal-btn {
+    padding: 9px 18px; border-radius: 50px;
+    border: 1.5px dashed rgba(6,182,212,0.5);
+    background: transparent; color: var(--cyan);
+    font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all 0.18s; margin-top: 4px;
+  }
+  .reveal-btn:hover { background: rgba(6,182,212,0.1); transform: scale(1.04); }
+
+  .answer-box {
+    margin-top: 12px; padding: 12px 16px;
+    background: rgba(6,182,212,0.12);
+    border: 1px solid rgba(6,182,212,0.3);
+    border-radius: 12px; font-weight: 700; color: var(--cyan); font-size: 0.95rem;
+    display: none; animation: fadeUp 0.3s;
+  }
+  .answer-box.show { display: block; }
+
+  /* FEEDBACK */
+  .feedback { margin-top: 10px; font-size: 0.88rem; font-weight: 700; display: none; animation: fadeUp 0.25s; }
+  .feedback.show { display: block; }
+  .feedback.ok { color: var(--green); }
+  .feedback.no { color: #F87171; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none} }
+
+  /* SUBMIT */
+  .submit-wrap { text-align: center; margin: 36px 0; }
+  .submit-btn {
+    padding: 16px 50px; border-radius: 50px; border: none;
+    background: linear-gradient(135deg, var(--gold), #F97316, var(--pink));
+    color: white; font-family: 'Lexend', sans-serif; font-size: 1.2rem; font-weight: 800;
+    cursor: pointer; box-shadow: 0 6px 28px rgba(245,158,11,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .submit-btn:hover { transform: scale(1.06); box-shadow: 0 10px 36px rgba(245,158,11,0.5); }
+
+  /* RESULT */
+  .result-section {
+    text-align: center; padding: 50px 30px; margin-top: 20px;
+    background: var(--card2);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 28px;
+    box-shadow: 0 10px 50px rgba(124,58,237,0.2);
+    display: none;
+  }
+  .result-section.show { display: block; animation: fadeUp 0.5s; }
+  .result-emoji { font-size: 5rem; margin-bottom: 16px; }
+  .result-stars { font-size: 2rem; margin-bottom: 12px; letter-spacing: 4px; }
+  .result-title {
+    font-family: 'Lexend', sans-serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 8px;
+  }
+  .result-score { font-size: 3rem; font-weight: 900; color: var(--gold); margin: 10px 0; }
+  .result-sub { color: var(--muted); font-size: 0.95rem; }
+  .result-iq {
+    display: inline-block; margin: 16px auto;
+    background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(6,182,212,0.3));
+    border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 16px; padding: 12px 30px;
+    font-size: 1.1rem; font-weight: 700; color: var(--accent2);
+  }
+  .restart-btn {
+    margin-top: 24px; padding: 14px 38px; border-radius: 50px; border: none;
+    background: linear-gradient(135deg, var(--accent), var(--cyan));
+    color: white; font-family: 'Lexend', sans-serif; font-size: 1rem; font-weight: 700;
+    cursor: pointer; box-shadow: 0 4px 20px rgba(124,58,237,0.4); transition: transform 0.2s;
+  }
+  .restart-btn:hover { transform: scale(1.06); }
+
+  @media (max-width: 500px) {
+    .header h1 { font-size: 2rem; }
+    .grid { grid-template-columns: 1fr; }
+    .hud { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="max-w">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-badge">✨ Bé 6–8 Tuổi · Level Up</div>
+    <h1>🧠 IQ & Tư Duy<br>Nâng Cao</h1>
+    <p>Thử thách não bộ · Rèn luyện suy luận · Bé thông minh hơn mỗi ngày!</p>
+  </div>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-item">
+      <span class="hud-icon">⚡</span>
+      <div><div class="hud-val gold" id="hud-score">0</div><div class="hud-label">Điểm IQ</div></div>
+    </div>
+    <div class="hud-item">
+      <span class="hud-icon">✅</span>
+      <div><div class="hud-val green" id="hud-correct">0</div><div class="hud-label">Đúng</div></div>
+    </div>
+    <div class="hud-item">
+      <span class="hud-icon">🎯</span>
+      <div><div class="hud-val cyan" id="hud-total">/ 0</div><div class="hud-label">Tổng câu</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section-header s1">
+    <span class="s-icon">🔢</span>
+    <div><div class="s-title">Dãy số & Quy luật</div><div class="s-desc">Tìm số còn thiếu theo quy luật ẩn</div></div>
+  </div>
+  <div class="grid" id="grid-s1"></div>
+
+  <!-- SECTION 2 -->
+  <div class="section-header s2">
+    <span class="s-icon">🔷</span>
+    <div><div class="s-title">Hình học & Không gian</div><div class="s-desc">Quan sát hình và suy luận</div></div>
+  </div>
+  <div class="grid" id="grid-s2"></div>
+
+  <!-- SECTION 3 -->
+  <div class="section-header s3">
+    <span class="s-icon">🌀</span>
+    <div><div class="s-title">Suy luận Logic</div><div class="s-desc">Đọc kỹ và suy nghĩ từng bước</div></div>
+  </div>
+  <div class="grid" id="grid-s3"></div>
+
+  <!-- SECTION 4 -->
+  <div class="section-header s4">
+    <span class="s-icon">🧩</span>
+    <div><div class="s-title">Phân loại & So sánh</div><div class="s-desc">Tìm điểm giống và khác nhau</div></div>
+  </div>
+  <div class="grid" id="grid-s4"></div>
+
+  <!-- SUBMIT -->
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitAll()">🧠 Tính điểm IQ ngay!</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-section" id="result-section">
+    <div class="result-emoji" id="res-emoji">🏆</div>
+    <div class="result-stars" id="res-stars">⭐⭐⭐⭐⭐</div>
+    <div class="result-title" id="res-title">Thiên tài nhỏ!</div>
+    <div class="result-score" id="res-score">100</div>
+    <div class="result-iq" id="res-iq">Chỉ số IQ ước tính: Xuất sắc 🌟</div>
+    <div class="result-sub" id="res-sub">Bé làm đúng 0/0 câu</div>
+    <br>
+    <button class="restart-btn" onclick="restartAll()">🔄 Thử lại nào!</button>
+  </div>
+
+</div>
+
+<script>
+// ========== DATA ==========
+const s1 = [
+  {
+    num:1, type:'fill',
+    q:'Dãy số sau tăng theo quy luật gì?\n2, 5, 8, 11, ___',
+    answer:'14', hint:'Gợi ý: mỗi số cộng thêm bao nhiêu?'
+  },
+  {
+    num:2, type:'choice',
+    q:'Điền số còn thiếu:\n1, 4, 9, 16, ___, 36',
+    pattern:'1  4  9  16  ？  36',
+    opts:['20','25','28','30'], answer:'25', hint:'Gợi ý: 1², 2², 3²...'
+  },
+  {
+    num:3, type:'fill',
+    q:'Dãy Fibonacci nhỏ:\n1, 1, 2, 3, 5, 8, ___',
+    answer:'13', hint:'Gợi ý: số sau = tổng 2 số trước'
+  },
+  {
+    num:4, type:'choice',
+    q:'Tìm số bị thiếu:\n100, 90, 81, 73, 66, ___',
+    opts:['58','60','61','62'], answer:'60',
+    hint:'Gợi ý: hiệu giảm dần: −10, −9, −8...'
+  },
+];
+
+const s2 = [
+  {
+    num:1, type:'choice',
+    q:'Một hình vuông có 4 cạnh bằng nhau.\nNếu cắt chéo qua tâm, được bao nhiêu hình tam giác?',
+    opts:['2','3','4','6'], answer:'2'
+  },
+  {
+    num:2, type:'choice',
+    q:'Hình nào có nhiều góc nhất?',
+    opts:['Tam giác 🔺','Hình vuông 🟥','Lục giác ⬡','Hình tròn ⭕'], answer:'Lục giác ⬡'
+  },
+  {
+    num:3, type:'fill',
+    q:'Một khối lập phương có bao nhiêu mặt?',
+    answer:'6', hint:'(Đếm: trên, dưới, trước, sau, trái, phải)'
+  },
+  {
+    num:4, type:'choice',
+    q:'Gương phản chiếu chữ "IQ".\nBé nhìn vào gương thấy gì?',
+    opts:['QI','IQ','ìq','PI'], answer:'QI'
+  },
+];
+
+const s3 = [
+  {
+    num:1, type:'choice',
+    q:'Lan nói thật, Mai nói dối.\nLan nói: "Hôm nay trời mưa."\nMai nói: "Hôm nay trời không mưa."\nHôm nay trời thế nào?',
+    opts:['Mưa','Không mưa','Không biết','Cả hai đều đúng'], answer:'Mưa'
+  },
+  {
+    num:2, type:'choice',
+    q:'Có 5 bạn xếp hàng:\nAn đứng trước Bình,\nBình đứng trước Chi,\nChi đứng sau Dung.\nDung đứng sau An.\nAi đứng đầu hàng?',
+    opts:['An','Bình','Chi','Dung'], answer:'An'
+  },
+  {
+    num:3, type:'fill',
+    q:'Nếu hôm nay là thứ Tư,\nthì 10 ngày nữa là thứ mấy?',
+    answer:'Thứ Bảy', hint:'(Ghi: Thứ Hai / Ba / ... / Bảy / CN)'
+  },
+  {
+    num:4, type:'choice',
+    q:'Tất cả mèo đều có đuôi.\nLulu là con mèo.\nLulu có đuôi không?',
+    opts:['Có','Không','Không chắc','Tuỳ'], answer:'Có'
+  },
+  {
+    num:5, type:'choice',
+    q:'Bố 40 tuổi, con 10 tuổi.\nBao nhiêu năm nữa tuổi bố\ngấp đôi tuổi con?',
+    opts:['10 năm','15 năm','20 năm','25 năm'], answer:'20 năm'
+  },
+];
+
+const s4 = [
+  {
+    num:1, type:'choice',
+    q:'Con nào KHÁC loài với các con còn lại?',
+    opts:['🐬 Cá heo','🐳 Cá voi','🦈 Cá mập','🐘 Voi'], answer:'🐘 Voi',
+    hint:'Gợi ý: nghĩ về môi trường sống'
+  },
+  {
+    num:2, type:'choice',
+    q:'Số nào KHÔNG thuộc về dãy này?\n2, 4, 6, 7, 8, 10',
+    opts:['4','6','7','8'], answer:'7'
+  },
+  {
+    num:3, type:'choice',
+    q:'Bốn thứ sau có điểm gì CHUNG?\n🌞 Mặt Trời · 🍊 Cam · 🟡 Bóng · 🌕 Mặt Trăng',
+    opts:['Đều tròn','Đều màu vàng','Đều trên trời','Đều phát sáng'], answer:'Đều tròn'
+  },
+  {
+    num:4, type:'fill',
+    q:'Hoàn thành chuỗi liên tưởng:\nNgày → Mặt Trời\nĐêm → ___',
+    answer:'Mặt Trăng', hint:'(Hoặc: Trăng / Mặt trăng)'
+  },
+];
+
+// ========== STATE ==========
+let answered = {}, correctCount = 0, totalAnswerable = 0;
+
+// ========== RENDER ==========
+function renderChoice(q, gridId, sec) {
+  totalAnswerable++;
+  const id = sec+'-'+q.num;
+  const div = document.createElement('div');
+  div.className = 'card'; div.id = 'card-'+id;
+  div.innerHTML = `
+    <div class="card-tag">${sec.toUpperCase()} · Câu ${q.num}</div>
+    <div class="q-text">${q.q}</div>
+    ${q.pattern ? `<div class="pattern-box">${q.pattern}</div>` : ''}
+    ${q.hint ? `<div class="q-hint" style="margin-bottom:12px">💡 ${q.hint}</div>` : ''}
+    <div class="options">
+      ${q.opts.map(o=>`<button class="opt-btn" onclick="checkChoice('${id}','${o.replace(/'/g,"\\'")}','${q.answer.replace(/'/g,"\\'")}',this)">${o}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb-${id}"></div>`;
+  document.getElementById(gridId).appendChild(div);
+}
+
+function renderFill(q, gridId, sec) {
+  totalAnswerable++;
+  const id = sec+'-'+q.num;
+  const div = document.createElement('div');
+  div.className = 'card'; div.id = 'card-'+id;
+  div.innerHTML = `
+    <div class="card-tag">${sec.toUpperCase()} · Câu ${q.num}</div>
+    <div class="q-text">${q.q}</div>
+    ${q.hint ? `<div class="q-hint" style="margin-bottom:12px">💡 ${q.hint}</div>` : ''}
+    <div class="fill-wrap">
+      <input class="fill-input" id="inp-${id}" placeholder="Đáp án..." onkeydown="if(event.key==='Enter')checkFill('${id}','${q.answer}')"/>
+      <button class="check-btn" id="btn-${id}" onclick="checkFill('${id}','${q.answer}')">✓ OK</button>
+    </div>
+    <div class="feedback" id="fb-${id}"></div>`;
+  document.getElementById(gridId).appendChild(div);
+}
+
+// ========== CHECK ==========
+function checkChoice(id, chosen, correct, btn) {
+  if (answered[id]) return;
+  answered[id] = true;
+  const card = document.getElementById('card-'+id);
+  const fb = document.getElementById('fb-'+id);
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === correct) b.classList.add('correct-opt');
+  });
+  if (chosen === correct) {
+    btn.classList.add('correct-opt'); card.classList.add('correct');
+    fb.textContent = '🎉 Chuẩn luôn! Bé thông minh quá!'; fb.className = 'feedback show ok';
+    correctCount++;
+  } else {
+    btn.classList.add('wrong-opt'); card.classList.add('wrong');
+    fb.textContent = '❌ Chưa đúng! Đáp án: '+correct; fb.className = 'feedback show no';
+  }
+  updateHUD();
+}
+
+function checkFill(id, correct) {
+  if (answered[id]) return;
+  const inp = document.getElementById('inp-'+id);
+  if (!inp.value.trim()) return;
+  answered[id] = true;
+  const btn = document.getElementById('btn-'+id);
+  const fb = document.getElementById('fb-'+id);
+  const card = document.getElementById('card-'+id);
+  // flexible check: normalize
+  const val = inp.value.trim().toLowerCase().replace(/\s+/g,' ');
+  const ans = correct.toLowerCase();
+  const aliases = {
+    'mat trang':'mặt trăng','trăng':'mặt trăng','mặt trăng':'mặt trăng',
+    'thu bay':'thứ bảy','thứ 7':'thứ bảy','t7':'thứ bảy'
+  };
+  const norm = aliases[val] || val;
+  const isOk = norm === ans || val === ans || val === ans.replace(/mặt /g,'');
+  inp.disabled = true; btn.disabled = true;
+  if (isOk) {
+    inp.classList.add('correct-input'); card.classList.add('correct');
+    fb.textContent = '🎉 Chuẩn luôn! Bé thông minh quá!'; fb.className = 'feedback show ok';
+    correctCount++;
+  } else {
+    inp.classList.add('wrong-input'); card.classList.add('wrong');
+    fb.textContent = '❌ Chưa đúng! Đáp án: '+correct; fb.className = 'feedback show no';
+  }
+  updateHUD();
+}
+
+function updateHUD() {
+  document.getElementById('hud-score').textContent = correctCount * 10;
+  document.getElementById('hud-correct').textContent = correctCount;
+}
+
+// ========== SUBMIT ==========
+function submitAll() {
+  const pct = totalAnswerable > 0 ? correctCount / totalAnswerable : 0;
+  const score = correctCount * 10;
+  let emoji, stars, title, iqLabel;
+  if (pct >= 0.9) {
+    emoji='🏆'; stars='⭐⭐⭐⭐⭐'; title='Thiên Tài Nhỏ!';
+    iqLabel='Chỉ số IQ: Vượt trội 🌟 (125+)';
+  } else if (pct >= 0.75) {
+    emoji='🌟'; stars='⭐⭐⭐⭐'; title='Siêu Thông Minh!';
+    iqLabel='Chỉ số IQ: Rất cao 💪 (110–124)';
+  } else if (pct >= 0.6) {
+    emoji='😎'; stars='⭐⭐⭐'; title='Khá Giỏi Đấy!';
+    iqLabel='Chỉ số IQ: Trên trung bình 👍 (100–109)';
+  } else if (pct >= 0.4) {
+    emoji='🙂'; stars='⭐⭐'; title='Cố Lên Bé!';
+    iqLabel='Chỉ số IQ: Đang phát triển 📈 (90–99)';
+  } else {
+    emoji='💪'; stars='⭐'; title='Luyện Tập Thêm Nhé!';
+    iqLabel='Chỉ số IQ: Cần rèn luyện thêm 🔥';
+  }
+  document.getElementById('res-emoji').textContent = emoji;
+  document.getElementById('res-stars').textContent = stars;
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-score').textContent = score + ' điểm';
+  document.getElementById('res-iq').textContent = iqLabel;
+  document.getElementById('res-sub').textContent = 'Bé làm đúng '+correctCount+'/'+totalAnswerable+' câu hỏi';
+  const res = document.getElementById('result-section');
+  res.classList.add('show');
+  res.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+// ========== RESTART ==========
+function restartAll() {
+  answered = {}; correctCount = 0;
+  document.getElementById('hud-score').textContent = '0';
+  document.getElementById('hud-correct').textContent = '0';
+  document.getElementById('result-section').classList.remove('show');
+  ['grid-s1','grid-s2','grid-s3','grid-s4'].forEach(id => document.getElementById(id).innerHTML='');
+  totalAnswerable = 0;
+  init();
+}
+
+// ========== INIT ==========
+function init() {
+  s1.forEach(q => q.type==='choice' ? renderChoice(q,'grid-s1','S1') : renderFill(q,'grid-s1','S1'));
+  s2.forEach(q => q.type==='choice' ? renderChoice(q,'grid-s2','S2') : renderFill(q,'grid-s2','S2'));
+  s3.forEach(q => q.type==='choice' ? renderChoice(q,'grid-s3','S3') : renderFill(q,'grid-s3','S3'));
+  s4.forEach(q => q.type==='choice' ? renderChoice(q,'grid-s4','S4') : renderFill(q,'grid-s4','S4'));
+  document.getElementById('hud-total').textContent = '/ '+(totalAnswerable*10);
+}
+init();
+</script>
+</body>
+</html>

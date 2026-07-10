@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🦕 Số Đếm Kỳ Diệu 0–10</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Baloo 2', cursive;
+    background: linear-gradient(180deg, #87CEEB 0%, #b8e8ff 45%, #d4f7a0 72%, #7ecb3f 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Clouds */
+  .cloud { position:fixed; background:white; border-radius:50px; opacity:.88; pointer-events:none; }
+  .cloud::before,.cloud::after { content:''; position:absolute; background:white; border-radius:50%; }
+  .cloud-1 { width:160px;height:52px;top:7%;left:-200px;animation:floatCloud 18s linear infinite; }
+  .cloud-1::before{width:80px;height:80px;top:-40px;left:20px;}
+  .cloud-1::after{width:55px;height:55px;top:-28px;left:75px;}
+  .cloud-2 { width:120px;height:38px;top:18%;left:-160px;animation:floatCloud 25s linear 7s infinite; }
+  .cloud-2::before{width:60px;height:60px;top:-30px;left:15px;}
+  .cloud-2::after{width:40px;height:40px;top:-20px;left:56px;}
+  .cloud-3 { width:140px;height:45px;top:4%;left:-180px;animation:floatCloud 21s linear 13s infinite; }
+  .cloud-3::before{width:70px;height:70px;top:-35px;left:18px;}
+  .cloud-3::after{width:48px;height:48px;top:-24px;left:67px;}
+  @keyframes floatCloud { from{left:-220px} to{left:110%} }
+
+  /* Ground */
+  .ground { position:fixed;bottom:0;left:0;right:0;height:68px;background:#5daf1e;border-radius:60% 60% 0 0/22px 22px 0 0;z-index:0; }
+  .ground::before{content:'';position:absolute;top:-20px;left:0;right:0;height:22px;background:#7ecb3f;border-radius:50%;}
+
+  /* Header */
+  .header { text-align:center;padding:20px 16px 6px;position:relative;z-index:10; }
+  .header h1 {
+    font-size: clamp(2rem, 7vw, 3.4rem);
+    font-weight:800;color:#fff;
+    text-shadow:0 4px 0 #d4600a,0 6px 16px rgba(0,0,0,.22);
+    letter-spacing:1px;
+  }
+  .header p { font-size:1.15rem;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.25);margin-top:4px;font-weight:600; }
+
+  /* Score bar */
+  .score-bar { text-align:center;position:relative;z-index:10;padding:4px 0 10px; }
+  .stars-row { font-size:1.5rem;letter-spacing:3px;display:block; }
+  .score-text { font-size:1rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.3); }
+
+  /* Grid */
+  .number-grid {
+    display:flex;flex-wrap:wrap;justify-content:center;
+    gap:18px;padding:10px 16px 130px;
+    max-width:780px;margin:0 auto;
+    position:relative;z-index:10;
+  }
+
+  /* Base button */
+  .num-btn {
+    width:130px;height:130px;
+    border:none;cursor:pointer;
+    font-family:'Baloo 2',cursive;
+    font-size:3.8rem;font-weight:800;
+    color:white;
+    text-shadow:0 3px 6px rgba(0,0,0,.3);
+    box-shadow:0 8px 0 rgba(0,0,0,.18),0 12px 28px rgba(0,0,0,.14);
+    transition:transform .13s,box-shadow .13s;
+    position:relative;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    line-height:1;
+    animation: floatBtn 3s ease-in-out infinite;
+  }
+  .num-btn:nth-child(even) { animation-delay: .5s; }
+  .num-btn:nth-child(3n)   { animation-delay: 1s; }
+  @keyframes floatBtn {
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-7px) rotate(1.5deg);}
+  }
+  .num-btn .toy-icon { font-size:2.6rem;line-height:1; }
+  .num-btn .btn-num  { font-size:2.6rem;font-weight:800;line-height:1; }
+
+  .num-btn::before {
+    content:'';position:absolute;top:8px;left:12px;right:12px;
+    height:14px;background:rgba(255,255,255,.32);border-radius:8px;
+  }
+  .num-btn:hover  { transform:translateY(-5px) scale(1.09) !important;box-shadow:0 14px 0 rgba(0,0,0,.14),0 20px 32px rgba(0,0,0,.18); }
+  .num-btn:active { transform:translateY(3px) scale(.97) !important;box-shadow:0 3px 0 rgba(0,0,0,.18); }
+
+  /* Shapes — border-radius only (no clip-path so content stays visible) */
+  .shape-circle   { border-radius: 50%; }
+  .shape-squircle { border-radius: 38% 62% 55% 45% / 45% 55% 45% 55%; }
+  .shape-blob     { border-radius: 62% 38% 46% 54% / 54% 46% 54% 46%; }
+  .shape-pebble   { border-radius: 30% 70% 60% 40% / 40% 50% 50% 60%; }
+  .shape-pill     { border-radius: 60px; }
+  .shape-rounded  { border-radius: 28px; }
+  .shape-egg      { border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+  .shape-cloud    { border-radius: 50px 50px 30px 30px; }
+  .shape-fat      { border-radius: 40px 20px 40px 20px / 20px 40px 20px 40px; }
+  .shape-gem      { border-radius: 24px 24px 48px 48px; }
+  .shape-jelly    { border-radius: 55% 45% 40% 60% / 45% 55% 45% 55%; }
+
+  /* Colors */
+  .num-btn:nth-child(1)  { background:linear-gradient(145deg,#ff6b9d,#e6004a); }
+  .num-btn:nth-child(2)  { background:linear-gradient(145deg,#ff9a3c,#e55a00); }
+  .num-btn:nth-child(3)  { background:linear-gradient(145deg,#ffe040,#ffab00);color:#6b3e00;text-shadow:none; }
+  .num-btn:nth-child(4)  { background:linear-gradient(145deg,#69f779,#00b020); }
+  .num-btn:nth-child(5)  { background:linear-gradient(145deg,#29d6f5,#0080b0); }
+  .num-btn:nth-child(6)  { background:linear-gradient(145deg,#7c83f7,#2a3ccc); }
+  .num-btn:nth-child(7)  { background:linear-gradient(145deg,#d26fff,#8b00cc); }
+  .num-btn:nth-child(8)  { background:linear-gradient(145deg,#ff5f7e,#c2003a); }
+  .num-btn:nth-child(9)  { background:linear-gradient(145deg,#ff8a50,#bf3400); }
+  .num-btn:nth-child(10) { background:linear-gradient(145deg,#26e8c8,#007a68); }
+  .num-btn:nth-child(11) { background:linear-gradient(145deg,#a0ff70,#2d9e00); }
+
+  /* Dino */
+  .dino-wrap { position:fixed;bottom:58px;left:-180px;z-index:20;pointer-events:none; }
+  .dino-wrap.walking { animation:dinoWalk 2.4s cubic-bezier(.4,0,.2,1) forwards; }
+  .dino-wrap.idle    { left:12px; }
+  @keyframes dinoWalk { 0%{left:-180px} 100%{left:12px} }
+  .dino {
+    font-size:6.5rem;line-height:1;display:inline-block;
+    animation:dinoBounce .45s ease-in-out infinite alternate;
+    filter:drop-shadow(0 5px 10px rgba(0,0,0,.2));
+  }
+  @keyframes dinoBounce {
+    from{transform:translateY(0) rotate(-2deg);}
+    to  {transform:translateY(-10px) rotate(2deg);}
+  }
+
+  /* Bubble */
+  .speech-bubble {
+    position:absolute;bottom:calc(100% + 12px);left:50%;
+    transform:translateX(-50%) scale(0);
+    background:white;border-radius:22px;padding:12px 22px;
+    font-size:1.2rem;font-weight:700;color:#333;
+    white-space:nowrap;
+    box-shadow:0 5px 20px rgba(0,0,0,.18);
+    transform-origin:bottom center;
+    transition:transform .32s cubic-bezier(.34,1.56,.64,1);
+    z-index:30;
+  }
+  .speech-bubble.show { transform:translateX(-50%) scale(1); }
+  .speech-bubble::after {
+    content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:10px solid transparent;border-top-color:white;
+  }
+
+  /* Overlay */
+  .overlay {
+    position:fixed;inset:0;background:rgba(0,0,0,.6);
+    z-index:100;display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+    backdrop-filter:blur(4px);
+  }
+  .overlay.show { opacity:1;pointer-events:all; }
+
+  .treasure-card {
+    background:linear-gradient(160deg,#fffde7,#fff3cd);
+    border-radius:32px;padding:28px 24px 24px;
+    max-width:380px;width:92%;
+    text-align:center;
+    box-shadow:0 24px 70px rgba(0,0,0,.32),inset 0 2px 0 rgba(255,255,255,.8);
+    border:4px solid #ffd54f;
+    transform:scale(.55) rotate(-5deg);
+    transition:transform .42s cubic-bezier(.34,1.56,.64,1);
+  }
+  .overlay.show .treasure-card { transform:scale(1) rotate(0deg); }
+
+  .chest-icon { font-size:3.5rem;display:inline-block;animation:chestPop .6s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes chestPop {
+    0%{transform:scale(1);}40%{transform:scale(1.5) rotate(12deg);}
+    70%{transform:scale(.88) rotate(-6deg);}100%{transform:scale(1);}
+  }
+
+  .card-number {
+    font-size:7rem;font-weight:800;line-height:1;
+    display:block;margin:4px 0 0;
+    text-shadow:0 4px 0 rgba(0,0,0,.12);
+  }
+  .card-emoji-big {
+    font-size:5rem;display:block;margin:8px 0 6px;
+    animation:popIn .5s cubic-bezier(.34,1.56,.64,1) .15s both;
+  }
+  @keyframes popIn {
+    from{transform:scale(0) rotate(-18deg);opacity:0;}
+    to  {transform:scale(1) rotate(0);opacity:1;}
+  }
+  .card-label { font-size:1.6rem;font-weight:800;color:#4a2800;margin-bottom:8px; }
+  .card-desc  { font-size:1.15rem;color:#7a4f00;font-weight:600;line-height:1.55;margin-bottom:4px; }
+
+  .btn-row { display:flex;gap:14px;justify-content:center;margin-top:20px;flex-wrap:wrap; }
+  .card-speak {
+    padding:15px 26px;
+    background:linear-gradient(145deg,#29b6f6,#0077c8);
+    color:white;border:none;border-radius:50px;
+    font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:700;
+    cursor:pointer;box-shadow:0 5px 0 #005a9e;
+    transition:transform .1s,box-shadow .1s;min-width:120px;
+  }
+  .card-speak:hover  { transform:translateY(-2px);box-shadow:0 7px 0 #005a9e; }
+  .card-speak:active { transform:translateY(3px);box-shadow:0 2px 0 #005a9e; }
+  .card-close {
+    padding:15px 26px;
+    background:linear-gradient(145deg,#ff7043,#e53935);
+    color:white;border:none;border-radius:50px;
+    font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:700;
+    cursor:pointer;box-shadow:0 5px 0 #b71c1c;
+    transition:transform .1s,box-shadow .1s;min-width:120px;
+  }
+  .card-close:hover  { transform:translateY(-2px);box-shadow:0 7px 0 #b71c1c; }
+  .card-close:active { transform:translateY(3px);box-shadow:0 2px 0 #b71c1c; }
+
+  /* Discovered state — float up and fade */
+  .num-btn.discovered {
+    animation: btnFlyAway 0.7s cubic-bezier(.4,0,.6,1) forwards !important;
+    pointer-events: none;
+    cursor: default;
+  }
+  @keyframes btnFlyAway {
+    0%   { transform: translateY(0) scale(1); opacity: 1; }
+    40%  { transform: translateY(-18px) scale(1.12); opacity: 1; }
+    100% { transform: translateY(-60px) scale(0.7); opacity: 0.18; }
+  }
+  .confetti-piece {
+    position:fixed;border-radius:2px;pointer-events:none;z-index:200;
+    animation:confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0%  {transform:translateY(-20px) rotate(0deg);opacity:1;}
+    100%{transform:translateY(100vh) rotate(720deg);opacity:0;}
+  }
+  .spark {
+    position:fixed;pointer-events:none;z-index:150;font-size:2rem;
+    animation:sparkBurst .9s ease-out forwards;
+  }
+  @keyframes sparkBurst {
+    0%  {transform:scale(0) translate(0,0);opacity:1;}
+    100%{transform:scale(1.6) translate(var(--tx),var(--ty));opacity:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cloud cloud-1"></div>
+<div class="cloud cloud-2"></div>
+<div class="cloud cloud-3"></div>
+<div class="ground"></div>
+
+<!-- Dino -->
+<div class="dino-wrap" id="dinoWrap">
+  <div class="speech-bubble" id="bubble">Chào bé! Bấm số nào nào! 🎁</div>
+  <div class="dino">🦕</div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <h1>🦕 Số Đếm Kỳ Diệu</h1>
+  <p>Bấm vào số để mở hộp đồ chơi bí ẩn!</p>
+</div>
+<div class="score-bar">
+  <span class="stars-row" id="starsRow">⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜</span>
+  <div class="score-text" id="scoreText">Khám phá: 0 / 11 số</div>
+</div>
+
+<!-- Buttons — shape classes assigned individually -->
+<div class="number-grid">
+  <button class="num-btn shape-circle"   id="btn-0"  onclick="openNumber(0)">
+    <span class="toy-icon">🚗</span><span class="btn-num">0</span>
+  </button>
+  <button class="num-btn shape-squircle" id="btn-1"  onclick="openNumber(1)">
+    <span class="toy-icon">🚜</span><span class="btn-num">1</span>
+  </button>
+  <button class="num-btn shape-blob"     id="btn-2"  onclick="openNumber(2)">
+    <span class="toy-icon">🚌</span><span class="btn-num">2</span>
+  </button>
+  <button class="num-btn shape-pebble"   id="btn-3"  onclick="openNumber(3)">
+    <span class="toy-icon">🐄</span><span class="btn-num">3</span>
+  </button>
+  <button class="num-btn shape-pill"     id="btn-4"  onclick="openNumber(4)">
+    <span class="toy-icon">🚒</span><span class="btn-num">4</span>
+  </button>
+  <button class="num-btn shape-egg"      id="btn-5"  onclick="openNumber(5)">
+    <span class="toy-icon">🐘</span><span class="btn-num">5</span>
+  </button>
+  <button class="num-btn shape-cloud"    id="btn-6"  onclick="openNumber(6)">
+    <span class="toy-icon">🚁</span><span class="btn-num">6</span>
+  </button>
+  <button class="num-btn shape-fat"      id="btn-7"  onclick="openNumber(7)">
+    <span class="toy-icon">🦁</span><span class="btn-num">7</span>
+  </button>
+  <button class="num-btn shape-gem"      id="btn-8"  onclick="openNumber(8)">
+    <span class="toy-icon">🚂</span><span class="btn-num">8</span>
+  </button>
+  <button class="num-btn shape-jelly"    id="btn-9"  onclick="openNumber(9)">
+    <span class="toy-icon">🐬</span><span class="btn-num">9</span>
+  </button>
+  <button class="num-btn shape-rounded"  id="btn-10" onclick="openNumber(10)">
+    <span class="toy-icon">🎡</span><span class="btn-num">10</span>
+  </button>
+</div>
+
+<!-- Card Overlay -->
+<div class="overlay" id="overlay" onclick="closeCard(event)">
+  <div class="treasure-card" id="card">
+    <div class="chest-icon" id="chestIcon">🎁</div>
+    <span class="card-number" id="cardNumber" style="color:#e67e00">0</span>
+    <span class="card-emoji-big" id="cardEmoji">🥚</span>
+    <div class="card-label" id="cardLabel">Quả trứng</div>
+    <div class="card-desc" id="cardDesc">Số 0 tròn như quả trứng!</div>
+    <div class="btn-row">
+      <button class="card-speak" onclick="speakIt()">🔊 Nghe lại</button>
+      <button class="card-close" onclick="closeOverlay()">Tiếp tục 🎈</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const data = {
+  0:  {
+    toy:'🚗', emoji:'🥚', label:'Quả trứng — Số không',
+    desc:'Số 0 tròn như quả trứng. Không có gì cả — nhưng bên trong chứa điều kỳ diệu!',
+    speak:'Số không! Tròn như quả trứng. Chưa có gì cả!',
+    chest:'🎪', color:'#e91e63'
+  },
+  1:  {
+    toy:'🚜', emoji:'🕯️', label:'Cây nến — Số một',
+    desc:'Số 1 thẳng đứng như cây nến lung linh. Một thôi — duy nhất và đặc biệt!',
+    speak:'Số một! Thẳng như cây nến đang cháy sáng!',
+    chest:'🗝️', color:'#ff5722'
+  },
+  2:  {
+    toy:'🚌', emoji:'🦆', label:'Con vịt — Số hai',
+    desc:'Số 2 cong cong như cổ con vịt đang bơi. Quạc quạc!',
+    speak:'Số hai! Cong như cổ con vịt bơi trên hồ. Quạc quạc!',
+    chest:'💎', color:'#ff9800'
+  },
+  3:  {
+    toy:'🐄', emoji:'🦋', label:'Con bướm — Số ba',
+    desc:'Số 3 có hai nét cong như đôi cánh bướm xinh đẹp bay lượn!',
+    speak:'Số ba! Hai nét cong như đôi cánh bướm xinh đẹp!',
+    chest:'🏺', color:'#4caf50'
+  },
+  4:  {
+    toy:'🚒', emoji:'🚩', label:'Lá cờ — Số bốn',
+    desc:'Số 4 có nét thẳng và nét ngang như lá cờ đang tung bay trong gió!',
+    speak:'Số bốn! Nét thẳng như lá cờ đang tung bay!',
+    chest:'🧿', color:'#2196f3'
+  },
+  5:  {
+    toy:'🐘', emoji:'🖐️', label:'Bàn tay — Số năm',
+    desc:'Số 5 là 5 ngón tay của một bàn tay. Xòe tay ra đếm cùng nhau nhé!',
+    speak:'Số năm! Năm ngón tay của một bàn tay. Xòe ra đếm nào!',
+    chest:'🌟', color:'#9c27b0'
+  },
+  6:  {
+    toy:'🚁', emoji:'🍐', label:'Quả lê — Số sáu',
+    desc:'Số 6 tròn ở dưới như quả lê mọng nước ngọt lịm!',
+    speak:'Số sáu! Tròn ở dưới như quả lê ngọt ngào!',
+    chest:'🎀', color:'#d81b60'
+  },
+  7:  {
+    toy:'🦁', emoji:'🪄', label:'Cây gậy phép — Số bảy',
+    desc:'Số 7 cong ở trên như cây gậy phép thuật của phù thủy!',
+    speak:'Số bảy! Cong như cây gậy phép thuật kỳ diệu!',
+    chest:'🔮', color:'#6a1b9a'
+  },
+  8:  {
+    toy:'🚂', emoji:'⛄', label:'Người tuyết — Số tám',
+    desc:'Số 8 có hai vòng tròn chồng lên nhau như người tuyết mũm mĩm dễ thương!',
+    speak:'Số tám! Hai vòng tròn như người tuyết mũm mĩm dễ thương!',
+    chest:'🎭', color:'#00838f'
+  },
+  9:  {
+    toy:'🐬', emoji:'🎈', label:'Bóng bay — Số chín',
+    desc:'Số 9 tròn ở trên có cái đuôi thõng xuống như quả bóng bay muốn lên trời!',
+    speak:'Số chín! Tròn ở trên như quả bóng bay bay lên cao!',
+    chest:'🪄', color:'#558b2f'
+  },
+  10: {
+    toy:'🎡', emoji:'🙌', label:'Mười ngón tay — Số mười',
+    desc:'Số 10! Hai bàn tay xòe ra — đếm hết tất cả 10 ngón tay rồi!',
+    speak:'Số mười! Hai bàn tay xòe ra là đủ mười ngón rồi! Giỏi lắm!',
+    chest:'🏆', color:'#e65100'
+  },
+};
+
+const discovered = new Set();
+let currentSpeak = '';
+let pendingDiscover = null;
+
+// TTS
+function speak(text) {
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'vi-VN';
+  u.rate = 0.88;
+  u.pitch = 1.15;
+  window.speechSynthesis.speak(u);
+}
+function speakIt() { speak(currentSpeak); }
+
+// Stars
+function makeStars() {
+  const cols=['#FFD700','#FF69B4','#00CED1','#7B68EE','#FF6347'];
+  for(let i=0;i<14;i++){
+    const s=document.createElement('div');
+    s.style.cssText=`position:fixed;border-radius:50%;pointer-events:none;
+      width:${5+Math.random()*7}px;height:${5+Math.random()*7}px;
+      background:${cols[i%cols.length]};top:${Math.random()*55}%;left:${Math.random()*100}%;
+      animation:twinkle ${2+Math.random()*3}s ease-in-out ${Math.random()*3}s infinite;`;
+    document.body.appendChild(s);
+  }
+}
+const twinkleCSS=document.createElement('style');
+twinkleCSS.textContent='@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.85;transform:scale(1.5)}}';
+document.head.appendChild(twinkleCSS);
+makeStars();
+
+// Dino intro
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    const w=document.getElementById('dinoWrap');
+    w.classList.add('walking');
+    w.addEventListener('animationend',()=>{
+      w.classList.remove('walking');
+      w.classList.add('idle');
+      showBubble('Chào bé! Bấm số nào nào! 🎁');
+      speak('Chào bé! Hãy bấm vào số để mở hộp đồ chơi bí ẩn nhé!');
+    },{once:true});
+  },500);
+});
+
+function showBubble(text){
+  const b=document.getElementById('bubble');
+  b.textContent=text;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+}
+function hideBubble(){ document.getElementById('bubble').classList.remove('show'); }
+
+function openNumber(n){
+  const d=data[n];
+  const phrases=[`Ồ! Số ${n}! Mở ra thôi! 🎉`,`Wow số ${n} nè! 🌟`,`Hộp số ${n} kìa bé ơi! 🎁`,`Tuyệt! Số ${n}! ✨`];
+  showBubble(phrases[Math.floor(Math.random()*phrases.length)]);
+  spawnSparks();
+
+  setTimeout(()=>{
+    const ci=document.getElementById('chestIcon');
+    ci.textContent=d.chest;
+    ci.className=''; void ci.offsetWidth; ci.className='chest-icon';
+
+    document.getElementById('cardNumber').textContent=n;
+    document.getElementById('cardNumber').style.color=d.color;
+    document.getElementById('cardEmoji').textContent=d.emoji;
+    document.getElementById('cardLabel').textContent=d.label;
+    document.getElementById('cardDesc').textContent=d.desc;
+
+    currentSpeak=d.speak;
+    document.getElementById('overlay').classList.add('show');
+
+    speak(d.speak);
+
+    if(!discovered.has(n)){ discovered.add(n); updateScore(); pendingDiscover = n; }
+    setTimeout(spawnConfetti,200);
+  },320);
+}
+
+function updateScore(){
+  const n=discovered.size, total=11;
+  document.getElementById('scoreText').textContent=`Khám phá: ${n} / ${total} số`;
+  document.getElementById('starsRow').textContent='⭐'.repeat(n)+'⬜'.repeat(Math.max(0,total-n));
+  if(n===total){
+    setTimeout(()=>{
+      showBubble('🏆 Bé giỏi quá! Khám phá hết rồi!');
+      speak('Bé giỏi quá! Đã khám phá hết mười một số rồi! Chúc mừng bé!');
+      for(let i=0;i<4;i++) setTimeout(spawnConfetti,i*350);
+    },600);
+  }
+}
+
+function closeOverlay(){
+  document.getElementById('overlay').classList.remove('show');
+  hideBubble();
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  // Mark button as discovered → fly away
+  if(pendingDiscover !== null) {
+    const btn = document.getElementById('btn-' + pendingDiscover);
+    if(btn) btn.classList.add('discovered');
+    pendingDiscover = null;
+  }
+}
+function closeCard(e){ if(e.target===document.getElementById('overlay')) closeOverlay(); }
+
+function spawnConfetti(){
+  const cols=['#ff6b9d','#ffd700','#00e5ff','#69ff47','#ff9a3c','#c86fff','#ff4444'];
+  for(let i=0;i<36;i++){
+    const c=document.createElement('div');
+    c.className='confetti-piece';
+    c.style.cssText=`left:${15+Math.random()*70}%;top:-10px;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      width:${7+Math.random()*9}px;height:${7+Math.random()*9}px;
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${1.4+Math.random()*1.6}s;
+      animation-delay:${Math.random()*.6}s;`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3200);
+  }
+}
+
+function spawnSparks(){
+  const ems=['✨','⭐','💫','🌟','🎊','🎉'];
+  for(let i=0;i<8;i++){
+    const s=document.createElement('div');
+    s.className='spark';
+    const angle=(i/8)*Math.PI*2, dist=70+Math.random()*100;
+    s.style.cssText=`left:${35+Math.random()*30}%;top:${25+Math.random()*30}%;
+      --tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;
+      animation-delay:${Math.random()*.25}s;`;
+    s.textContent=ems[Math.floor(Math.random()*ems.length)];
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1400);
+  }
+}
+</script>
+</body>
+</html>

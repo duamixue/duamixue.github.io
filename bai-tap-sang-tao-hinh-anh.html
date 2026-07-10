@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎨 Sáng Tạo & Hình Ảnh</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:  #FFF8EE;
+  --paper:  #FFF3E0;
+  --ink:    #2D1B00;
+  --red:    #E53935;
+  --blue:   #1565C0;
+  --green:  #2E7D32;
+  --orange: #E65100;
+  --purple: #6A1B9A;
+  --yellow: #F9A825;
+  --pink:   #C2185B;
+  --teal:   #00695C;
+  --correct:#2E7D32;
+  --wrong:  #C62828;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--cream);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,160,120,0.13) 27px, rgba(180,160,120,0.13) 28px),
+    repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(180,160,120,0.06) 27px, rgba(180,160,120,0.06) 28px);
+  min-height: 100vh;
+  padding: 24px 16px 40px;
+  color: var(--ink);
+}
+
+/* ── HEADER ── */
+.header {
+  text-align: center;
+  padding: 32px 16px 24px;
+  position: relative;
+}
+.header-tape {
+  display: inline-block;
+  background: rgba(249,168,37,0.55);
+  padding: 6px 32px;
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: #5D4037;
+  transform: rotate(-1deg);
+  margin-bottom: 16px;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.08);
+  letter-spacing: 1px;
+}
+.header h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 1.1;
+  color: var(--ink);
+  letter-spacing: 1px;
+}
+.header h1 span { color: var(--orange); }
+.header-sub {
+  font-family: 'Caveat', cursive;
+  font-size: 1.15rem;
+  color: #7B5E3A;
+  margin-top: 8px;
+}
+.crayon-line {
+  height: 6px;
+  background: repeating-linear-gradient(90deg,
+    var(--red) 0 40px, var(--yellow) 40px 80px,
+    var(--blue) 80px 120px, var(--green) 120px 160px,
+    var(--purple) 160px 200px, var(--orange) 200px 240px);
+  border-radius: 3px;
+  margin: 16px auto 0;
+  max-width: 320px;
+  opacity: 0.85;
+}
+
+/* ── HUD ── */
+.hud {
+  display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+  margin: 20px auto 28px; max-width: 480px;
+}
+.hud-chip {
+  background: white;
+  border: 2.5px solid var(--ink);
+  border-radius: 50px;
+  padding: 8px 18px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem;
+  display: flex; align-items: center; gap: 7px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.hud-chip .val { font-size: 1.2rem; }
+.hud-chip.score .val { color: var(--orange); }
+.hud-chip.good  .val { color: var(--green); }
+
+/* ── SECTION TITLE ── */
+.sec-wrap { max-width: 860px; margin: 0 auto 6px; }
+.sec-title {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.25rem;
+  padding: 8px 20px 8px 14px;
+  border-radius: 8px 8px 0 0;
+  color: white;
+  position: relative;
+  margin-bottom: 0;
+}
+.sec-title::after {
+  content: '';
+  position: absolute; bottom: -6px; left: 0; right: 0; height: 6px;
+  background: inherit;
+  border-radius: 0;
+}
+.st-red    { background: var(--red); }
+.st-blue   { background: var(--blue); }
+.st-green  { background: var(--green); }
+.st-purple { background: var(--purple); }
+.st-teal   { background: var(--teal); }
+
+/* ── SECTION BODY ── */
+.sec-body {
+  max-width: 860px; margin: 0 auto 32px;
+  background: white;
+  border: 2.5px solid var(--ink);
+  border-radius: 0 12px 12px 12px;
+  padding: 20px 20px 12px;
+  box-shadow: 5px 5px 0 rgba(45,27,0,0.12);
+}
+
+/* ── CARD GRID ── */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px,1fr)); gap: 16px; }
+
+/* ── CARD ── */
+.card {
+  border: 2px solid #D4B896;
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--paper);
+  position: relative;
+  transition: transform .18s, box-shadow .18s;
+}
+.card:hover { transform: translateY(-2px) rotate(0.3deg); box-shadow: 4px 5px 0 rgba(45,27,0,0.1); }
+.card.correct { border-color: var(--correct); background: #F1F8F1; }
+.card.wrong   { border-color: var(--wrong);   background: #FFF1F1; }
+
+.card-num {
+  font-family: 'Caveat', cursive;
+  font-size: 0.85rem; font-weight: 700;
+  color: #9E7B50; margin-bottom: 6px;
+}
+.card-emoji { font-size: 2.8rem; text-align: center; margin-bottom: 8px; line-height: 1; }
+.card-q {
+  font-size: 0.98rem; font-weight: 700;
+  color: var(--ink); line-height: 1.55;
+  margin-bottom: 12px; white-space: pre-line;
+}
+
+/* ── CHOICE OPTIONS ── */
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt {
+  padding: 7px 14px;
+  border: 2px solid #C8A882;
+  border-radius: 8px;
+  background: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem; font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  color: var(--ink);
+}
+.opt:hover:not(:disabled) { border-color: var(--orange); background: #FFF3E0; transform: scale(1.04); }
+.opt.ok  { background: var(--correct); border-color: var(--correct); color: white; }
+.opt.no  { background: var(--wrong);   border-color: var(--wrong);   color: white; }
+.opt:disabled { cursor: default; }
+
+/* ── DRAW QUESTION (observe & answer) ── */
+.draw-box {
+  background: white;
+  border: 2px dashed #C8A882;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: center;
+}
+.draw-item {
+  font-size: 2rem;
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  border: 1.5px solid #E0C8A0;
+  background: var(--cream);
+  transition: transform .15s;
+}
+.draw-item:hover { transform: scale(1.15); }
+.draw-item.odd-one { border-color: var(--red); background: #FFF0EE; }
+
+/* ── FILL INPUT ── */
+.fill-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.fill-in {
+  padding: 8px 14px; border-radius: 8px;
+  border: 2px solid #C8A882;
+  background: white;
+  font-family: 'Caveat', cursive; font-size: 1.1rem; font-weight: 700;
+  color: var(--ink); width: 160px; outline: none;
+  transition: border-color .2s;
+}
+.fill-in::placeholder { color: #BFA882; font-weight: 600; }
+.fill-in:focus { border-color: var(--orange); }
+.fill-in.ok  { border-color: var(--correct); background: #F1F8F1; }
+.fill-in.no  { border-color: var(--wrong);   background: #FFF1F1; }
+.check-btn {
+  padding: 8px 16px; border-radius: 8px; border: 2px solid var(--ink);
+  background: var(--yellow); color: var(--ink);
+  font-family: 'Fredoka One', cursive; font-size: 0.95rem;
+  cursor: pointer; box-shadow: 2px 2px 0 var(--ink);
+  transition: all .15s;
+}
+.check-btn:hover:not(:disabled) { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--ink); }
+.check-btn:disabled { opacity: .45; cursor: default; }
+
+/* ── REVEAL ── */
+.reveal-btn {
+  padding: 8px 16px; border-radius: 8px;
+  border: 2px dashed #C8A882; background: transparent;
+  font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 700;
+  color: #7B5E3A; cursor: pointer; transition: all .15s; margin-top: 4px;
+}
+.reveal-btn:hover { background: #FFF3E0; border-color: var(--orange); }
+.ans-reveal {
+  margin-top: 10px; padding: 10px 14px;
+  background: #FFFDE7; border: 2px solid var(--yellow); border-radius: 8px;
+  font-family: 'Caveat', cursive; font-size: 1.05rem; font-weight: 700;
+  color: #5D4037; display: none; animation: popIn .25s;
+}
+.ans-reveal.show { display: block; }
+
+/* ── FEEDBACK ── */
+.fb { margin-top: 9px; font-size: 0.88rem; font-weight: 700; display: none; animation: popIn .2s; }
+.fb.show { display: block; }
+.fb.ok { color: var(--correct); }
+.fb.no { color: var(--wrong); }
+
+@keyframes popIn { from{opacity:0;transform:scale(.9)} to{opacity:1;transform:scale(1)} }
+
+/* ── COLOUR SORT GAME ── */
+.color-sort {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; margin-bottom: 12px;
+}
+.color-chip {
+  padding: 8px 18px; border-radius: 50px;
+  font-family: 'Fredoka One', cursive; font-size: 0.95rem;
+  border: 2px solid var(--ink); cursor: pointer;
+  transition: transform .15s, opacity .15s;
+  user-select: none;
+}
+.color-chip.used { opacity: .35; cursor: default; transform: none !important; }
+.color-chip:not(.used):hover { transform: scale(1.07) rotate(-2deg); }
+.color-targets { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.color-target {
+  min-width: 90px; padding: 9px 14px; border-radius: 10px;
+  border: 2px dashed #C8A882; background: white;
+  text-align: center;
+  font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 700; color: #9E7B50;
+  transition: border-color .2s;
+}
+.color-target.filled { border-style: solid; }
+.color-target.target-ok  { border-color: var(--correct); }
+.color-target.target-no  { border-color: var(--wrong); }
+
+/* ── PATTERN MATCH ── */
+.pattern-row {
+  display: flex; gap: 8px; align-items: center;
+  flex-wrap: wrap; justify-content: center;
+  font-size: 2rem; margin-bottom: 12px;
+  background: white; border: 2px dashed #D4B896;
+  border-radius: 10px; padding: 12px;
+}
+.pattern-blank {
+  width: 44px; height: 44px; border-radius: 8px;
+  border: 2.5px dashed var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; background: #FFF8EE;
+  cursor: pointer; transition: background .15s;
+}
+.pattern-blank.filled { border-style: solid; border-color: var(--green); background: #F1F8F1; }
+
+/* ── SUBMIT ── */
+.submit-wrap { text-align: center; margin: 32px 0 10px; }
+.submit-btn {
+  padding: 15px 48px; border-radius: 12px;
+  border: 3px solid var(--ink);
+  background: var(--orange); color: white;
+  font-family: 'Fredoka One', cursive; font-size: 1.3rem;
+  cursor: pointer; box-shadow: 5px 5px 0 var(--ink);
+  transition: all .18s; letter-spacing: .5px;
+}
+.submit-btn:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); }
+
+/* ── RESULT ── */
+.result-box {
+  max-width: 520px; margin: 20px auto 0;
+  background: white; border: 3px solid var(--ink);
+  border-radius: 20px; padding: 36px 28px;
+  text-align: center; box-shadow: 7px 7px 0 var(--ink);
+  display: none;
+}
+.result-box.show { display: block; animation: popIn .4s; }
+.res-emoji { font-size: 4.5rem; margin-bottom: 10px; }
+.res-title { font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--orange); }
+.res-score { font-family: 'Fredoka One', cursive; font-size: 2.8rem; color: var(--ink); margin: 6px 0; }
+.res-sub   { font-family: 'Caveat', cursive; font-size: 1.1rem; color: #7B5E3A; }
+.crayon-line-sm {
+  height: 5px; max-width: 200px; margin: 14px auto;
+  background: repeating-linear-gradient(90deg,
+    var(--red) 0 30px,var(--yellow) 30px 60px,
+    var(--blue) 60px 90px,var(--green) 90px 120px,
+    var(--purple) 120px 150px,var(--orange) 150px 180px);
+  border-radius: 3px;
+}
+.restart-btn {
+  margin-top: 18px; padding: 12px 32px;
+  border-radius: 10px; border: 2.5px solid var(--ink);
+  background: var(--yellow); color: var(--ink);
+  font-family: 'Fredoka One', cursive; font-size: 1rem;
+  cursor: pointer; box-shadow: 3px 3px 0 var(--ink);
+  transition: all .18s;
+}
+.restart-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+
+.wrap { max-width: 900px; margin: 0 auto; }
+@media(max-width:500px){
+  .grid{grid-template-columns:1fr;}
+  .header h1{font-size:1.8rem;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tape">✏️ Bài tập hôm nay</div>
+  <h1>🎨 Sáng Tạo<br><span>&</span> Hình Ảnh</h1>
+  <div class="header-sub">Quan sát · Tưởng tượng · Sáng tạo · Vui vẻ!</div>
+  <div class="crayon-line"></div>
+</div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="hud-chip score">⭐ Điểm: <span class="val" id="hud-score">0</span></div>
+  <div class="hud-chip good">✅ Đúng: <span class="val" id="hud-ok">0</span></div>
+  <div class="hud-chip">📝 Tổng: <span class="val" id="hud-total">/ 0</span></div>
+</div>
+
+<!-- ════ SECTION 1 ════ -->
+<div class="sec-wrap">
+  <div class="sec-title st-red">🔴 Phần 1: Con gì? Cái gì?</div>
+</div>
+<div class="sec-body">
+  <div class="grid" id="g1"></div>
+</div>
+
+<!-- ════ SECTION 2 ════ -->
+<div class="sec-wrap">
+  <div class="sec-title st-blue">🔵 Phần 2: Tìm hình khác biệt</div>
+</div>
+<div class="sec-body">
+  <div class="grid" id="g2"></div>
+</div>
+
+<!-- ════ SECTION 3 ════ -->
+<div class="sec-wrap">
+  <div class="sec-title st-green">🟢 Phần 3: Quy luật hình ảnh</div>
+</div>
+<div class="sec-body">
+  <div class="grid" id="g3"></div>
+</div>
+
+<!-- ════ SECTION 4 ════ -->
+<div class="sec-wrap">
+  <div class="sec-title st-purple">🟣 Phần 4: Màu sắc & Ghép đôi</div>
+</div>
+<div class="sec-body">
+  <div class="grid" id="g4"></div>
+</div>
+
+<!-- ════ SECTION 5 ════ -->
+<div class="sec-wrap">
+  <div class="sec-title st-teal">🟤 Phần 5: Câu đố hình ảnh</div>
+</div>
+<div class="sec-body">
+  <div class="grid" id="g5"></div>
+</div>
+
+<div class="submit-wrap">
+  <button class="submit-btn" onclick="submitAll()">🎉 Xem kết quả!</button>
+</div>
+
+<div class="result-box" id="result">
+  <div class="res-emoji" id="res-emoji">🎨</div>
+  <div class="res-title" id="res-title">Tuyệt vời!</div>
+  <div class="res-score" id="res-score">0 điểm</div>
+  <div class="crayon-line-sm"></div>
+  <div class="res-sub" id="res-sub">Bé làm đúng 0 câu</div>
+  <button class="restart-btn" onclick="restartAll()">🔄 Chơi lại!</button>
+</div>
+
+</div><!-- .wrap -->
+
+<script>
+/* ── STATE ── */
+let answered = {}, correct = 0, total = 0;
+
+/* ── DATA ── */
+const sec1 = [
+  { id:'1-1', emoji:'🌺', type:'choice',
+    q:'Hoa này thường có mấy cánh?',
+    opts:['3 cánh','4 cánh','5 cánh','6 cánh'], ans:'5 cánh' },
+  { id:'1-2', emoji:'🦋', type:'choice',
+    q:'Con bướm bay bằng gì?',
+    opts:['Chân','Cánh','Đuôi','Vây'], ans:'Cánh' },
+  { id:'1-3', emoji:'🌈', type:'choice',
+    q:'Cầu vồng có bao nhiêu màu?',
+    opts:['5','6','7','8'], ans:'7' },
+  { id:'1-4', emoji:'🐠', type:'fill',
+    q:'Con cá này sống ở đâu?',
+    ans:'biển', hint:'(Biển / sông / hồ)' },
+  { id:'1-5', emoji:'🌙', type:'choice',
+    q:'Mặt Trăng thường có hình gì khi tròn nhất?',
+    opts:['Hình vuông','Hình tròn','Hình tam giác','Hình elip'], ans:'Hình tròn' },
+];
+
+const sec2 = [
+  { id:'2-1', type:'oddone',
+    q:'Con nào KHÁC với các con còn lại?',
+    items:['🐶','🐱','🐰','🦁','🐭'],
+    odd:'🦁', ans:'🦁 Sư tử (sống hoang dã)', hint:'Gợi ý: con nào không phải thú nuôi?' },
+  { id:'2-2', type:'oddone',
+    q:'Quả nào KHÁC với các quả còn lại?',
+    items:['🍎','🍊','🍋','🍇','🍕'],
+    odd:'🍕', ans:'🍕 Pizza (không phải quả)', hint:'Gợi ý: cái nào không phải trái cây?' },
+  { id:'2-3', type:'oddone',
+    q:'Hình nào KHÁC với các hình còn lại?',
+    items:['🔵','🔴','🟡','🟢','⭐'],
+    odd:'⭐', ans:'⭐ Ngôi sao (không phải hình tròn)', hint:'Gợi ý: hình dạng khác nhau thế nào?' },
+  { id:'2-4', type:'oddone',
+    q:'Đồ vật nào KHÁC với các đồ vật còn lại?',
+    items:['✏️','📏','📐','🖊️','🎸'],
+    odd:'🎸', ans:'🎸 Đàn guitar (không phải đồ dùng học tập)', hint:'Gợi ý: dùng ở đâu?' },
+];
+
+const sec3 = [
+  { id:'3-1', type:'pattern',
+    q:'Dãy hình sau theo quy luật gì? Điền vào ô trống:',
+    pattern:['🌑','🌒','🌓','🌔','?'],
+    opts:['🌕','🌙','⭐','🌞'], ans:'🌕',
+    hint:'Mặt Trăng đang... lớn dần!' },
+  { id:'3-2', type:'pattern',
+    q:'Tìm hình còn thiếu trong dãy:',
+    pattern:['🌱','🌿','🌳','?','🍂'],
+    opts:['🌻','🍁','🌲','🎋'], ans:'🍁',
+    hint:'Vòng đời của cây theo mùa...' },
+  { id:'3-3', type:'pattern',
+    q:'Điền vào ô trống:',
+    pattern:['🐣','🐥','🐔','?'],
+    opts:['🦅','🥚','🦜','🦆'], ans:'🥚',
+    hint:'Đây là vòng đời của... gà!' },
+  { id:'3-4', type:'choice',
+    q:'Nếu dãy là: 🔴🔵🔴🔵🔴...\nMàu tiếp theo là gì?',
+    opts:['🔴 Đỏ','🔵 Xanh dương','🟡 Vàng','🟢 Xanh lá'], ans:'🔵 Xanh dương',
+    hint:'Quy luật xen kẽ 2 màu' },
+];
+
+const sec4 = [
+  { id:'4-1', type:'choice',
+    q:'Trộn màu đỏ + màu vàng được màu gì?',
+    opts:['Màu tím','Màu cam','Màu xanh','Màu nâu'], ans:'Màu cam' },
+  { id:'4-2', type:'choice',
+    q:'Trộn màu xanh dương + màu vàng được màu gì?',
+    opts:['Màu tím','Màu cam','Màu xanh lá','Màu hồng'], ans:'Màu xanh lá' },
+  { id:'4-3', type:'choice',
+    q:'Con nào và cái cây nào đi đôi với nhau?\n🐛 Sâu bướm — tìm bạn của nó!',
+    opts:['🌵 Xương rồng','🍃 Lá cây','🌺 Hoa','🍄 Nấm'], ans:'🍃 Lá cây',
+    hint:'Sâu bướm ăn gì?' },
+  { id:'4-4', type:'fill',
+    q:'Bầu trời ban ngày có màu gì?\n(Ghi màu bằng tiếng Việt)',
+    ans:'xanh', hint:'(xanh / xanh da trời / xanh lam)' },
+];
+
+const sec5 = [
+  { id:'5-1', type:'riddle',
+    emoji:'❓',
+    q:'Tôi có 4 chân nhưng không đi được.\nTôi có mặt nhưng không nhìn được.\nTôi ở trong phòng ngủ. Tôi là gì?',
+    ans:'🪑 Cái ghế (hoặc cái bàn)!' },
+  { id:'5-2', type:'riddle',
+    emoji:'❓',
+    q:'Tôi rất nhỏ, tôi bay được,\nnhưng tôi không phải là chim.\nTôi hút mật hoa. Tôi là gì?',
+    ans:'🦋 Con bướm (hoặc con ong)!' },
+  { id:'5-3', type:'riddle',
+    emoji:'❓',
+    q:'Ban ngày tôi ngủ, ban đêm tôi thức.\nTôi bay trong bóng tối.\nTôi không phải chim. Tôi là gì?',
+    ans:'🦇 Con dơi!' },
+  { id:'5-4', type:'riddle',
+    emoji:'❓',
+    q:'Tôi có màu vàng, tôi tròn và sáng.\nBuổi sáng tôi mọc, buổi tối tôi lặn.\nTôi là gì?',
+    ans:'🌞 Mặt Trời!' },
+];
+
+/* ── RENDER HELPERS ── */
+function makeCard(id, innerHTML) {
+  const d = document.createElement('div');
+  d.className = 'card'; d.id = 'card-'+id;
+  d.innerHTML = innerHTML;
+  return d;
+}
+function fb(id){ return `<div class="fb" id="fb-${id}"></div>`; }
+
+/* ── CHOICE ── */
+function renderChoice(q, grid) {
+  total++;
+  const btns = q.opts.map(o =>
+    `<button class="opt" onclick="checkChoice('${q.id}','${esc(o)}','${esc(q.ans)}',this)">${o}</button>`
+  ).join('');
+  const html = `
+    <div class="card-num">${q.id}</div>
+    ${q.emoji ? `<div class="card-emoji">${q.emoji}</div>` : ''}
+    <div class="card-q">${q.q}</div>
+    ${q.hint ? `<div style="font-family:Caveat,cursive;font-size:.85rem;color:#9E7B50;margin-bottom:8px">💡 ${q.hint}</div>` : ''}
+    <div class="opts">${btns}</div>
+    ${fb(q.id)}`;
+  grid.appendChild(makeCard(q.id, html));
+}
+
+/* ── FILL ── */
+function renderFill(q, grid) {
+  total++;
+  const html = `
+    <div class="card-num">${q.id}</div>
+    ${q.emoji ? `<div class="card-emoji">${q.emoji}</div>` : ''}
+    <div class="card-q">${q.q}</div>
+    ${q.hint ? `<div style="font-family:Caveat,cursive;font-size:.85rem;color:#9E7B50;margin-bottom:8px">💡 ${q.hint}</div>` : ''}
+    <div class="fill-row">
+      <input class="fill-in" id="inp-${q.id}" placeholder="Ghi đáp án..." onkeydown="if(event.key==='Enter')checkFill('${q.id}','${esc(q.ans)}')"/>
+      <button class="check-btn" id="btn-${q.id}" onclick="checkFill('${q.id}','${esc(q.ans)}')">✓ OK</button>
+    </div>
+    ${fb(q.id)}`;
+  grid.appendChild(makeCard(q.id, html));
+}
+
+/* ── ODD ONE OUT ── */
+function renderOddOne(q, grid) {
+  total++;
+  const items = q.items.map((it, i) => {
+    const isOdd = it === q.odd;
+    return `<div class="draw-item${isOdd?' odd-one':''}" style="cursor:pointer" onclick="pickOdd('${q.id}','${it}','${esc(q.odd)}',this)">${it}</div>`;
+  }).join('');
+  const html = `
+    <div class="card-num">${q.id}</div>
+    <div class="card-q">${q.q}</div>
+    ${q.hint ? `<div style="font-family:Caveat,cursive;font-size:.85rem;color:#9E7B50;margin-bottom:8px">💡 ${q.hint}</div>` : ''}
+    <div class="draw-box">${items}</div>
+    ${fb(q.id)}`;
+  grid.appendChild(makeCard(q.id, html));
+}
+
+/* ── PATTERN ── */
+function renderPattern(q, grid) {
+  total++;
+  const pats = q.pattern.map(p =>
+    p === '?' ? `<div class="pattern-blank" id="blank-${q.id}">?</div>` : `<span>${p}</span>`
+  ).join('');
+  const btns = q.opts.map(o =>
+    `<button class="opt" onclick="checkPattern('${q.id}','${esc(o)}','${esc(q.ans)}',this)">${o}</button>`
+  ).join('');
+  const html = `
+    <div class="card-num">${q.id}</div>
+    <div class="card-q">${q.q}</div>
+    ${q.hint ? `<div style="font-family:Caveat,cursive;font-size:.85rem;color:#9E7B50;margin-bottom:8px">💡 ${q.hint}</div>` : ''}
+    <div class="pattern-row">${pats}</div>
+    <div class="opts">${btns}</div>
+    ${fb(q.id)}`;
+  grid.appendChild(makeCard(q.id, html));
+}
+
+/* ── RIDDLE ── */
+function renderRiddle(q, grid) {
+  const html = `
+    <div class="card-num">${q.id}</div>
+    <div class="card-emoji">${q.emoji}</div>
+    <div class="card-q">${q.q}</div>
+    <button class="reveal-btn" id="rev-${q.id}" onclick="revealRiddle('${q.id}','${esc(q.ans)}',this)">🔍 Xem đáp án</button>
+    <div class="ans-reveal" id="ans-${q.id}">💡 ${q.ans}</div>`;
+  grid.appendChild(makeCard(q.id, html));
+}
+
+/* ── CHECK LOGIC ── */
+function esc(s){ return s.replace(/'/g,"\\'"); }
+
+function checkChoice(id, chosen, ans, btn) {
+  if(answered[id]) return;
+  answered[id] = true;
+  const card = document.getElementById('card-'+id);
+  card.querySelectorAll('.opt').forEach(b => {
+    b.disabled = true;
+    if(b.textContent.trim() === ans) b.classList.add('ok');
+  });
+  const fbEl = document.getElementById('fb-'+id);
+  if(chosen === ans) {
+    btn.classList.add('ok'); card.classList.add('correct');
+    fbEl.textContent = '🎉 Đúng rồi! Giỏi quá!'; fbEl.className = 'fb show ok'; correct++;
+  } else {
+    btn.classList.add('no'); card.classList.add('wrong');
+    fbEl.textContent = '❌ Chưa đúng! Đáp án: '+ans; fbEl.className = 'fb show no';
+  }
+  updateHUD();
+}
+
+function checkFill(id, ans) {
+  if(answered[id]) return;
+  const inp = document.getElementById('inp-'+id);
+  const val = inp.value.trim().toLowerCase();
+  if(!val) return;
+  answered[id] = true;
+  inp.disabled = true;
+  document.getElementById('btn-'+id).disabled = true;
+  const card = document.getElementById('card-'+id);
+  const fbEl = document.getElementById('fb-'+id);
+  const ok = val === ans.toLowerCase() || val.includes(ans.toLowerCase()) || ans.toLowerCase().includes(val);
+  inp.classList.add(ok ? 'ok' : 'no'); card.classList.add(ok ? 'correct' : 'wrong');
+  if(ok) {
+    fbEl.textContent = '🎉 Đúng rồi! Giỏi quá!'; fbEl.className = 'fb show ok'; correct++;
+  } else {
+    fbEl.textContent = '❌ Chưa đúng! Đáp án: '+ans; fbEl.className = 'fb show no';
+  }
+  updateHUD();
+}
+
+function pickOdd(id, chosen, odd, el) {
+  if(answered[id]) return;
+  answered[id] = true;
+  const card = document.getElementById('card-'+id);
+  card.querySelectorAll('.draw-item').forEach(d => d.style.cursor = 'default');
+  const fbEl = document.getElementById('fb-'+id);
+  if(chosen === odd) {
+    el.style.outline = '3px solid var(--correct)';
+    card.classList.add('correct');
+    fbEl.textContent = '🎉 Đúng rồi! Tinh mắt quá!'; fbEl.className = 'fb show ok'; correct++;
+  } else {
+    el.style.outline = '3px solid var(--wrong)';
+    card.classList.add('wrong');
+    const oddEl = Array.from(card.querySelectorAll('.draw-item')).find(d=>d.textContent.trim()===odd);
+    if(oddEl) oddEl.style.outline = '3px solid var(--correct)';
+    fbEl.textContent = '❌ Chưa đúng!'; fbEl.className = 'fb show no';
+  }
+  updateHUD();
+}
+
+function checkPattern(id, chosen, ans, btn) {
+  if(answered[id]) return;
+  answered[id] = true;
+  const card = document.getElementById('card-'+id);
+  card.querySelectorAll('.opt').forEach(b => {
+    b.disabled = true;
+    if(b.textContent.trim() === ans) b.classList.add('ok');
+  });
+  const blank = document.getElementById('blank-'+id);
+  const fbEl  = document.getElementById('fb-'+id);
+  if(chosen === ans) {
+    btn.classList.add('ok'); card.classList.add('correct');
+    if(blank){ blank.textContent = ans; blank.classList.add('filled'); }
+    fbEl.textContent = '🎉 Đúng rồi! Bé thông minh!'; fbEl.className = 'fb show ok'; correct++;
+  } else {
+    btn.classList.add('no'); card.classList.add('wrong');
+    fbEl.textContent = '❌ Chưa đúng! Đáp án: '+ans; fbEl.className = 'fb show no';
+  }
+  updateHUD();
+}
+
+function revealRiddle(id, ans, btn) {
+  document.getElementById('ans-'+id).classList.add('show');
+  document.getElementById('card-'+id).classList.add('revealed');
+  btn.textContent = '✅ Đã biết!'; btn.disabled = true; btn.style.opacity = '.6';
+}
+
+/* ── HUD ── */
+function updateHUD() {
+  document.getElementById('hud-score').textContent = correct * 10;
+  document.getElementById('hud-ok').textContent = correct;
+}
+
+/* ── SUBMIT ── */
+function submitAll() {
+  const pct = total > 0 ? correct / total : 0;
+  let emoji, title;
+  if(pct >= .9){ emoji='🏆'; title='Thiên tài nghệ thuật!'; }
+  else if(pct >= .75){ emoji='🌟'; title='Siêu giỏi! Cố lên!'; }
+  else if(pct >= .55){ emoji='😊'; title='Khá lắm bé ơi!'; }
+  else { emoji='💪'; title='Luyện thêm nhé bé!'; }
+  document.getElementById('res-emoji').textContent = emoji;
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-score').textContent = (correct*10) + ' điểm';
+  document.getElementById('res-sub').textContent   = 'Bé làm đúng '+correct+'/'+total+' câu hỏi';
+  const box = document.getElementById('result');
+  box.classList.add('show');
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ── RESTART ── */
+function restartAll() {
+  answered = {}; correct = 0; total = 0;
+  updateHUD();
+  document.getElementById('result').classList.remove('show');
+  ['g1','g2','g3','g4','g5'].forEach(id => document.getElementById(id).innerHTML = '');
+  init();
+}
+
+/* ── INIT ── */
+function init() {
+  const g1 = document.getElementById('g1');
+  sec1.forEach(q => q.type === 'choice' ? renderChoice(q,g1) : renderFill(q,g1));
+
+  const g2 = document.getElementById('g2');
+  sec2.forEach(q => renderOddOne(q,g2));
+
+  const g3 = document.getElementById('g3');
+  sec3.forEach(q => q.type === 'pattern' ? renderPattern(q,g3) : renderChoice(q,g3));
+
+  const g4 = document.getElementById('g4');
+  sec4.forEach(q => q.type === 'choice' ? renderChoice(q,g4) : renderFill(q,g4));
+
+  const g5 = document.getElementById('g5');
+  sec5.forEach(q => renderRiddle(q,g5));
+
+  document.getElementById('hud-total').textContent = '/ '+(total*10);
+}
+init();
+</script>
+</body>
+</html>
