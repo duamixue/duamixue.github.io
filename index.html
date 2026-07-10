@@ -10,15 +10,15 @@
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Kho Báu Dừa & Mixue 💎"/>
 <meta property="og:description" content="Mỗi món quà là một điều kỳ diệu — cùng nhau chơi, cùng nhau học, cùng nhau lớn. ✨"/>
-<meta property="og:image" content="https://duamixue.github.io/og-khoban.png"/>
+<meta property="og:image" content="https://13hung-c4ch5.github.io/Ihtml/og-khoban.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
 <meta property="og:locale" content="vi_VN"/>
-<meta property="og:url" content="https://duamixue.github.io/"/>
+<meta property="og:url" content="https://13hung-c4ch5.github.io/Ihtml/"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Kho Báu Dừa &amp; Mixue 💎"/>
 <meta name="twitter:description" content="Mỗi món quà là một điều kỳ diệu — cùng nhau chơi, cùng nhau học, cùng nhau lớn. ✨"/>
-<meta name="twitter:image" content="https://duamixue.github.io/og-khoban.png"/>
+<meta name="twitter:image" content="https://13hung-c4ch5.github.io/Ihtml/og-khoban.png"/>
 
 <!-- Favicon -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>"/>
@@ -386,6 +386,7 @@ nav {
 .map-node[data-pos="left"]   .node-label { transform: translate(calc(-100% - var(--gap, 36px)), calc(-50% + var(--ldy, 0px))) rotate(var(--tilt, 0deg)); }
 .map-node[data-pos="bottom"] .node-label { transform: translate(calc(-50% + var(--ldx, 0px)), var(--gap, 36px)) rotate(var(--tilt, 0deg)); text-align: center; }
 .map-node[data-pos="top"]    .node-label { transform: translate(calc(-50% + var(--ldx, 0px)), calc(-100% - var(--gap, 36px))) rotate(var(--tilt, 0deg)); text-align: center; }
+.node-label.stacked { white-space: normal; max-width: 66px; line-height: 1.25; text-align: center; padding: 5px 7px; }
 .map-node.active .node-label { color: var(--gold-lt); background: rgba(138,108,62,.35); border-color: rgba(226,201,138,.4); }
 .map-node:hover .node-label { filter: brightness(1.2); }
 
@@ -1258,28 +1259,32 @@ function itemAges(item){
 }
 
 /* Thứ tự ưu tiên hiển thị các môn + emoji đại diện */
-const SUBJECT_ORDER = ["Toán","Tiếng Việt","Tiếng Anh","Khoa học","Tư duy","Nghệ thuật","Đạo đức","Tổng hợp","Giải trí"];
+const SUBJECT_ORDER = ["Toán","Tiếng Việt","Tiếng Anh","Khoa học","Tư duy","Nghệ thuật","Đạo đức","Âm nhạc","Tin học","Tổng hợp","Giải trí"];
 const SUBJECT_EMOJI = {
   "Toán":"🔢", "Tiếng Việt":"🔤", "Tiếng Anh":"🇬🇧", "Khoa học":"🔬",
-  "Tư duy":"🧩", "Nghệ thuật":"🎨", "Đạo đức":"💛", "Tổng hợp":"📖", "Giải trí":"🎮"
+  "Tư duy":"🧩", "Nghệ thuật":"🎨", "Đạo đức":"💛", "Tổng hợp":"📖", "Giải trí":"🎮",
+  "Âm nhạc":"🎵", "Tin học":"💻"
 };
 /* Tên "địa điểm phiêu lưu" hiển thị ra giao diện — dữ liệu (items.json) vẫn dùng tên gọn ở trên, không đổi */
 const SUBJECT_DISPLAY = {
   "Toán":"🌳 Khu Rừng Toán",
   "Tiếng Việt":"🏰 Lâu Đài Tiếng Việt",
   "Tiếng Anh":"🏝️ Đảo Tiếng Anh",
-  "Khoa học":"🔬 Phòng Thí Nghiệm Khoa Học",
+  "Khoa học":"🔬 Phòng Thí Nghiệm",
   "Tư duy":"🧩 Mê Cung Trí Tuệ",
   "Nghệ thuật":"🎨 Xưởng Nghệ Thuật",
   "Đạo đức":"🌻 Vườn Yêu Thương",
   "Giải trí":"🎡 Vương Quốc Vui Chơi",
-  "Tổng hợp":"🏕️ Trạm Nghỉ Chân"
+  "Tổng hợp":"🏕️ Trạm Nghỉ Chân",
+  "Âm nhạc":"🎵 Đồi Âm Nhạc",
+  "Tin học":"💻 Trạm Tin Học"
 };
 function subjectDisplay(s){ return SUBJECT_DISPLAY[s] || s; }
 /* Màu riêng cho từng "vùng đất" trên bản đồ — để các đảo trông sinh động, dễ phân biệt */
 const LAND_COLOR = {
   "Toán":"#4ade80", "Tiếng Việt":"#a78bfa", "Tiếng Anh":"#38bdf8", "Khoa học":"#2dd4bf",
-  "Tư duy":"#fb923c", "Nghệ thuật":"#f472b6", "Đạo đức":"#fbbf24", "Giải trí":"#fb7185", "Tổng hợp":"#d6a35c"
+  "Tư duy":"#fb923c", "Nghệ thuật":"#f472b6", "Đạo đức":"#fbbf24", "Giải trí":"#fb7185", "Tổng hợp":"#d6a35c",
+  "Âm nhạc":"#c084fc", "Tin học":"#60a5fa"
 };
 
 /* ══ STATE ══ */
@@ -1361,8 +1366,8 @@ function updateStats() {
    (KHÔNG phải xoắn ốc nhiều vòng). Số môn học thay đổi không làm biến dạng đường cong — chỉ thay đổi
    số trạm được "rải" dọc theo nó, nhờ getPointAtLength (lấy mẫu theo chiều dài cung thật của SVG path). */
 /* Đường xoáy ốc cuộn tròn + đuôi lượn sóng — phỏng theo đúng hình bé vẽ tay (1 vòng cuộn sạch, không rối) */
-const FIXED_MAP_PATH_D = "M267.1,30.0 C272.9,38.8 294.7,64.0 302.2,82.7 C309.8,101.2 313.1,122.5 312.4,141.5 C311.7,160.5 306.2,180.3 298.0,196.8 C289.9,213.3 277.2,228.7 263.6,240.2 C250.0,251.7 232.9,260.6 216.5,265.8 C200.1,270.9 181.6,272.7 165.3,271.3 C149.0,270.0 132.3,264.8 118.7,257.9 C105.1,251.0 92.7,240.5 83.7,229.8 C74.7,218.8 68.1,205.5 64.6,193.0 C61.0,180.5 60.7,166.6 62.5,154.7 C64.4,142.8 69.6,130.8 75.8,121.3 C82.1,111.9 91.2,103.5 100.2,97.7 C109.2,91.9 120.1,88.2 129.9,86.6 C139.7,84.9 150.3,85.7 159.1,87.8 C167.9,89.9 176.3,94.3 182.7,99.0 C189.1,103.9 194.3,110.5 197.5,116.8 C200.8,122.9 202.3,130.1 202.4,136.3 C202.6,142.3 200.8,148.6 198.5,153.3 C196.2,158.2 192.2,162.2 188.5,165.0 C184.8,167.8 180.1,169.3 176.2,169.9 C172.3,170.5 173.8,166.4 165.2,168.5 C156.7,170.6 138.4,168.5 125.0,182.4 C111.6,196.3 100.8,228.8 85.0,252.0 C69.2,275.2 35.0,297.5 30.0,321.6 C25.0,345.8 37.5,378.7 55.0,397.0 C72.5,415.4 108.3,428.0 135.0,431.8 C161.7,435.7 201.7,422.2 215.0,420.2";
-const MAP_VB_W = 342, MAP_VB_H = 466;
+const FIXED_MAP_PATH_D = "M285.1,30.0 C291.5,37.9 314.5,60.7 323.8,77.7 C333.1,94.6 338.8,113.8 340.7,131.8 C342.6,149.8 340.5,168.8 335.3,185.7 C330.1,202.5 320.8,219.2 309.7,233.0 C298.5,246.9 283.7,259.4 268.3,268.8 C252.8,278.3 234.7,285.5 217.1,289.7 C199.5,294.0 180.4,295.5 162.9,294.4 C145.4,293.4 127.6,289.4 112.2,283.7 C96.9,277.9 82.4,269.4 70.8,260.0 C59.2,250.6 49.4,238.9 42.6,227.2 C35.8,215.6 31.6,202.4 30.0,190.1 C28.4,177.8 29.7,164.9 32.9,153.5 C36.1,142.1 42.2,131.0 49.5,121.7 C56.7,112.5 66.4,104.3 76.3,98.1 C86.3,91.9 98.0,87.4 109.1,84.7 C120.2,82.0 132.3,81.2 143.1,81.9 C153.9,82.6 164.7,85.2 173.9,88.8 C183.1,92.4 191.5,97.8 198.1,103.4 C204.7,109.1 209.9,116.0 213.5,122.7 C217.0,129.4 218.8,136.9 219.2,143.6 C219.7,150.3 218.3,157.2 216.1,163.0 C213.9,168.8 210.0,174.2 205.9,178.4 C201.8,182.7 199.1,181.4 191.4,188.4 C183.7,195.4 172.5,204.3 159.8,220.4 C147.0,236.6 131.4,263.8 114.8,285.4 C98.1,307.1 64.8,328.8 59.8,350.4 C54.8,372.1 66.4,399.1 84.8,415.4 C103.1,431.8 141.4,444.6 169.8,448.4 C198.1,452.3 240.6,440.1 254.8,438.4";
+const MAP_VB_W = 371, MAP_VB_H = 478;
 
 let mapCoords = [];      // {key, x, y, len} theo thứ tự ['all', ...subjects]
 let mapTotalLen = 0;
@@ -1374,14 +1379,16 @@ let mapTotalLen = 0;
    curved: true — tên chữ uốn cong ôm quanh icon; curveSide: 'top'|'right'|'left'|'bottom' hướng uốn; radius: bán kính cong */
 const LABEL_LAYOUT = {
   "all":        { pos: 'top', gap: 46 },
-  "Giải trí":   { pos: 'bottom' },
-  "Tiếng Việt": { pos: 'bottom', gap: 46 },
-  "Toán":       { pos: 'top', gap: 40, nudge: { dx: -20, dy: 10 } },
-  "Tư duy":     { pos: 'top', nudge: { dx: -18, dy: -26 } },
-  "Tiếng Anh":  { pos: 'left', nudge: { dx: 34, dy: 14 } },
-  "Nghệ thuật": { curved: true, curveSide: 'right', radius: 48, nudge: { dx: 16, dy: 0 } },
-  "Đạo đức":    { dy: 10, nudge: { dx: -24, dy: -10 } },
-  "Khoa học":   { curved: true, curveSide: 'top', radius: 50, nudge: { dx: 10, dy: 6 } },
+  "Toán":       { pos: 'top', dx: 2, nudge: { dx: -14, dy: 0 } },
+  "Khoa học":   { pos: 'bottom', nudge: { dx: 15, dy: 0 } },
+  "Tư duy":     { pos: 'top' },
+  "Nghệ thuật": { curved: true, curveSide: 'top', radius: 44 },
+  "Đạo đức":    { pos: 'top', dx: -4 },
+  "Âm nhạc":    { pos: 'bottom', nudge: { dx: -34, dy: 14 } },
+  "Tiếng Việt": { curved: true, curveSide: 'bottom', radius: 44 },
+  "Tiếng Anh":  { pos: 'bottom' },
+  "Tổng hợp":   { pos: 'bottom' },
+  "Giải trí":   { nudge: { dx: -28, dy: 0 } },
 };
 
 /* Tạo HTML cho chữ uốn cong dạng vòng cung ôm quanh icon (giống chữ trên huy hiệu tròn).
@@ -1433,7 +1440,7 @@ function renderSubjectMap(){
   const N = items.length;
   // Khoảng cách giữa các trạm: vẫn "có gần có xa" cho sinh động, nhưng LUÔN có khoảng tối thiểu
   // đủ rộng để không đè chữ lên nhau (trước đây trạm đầu quá sát trạm 2 vì ease bunching).
-  const GAP_WEIGHTS = [1.3, 0.8, 1.2, 0.75, 1.35, 0.85, 1.15, 0.8, 1.25, 0.9, 1.1, 0.85];
+  const GAP_WEIGHTS = [1.0, 0.9, 1.0, 2.1, 1.4, 1.3, 1.3, 0.5, 1.1, 1.0, 1.0, 0.9];
   const weights = [];
   for(let i = 0; i < N - 1; i++) weights.push(GAP_WEIGHTS[i % GAP_WEIGHTS.length]);
   const wsum = weights.reduce((a,b) => a+b, 0) || 1;
@@ -1516,7 +1523,9 @@ function renderSubjectMap(){
       const curveBaseAngle = { top: 0, right: 90, bottom: 180, left: -90 }[layout.curveSide || 'top'];
       const labelHTML = layout.curved
         ? curvedLabelHTML(name, layout.radius || 38, 140, curveBaseAngle)
-        : `<span class="node-label">${name}</span>`;
+        : layout.stacked
+          ? `<span class="node-label stacked">${name.split(' ').join('<br>')}</span>`
+          : `<span class="node-label">${name}</span>`;
       html += `<div class="map-node" data-subject="${s}" data-pos="${pos}" style="${nodeStyle}" onclick="filterSubject('${s}')">
         <div class="node-dot" style="--land:${land}">${emoji}<span class="node-count">${count}</span></div>
         ${labelHTML}
