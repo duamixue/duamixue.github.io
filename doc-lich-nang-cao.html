@@ -25,14 +25,15 @@
   .star { position: absolute; background: white; border-radius: 50%; animation: tw 2.5s infinite alternate ease-in-out; }
   @keyframes tw { from{opacity:.15;transform:scale(1)} to{opacity:.95;transform:scale(1.4)} }
 
-  header { text-align: center; padding: 28px 20px 10px; }
-  .music-toggle {
-    margin-top: 12px; padding: 7px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,.15);
-    background: rgba(255,255,255,.06); color: var(--sub); font-size: 12px; font-weight: 700; cursor: pointer;
-    transition: all .2s;
+  header { text-align: center; padding: 20px 20px 8px; }
+  .music-fab {
+    position: fixed; top: 14px; right: 14px; z-index: 50;
+    width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(17,24,39,.85); backdrop-filter: blur(6px); color: var(--sub); font-size: 16px;
+    cursor: pointer; transition: all .2s; display:flex; align-items:center; justify-content:center;
   }
-  .music-toggle.on { background: rgba(52,211,153,.15); color: #34d399; border-color: rgba(52,211,153,.4); }
-  .music-toggle:hover { transform: scale(1.05); }
+  .music-fab.on { background: rgba(52,211,153,.18); color: #34d399; border-color: rgba(52,211,153,.4); }
+  .music-fab:hover { transform: scale(1.08); }
   .badge {
     display: inline-block; background: linear-gradient(120deg, #fbbf24, #ef4444);
     border-radius: 50px; padding: 5px 18px; font-size: 12px; font-weight: 800;
@@ -104,35 +105,35 @@
   .score-box .lbl { font-size: 12px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
   .vc { color: var(--correct); } .vw { color: var(--wrong); } .vq { color: var(--accent1); }
 
-  .dot-row { display: flex; flex-wrap: wrap; justify-content: center; align-items:center; gap: 4px; margin-bottom: 16px; padding: 0 20px; }
+  .dot-row { display: flex; flex-wrap: wrap; justify-content: center; align-items:center; gap: 4px; margin-bottom: 8px; padding: 0 20px; }
   .dot {
-    width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.1);
-    display:flex; align-items:center; justify-content:center; font-size:11px; transition: all .3s; flex-shrink:0;
+    width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center; font-size:10px; transition: all .3s; flex-shrink:0;
   }
   .dot.ok { background: rgba(16,185,129,.25); }
   .dot.no { background: rgba(239,68,68,.2); }
-  .dot.cur { background: rgba(251,191,36,.25); box-shadow: 0 0 8px var(--accent1); font-size:13px; }
-  .dot.castle { background: transparent; font-size:18px; width:auto; margin-left:2px; }
+  .dot.cur { background: rgba(251,191,36,.25); box-shadow: 0 0 8px var(--accent1); font-size:12px; }
+  .dot.castle { background: transparent; font-size:16px; width:auto; margin-left:2px; }
 
-  .card { max-width: 580px; margin: 0 auto; padding: 0 16px 48px; }
+  .card { max-width: 580px; margin: 0 auto; padding: 0 16px 32px; }
   .question-card {
     background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09);
-    border-radius: 28px; padding: 24px 24px 24px; text-align: center;
+    border-radius: 24px; padding: 16px 20px 18px; text-align: center;
     backdrop-filter: blur(12px); animation: slideIn .4s ease;
   }
   @keyframes slideIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
 
-  .badge-row-top { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom: 10px; }
+  .badge-row-top { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom: 6px; }
   .stage-badge {
-    display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:50px;
-    font-size:12px; font-weight:800; letter-spacing:1px;
+    display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:50px;
+    font-size:11px; font-weight:800; letter-spacing:.5px;
     background: rgba(167,139,250,.15); color:#a78bfa; border:1px solid rgba(167,139,250,.3);
   }
   .stage-badge.levelup { animation: stagePulse .6s ease 2; }
   @keyframes stagePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
   .golden-badge {
-    display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:50px;
-    font-size:12px; font-weight:800; letter-spacing:1px;
+    display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:50px;
+    font-size:11px; font-weight:800; letter-spacing:.5px;
     background: rgba(251,191,36,.2); color:#fbbf24; border:1px solid rgba(251,191,36,.5);
     animation: goldenGlow 1s infinite alternate;
   }
@@ -141,42 +142,42 @@
     border-color: rgba(251,191,36,.6); box-shadow: 0 0 0 2px rgba(251,191,36,.25), 0 0 30px rgba(251,191,36,.2);
   }
   .mascot-strip {
-    display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom: 12px;
-    font-size: 14px; font-weight:700; color: var(--text); background: rgba(255,255,255,.04);
-    border-radius: 14px; padding: 8px 14px;
+    display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom: 6px;
+    font-size: 13px; font-weight:700; color: var(--text); background: rgba(255,255,255,.04);
+    border-radius: 12px; padding: 5px 12px;
   }
-  .mascot-strip-emoji { font-size:20px; animation: mascotNod 2s infinite ease-in-out; }
+  .mascot-strip-emoji { font-size:17px; animation: mascotNod 2s infinite ease-in-out; }
   @keyframes mascotNod { 0%,100%{transform:rotate(0)} 50%{transform:rotate(-8deg)} }
 
-  .q-label { font-size: 13px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
-  .q-task-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .q-label { font-size: 11px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+  .q-task-row { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom: 2px; flex-wrap: wrap; }
   .q-task {
-    font-family: 'Baloo 2', cursive; font-size: 23px; font-weight: 800; color: var(--accent1);
-    letter-spacing: .2px; line-height: 1.45; min-height: 1.45em;
+    font-family: 'Baloo 2', cursive; font-size: 20px; font-weight: 800; color: var(--accent1);
+    letter-spacing: .2px; line-height: 1.3; min-height: 1.3em;
   }
   .type-cursor { display:inline-block; color: var(--accent2); font-weight:800; animation: blinkCursor .8s steps(1) infinite; }
   @keyframes blinkCursor { 50%{ opacity:0; } }
   .speak-btn {
-    flex-shrink:0; width: 38px; height: 38px; border-radius: 50%; border: 2px solid rgba(255,255,255,.15);
-    background: rgba(255,255,255,.07); font-size: 18px; cursor: pointer; display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.07); font-size: 15px; cursor: pointer; display:flex; align-items:center; justify-content:center;
     transition: all .2s;
   }
   .speak-btn:hover { background: rgba(251,191,36,.15); border-color: var(--accent1); transform: scale(1.08); }
   .speak-btn:active { transform: scale(.94); }
 
   /* ── Calendar ── */
-  .cal-wrap { margin: 16px 0 20px; }
-  .cal-title { font-family: 'Baloo 2', cursive; font-size: 19px; font-weight: 700; color: var(--accent3); margin-bottom: 12px; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-width: 460px; margin: 0 auto; }
-  .cal-head { font-size: 12px; font-weight: 800; color: var(--sub); padding: 6px 0; text-transform: uppercase; }
+  .cal-wrap { margin: 8px 0 8px; }
+  .cal-title { font-family: 'Baloo 2', cursive; font-size: 16px; font-weight: 700; color: var(--accent3); margin-bottom: 6px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 340px; margin: 0 auto; }
+  .cal-head { font-size: 11px; font-weight: 800; color: var(--sub); padding: 3px 0; text-transform: uppercase; }
   .cal-head.sun { color: #f87171; } .cal-head.sat { color: #fb923c; }
   .cal-day {
     aspect-ratio: 1; display: flex; flex-direction:column; align-items: center; justify-content: center;
-    border-radius: 10px; background: rgba(255,255,255,.05); border: 2px solid transparent; gap:1px;
+    border-radius: 8px; background: rgba(255,255,255,.05); border: 2px solid transparent; gap:0;
   }
   .cal-day.blank { background: transparent; }
-  .d-num { font-family: 'Baloo 2', cursive; font-size: 16px; font-weight: 700; color: var(--text); line-height:1; }
-  .d-icon { font-size: 10px; line-height:1; }
+  .d-num { font-family: 'Baloo 2', cursive; font-size: 14px; font-weight: 700; color: var(--text); line-height:1; }
+  .d-icon { font-size: 9px; line-height:1; }
   .cal-day.sun .d-num { color: #f87171; } .cal-day.sat .d-num { color: #fb923c; }
   .cal-day.today {
     background: rgba(251,191,36,.18); border-color: var(--accent1);
@@ -185,16 +186,16 @@
   .cal-day.today .d-num { color: var(--accent1); }
   @keyframes pulseDay { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
 
-  .hint-row { display: flex; justify-content: center; flex-wrap:wrap; gap: 14px; padding: 4px 20px 10px; font-size: 13px; font-weight: 600; color: var(--sub); }
-  .hint-item { display:flex; align-items:center; gap:5px; }
-  .hint-dot { width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--accent1); background: rgba(251,191,36,.15); }
+  .hint-row { display: flex; justify-content: center; flex-wrap:wrap; gap: 10px; padding: 2px 20px 4px; font-size: 11px; font-weight: 600; color: var(--sub); }
+  .hint-item { display:flex; align-items:center; gap:4px; }
+  .hint-dot { width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--accent1); background: rgba(251,191,36,.15); }
 
   /* ── Answers ── */
-  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .ans-btn {
     background: rgba(255,255,255,.07); border: 2px solid rgba(255,255,255,.13);
-    border-radius: 15px; padding: 15px 8px; font-family: 'Baloo 2', cursive; font-size: 18px;
-    font-weight: 700; color: var(--text); cursor: pointer; transition: all .2s ease; line-height: 1.3;
+    border-radius: 14px; padding: 12px 8px; font-family: 'Baloo 2', cursive; font-size: 17px;
+    font-weight: 700; color: var(--text); cursor: pointer; transition: all .2s ease; line-height: 1.25;
   }
   .ans-btn:hover:not(:disabled) { background: rgba(255,255,255,.12); border-color: var(--accent1); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(251,191,36,.2); }
   .ans-btn.correct { background: rgba(16,185,129,.2); border-color: var(--correct); color: var(--correct); animation: popG .4s ease; }
@@ -204,16 +205,16 @@
   @keyframes shk { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
   .feedback {
-    margin-top: 16px; min-height: 44px; display: flex; align-items: center; justify-content: center;
-    gap: 6px; font-size: 17px; font-weight: 700; border-radius: 13px; padding: 12px 14px; opacity: 0; transition: opacity .3s;
+    margin-top: 10px; min-height: 0; display: flex; align-items: center; justify-content: center;
+    gap: 6px; font-size: 15px; font-weight: 700; border-radius: 12px; padding: 8px 12px; opacity: 0; transition: opacity .3s;
   }
   .feedback.show { opacity: 1; }
   .feedback.ok { background: rgba(16,185,129,.14); color: var(--correct); }
   .feedback.no { background: rgba(239,68,68,.12); color: var(--wrong); }
 
   .explain-box {
-    margin-top: 10px; text-align:left; font-size: 14px; line-height:1.5; font-weight:600;
-    color: var(--sub); background: rgba(255,255,255,.03); border-radius: 12px; padding: 12px 14px;
+    margin-top: 8px; text-align:left; font-size: 13px; line-height:1.4; font-weight:600;
+    color: var(--sub); background: rgba(255,255,255,.03); border-radius: 10px; padding: 10px 12px;
     opacity:0; transition:opacity .3s;
   }
   .explain-box.show { opacity:1; }
@@ -287,13 +288,12 @@
 
 <div class="stars" id="stars"></div>
 
-<header>
-  <div class="badge">🎮 Trò chơi vui nhộn</div>
+<header id="app-header">
   <h1>🌈 Vương Quốc Lịch</h1>
   <p class="subtitle">Mèo Lịch cần bé giúp một việc quan trọng!</p>
-  <button class="music-toggle" id="music-toggle" onclick="toggleMusic()" title="Bật/tắt nhạc nền">🔈 Nhạc nền: Tắt</button>
 </header>
 
+<button class="music-fab" id="music-toggle" onclick="toggleMusic()" title="Bật/tắt nhạc nền">🔈</button>
 <audio id="bg-music" src="Peter-and-the-Wolf.mp3" loop preload="auto"></audio>
 
 <div class="mascot-box" id="mascot-box">
@@ -503,7 +503,7 @@ const COMBO_MSGS = {5:'🔥 Combo 5 câu liền!',10:'⚡ Combo 10, không thể
 const GOLDEN_MSGS = ['🌟 Câu Vàng chính xác! Thưởng lớn cho bé!','✨ Tuyệt vời, bé vừa ăn Câu Vàng!'];
 
 // ── Lời thoại Mèo Lịch xuyên suốt game ──
-const MASCOT_START = ['🐱 Mình bắt đầu tìm ngày nhé!','🐱 Cùng khám phá lịch nào!','🐱 Bé sẵn sàng chưa?'];
+const MASCOT_START = ['🐱 Mình bắt đầu tìm ngày nhé!','🐱 Bé sẵn sàng chưa?'];
 const MASCOT_GENERIC = ['🐱 Bé làm tốt lắm!','🐱 Xem kỹ lịch rồi chọn nhé!','🐱 Mèo tin bé làm được!','🐱 Cố lên, sắp giỏi hơn rồi!','🐱 Từng ngày một thôi nào!'];
 const MASCOT_FUNFACTS = ['🐱 Bạn biết không, một tuần có 7 ngày đó!','😹 Mèo ngủ tới 12-16 tiếng một ngày lận!','🐱 Một năm có 12 tháng, y như 12 con giáp!','😸 Chủ Nhật là ngày Mèo thích nhất, được nghỉ ngơi!','🐱 Thứ Hai là ngày đầu tuần làm việc đó bé!','😽 Mèo Lịch thích nhất là tháng có ngày lễ!'];
 const MASCOT_QUIET = ['🐾 ...','😽 (đang lặng lẽ cổ vũ bé)','🐱 (dán mắt vào lịch)','😺 (vẫy đuôi chờ đợi)'];
@@ -889,12 +889,12 @@ function toggleMusic(){
   musicEnabled=!musicEnabled;
   const btn=document.getElementById('music-toggle');
   if(musicEnabled){
-    btn.textContent='🔊 Nhạc nền: Bật'; btn.classList.add('on');
+    btn.textContent='🔊'; btn.classList.add('on');
     musicStarted=true;
     fadeMusic(BG_MUSIC_VOLUME, 600);
     bgMusic.play().catch(()=>{ musicStarted=false; fadeMusic(0,200); });
   } else {
-    btn.textContent='🔈 Nhạc nền: Tắt'; btn.classList.remove('on');
+    btn.textContent='🔈'; btn.classList.remove('on');
     fadeMusic(0, 400);
     setTimeout(()=>{ if(!musicEnabled) bgMusic.pause(); }, 450);
   }
@@ -996,6 +996,7 @@ function goToModeSelect(){
   document.getElementById('result-screen').classList.remove('show');
   document.getElementById('mode-screen').style.display='block';
   document.getElementById('mascot-box').style.display='block';
+  document.getElementById('app-header').style.display='block';
   evaluateBadges(0); saveProgress();
   renderStatsLine(); renderBadgeCollection(); buildModeGrid();
   hideMonthPanel();
@@ -1013,6 +1014,7 @@ function startQuiz(){
   scenarios.forEach(s=>{ if(s) stageTotal[s.stage]++; });
   document.getElementById('mode-screen').style.display='none';
   document.getElementById('mascot-box').style.display='none';
+  document.getElementById('app-header').style.display='none';
   document.getElementById('result-screen').classList.remove('show');
   document.getElementById('quiz-screen').style.display='block';
   buildDots();
