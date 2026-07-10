@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌟 Game4Dua English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Baloo 2',cursive;background:linear-gradient(180deg,#87CEEB 0%,#C5E8FF 55%,#A8D5A2 100%);min-height:100vh;overflow:hidden;user-select:none;}
+  .sun{position:fixed;top:16px;right:36px;width:70px;height:70px;background:#FFD700;border-radius:50%;box-shadow:0 0 26px #FFD700,0 0 52px #FFD70050;animation:sunPulse 3s ease-in-out infinite;z-index:0;}
+  .sun::before{content:'😊';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:32px;}
+  @keyframes sunPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+  .cloud{position:fixed;background:#fff;border-radius:50px;opacity:.9;z-index:0;}
+  .cloud::before,.cloud::after{content:'';position:absolute;background:#fff;border-radius:50%;}
+  .c1{width:120px;height:42px;top:34px;left:-130px;animation:cloudMove 20s linear infinite;}
+  .c1::before{width:56px;height:56px;top:-26px;left:18px}.c1::after{width:42px;height:42px;top:-18px;left:56px}
+  .c2{width:90px;height:34px;top:100px;left:-100px;animation:cloudMove 28s linear infinite 10s;}
+  .c2::before{width:44px;height:44px;top:-22px;left:14px}.c2::after{width:34px;height:34px;top:-16px;left:44px}
+  @keyframes cloudMove{from{left:-160px}to{left:110%}}
+  .grass-strip{position:fixed;bottom:0;left:0;right:0;height:72px;background:linear-gradient(180deg,#7BC67E,#5A9E5A);z-index:1;border-radius:50% 50% 0 0/16px 16px 0 0;}
+  #game{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;height:100vh;padding:8px 10px;gap:5px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:700px;padding:6px 16px;background:rgba(255,255,255,.92);border-radius:40px;box-shadow:0 4px 14px rgba(0,0,0,.1);flex-shrink:0;}
+  .score-box{display:flex;align-items:center;gap:5px;font-size:1rem;font-weight:800;color:#FF6B6B;}
+  .level-box{font-size:.9rem;font-weight:800;color:#9B59B6;background:#F3E5FF;padding:3px 12px;border-radius:16px;}
+  .lives{font-size:1.2rem;letter-spacing:2px;}
+  #music-btn{background:rgba(255,255,255,.85);border:2px solid #FFB3D4;border-radius:50%;width:36px;height:36px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;flex-shrink:0;}
+  #music-btn:active{transform:scale(.9);}
+  .theme-tabs{display:flex;gap:6px;width:100%;max-width:700px;flex-shrink:0;overflow-x:auto;padding-bottom:2px;}
+  .theme-tab{background:rgba(255,255,255,.75);border:2px solid rgba(255,255,255,.9);border-radius:20px;padding:4px 12px;font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:800;cursor:pointer;white-space:nowrap;color:#555;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+  .theme-tab.active{background:#FF6B9D;color:#fff;border-color:#FF6B9D;box-shadow:0 3px 8px rgba(255,107,157,.4);}
+  .progress-wrap{width:100%;max-width:700px;height:8px;background:rgba(255,255,255,.4);border-radius:8px;overflow:hidden;flex-shrink:0;}
+  .progress-bar{height:100%;background:linear-gradient(90deg,#FF6B9D,#FF8E53);border-radius:8px;transition:width .08s linear;}
+  #stage{position:relative;width:100%;max-width:700px;height:175px;background:rgba(255,255,255,.28);border-radius:26px;overflow:hidden;box-shadow:inset 0 2px 12px rgba(0,0,0,.06);border:3px dashed rgba(255,255,255,.65);flex-shrink:0;}
+  .flying-item{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;animation:flyAcross linear forwards;pointer-events:none;}
+  .flying-emoji{font-size:95px;line-height:1;filter:drop-shadow(2px 4px 8px rgba(0,0,0,.2));animation:eBounce .55s ease-in-out infinite alternate;}
+  .flying-shape{width:90px;height:90px;display:flex;align-items:center;justify-content:center;animation:eBounce .55s ease-in-out infinite alternate;}
+  .color-swatch{width:82px;height:82px;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,.22);animation:eBounce .55s ease-in-out infinite alternate;}
+  .flying-number{font-size:100px;font-weight:800;line-height:1;animation:eBounce .55s ease-in-out infinite alternate;text-shadow:3px 4px 0 rgba(0,0,0,.15);}
+  @keyframes eBounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+  @keyframes flyAcross{from{left:110%}to{left:-220px}}
+  #prompt-row{display:flex;align-items:center;gap:8px;width:100%;max-width:700px;flex-shrink:0;}
+  #prompt{background:rgba(255,255,255,.92);border-radius:14px;padding:6px 16px;font-size:.95rem;font-weight:700;color:#555;flex:1;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+  #prompt strong{color:#E84393;font-size:1.1rem;}
+  #repeat-btn{background:#fff;border:2px solid #FFB3D4;border-radius:50%;width:40px;height:40px;font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:transform .13s;-webkit-tap-highlight-color:transparent;}
+  #repeat-btn:active{transform:scale(.88);}
+  #combo-badge{display:none;align-self:center;font-size:1.05rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#FF6B9D,#FF8E53);border-radius:20px;padding:4px 16px;box-shadow:0 3px 10px rgba(255,107,157,.4);}
+  #combo-badge.show{display:block;animation:comboPop .4s ease;}
+  @keyframes comboPop{0%{transform:scale(.6)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+  #choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:700px;padding:0 2px;flex-shrink:0;}
+  .choice-btn{background:#fff;border:4px solid #ddd;border-radius:18px;padding:14px 10px;font-family:'Times New Roman',Times,serif;font-size:1.45rem;font-weight:700;letter-spacing:.5px;line-height:1.25;cursor:pointer;color:#222;transition:transform .13s,box-shadow .13s;box-shadow:0 5px 0 rgba(0,0,0,.1),0 3px 10px rgba(0,0,0,.07);display:flex;align-items:center;justify-content:center;text-align:center;min-height:72px;-webkit-tap-highlight-color:transparent;}
+  .choice-btn:nth-child(1){background:#FFF0F7;border-color:#FFB3D4;color:#B5004A;}
+  .choice-btn:nth-child(2){background:#EFF6FF;border-color:#93C5FD;color:#1040B0;}
+  .choice-btn:nth-child(3){background:#F0FFF4;border-color:#86EFAC;color:#0E6630;}
+  .choice-btn:nth-child(4){background:#FFFBEB;border-color:#FCD34D;color:#8B5A00;}
+  .choice-btn:active{transform:scale(.91) translateY(3px);}
+  .choice-btn:hover{transform:scale(1.04);box-shadow:0 7px 0 rgba(0,0,0,.12),0 5px 16px rgba(0,0,0,.1);}
+  .choice-btn.correct{animation:correctPop .5s ease;background:#DCFCE7!important;border-color:#22C55E!important;color:#0D5C2A!important;}
+  .choice-btn.wrong{animation:wrongShake .4s ease;background:#FEE2E2!important;border-color:#EF4444!important;}
+  @keyframes correctPop{0%{transform:scale(1)}40%{transform:scale(1.2)}70%{transform:scale(.95)}100%{transform:scale(1)}}
+  @keyframes wrongShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+  #feedback{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:5rem;z-index:100;pointer-events:none;opacity:0;transition:opacity .18s;}
+  #feedback.show{opacity:1;}
+  .fb-text{font-family:'Baloo 2',cursive;font-size:1.9rem;font-weight:800;color:#fff;text-shadow:2px 3px 0 rgba(0,0,0,.2);margin-top:8px;}
+  .conf{position:fixed;width:11px;height:11px;border-radius:3px;pointer-events:none;z-index:200;animation:confFall 1.2s ease-in forwards;}
+  @keyframes confFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+  #start-screen,#gameover-screen,#levelup-screen{position:fixed;inset:0;background:linear-gradient(135deg,#FFE8F5,#E8F0FF,#E8FFE8);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:14px;padding:24px;text-align:center;}
+  .screen-emoji{font-size:90px;animation:bigBounce 1s ease-in-out infinite alternate;}
+  @keyframes bigBounce{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-18px) rotate(5deg)}}
+  .screen-title{font-size:2.1rem;font-weight:800;color:#E84393;line-height:1.2;}
+  .screen-sub{font-size:.95rem;color:#666;max-width:320px;font-weight:600;line-height:1.6;}
+  .big-btn{background:linear-gradient(135deg,#FF6B9D,#FF8E53);color:#fff;border:none;border-radius:50px;padding:15px 48px;font-family:'Baloo 2',cursive;font-size:1.45rem;font-weight:800;cursor:pointer;box-shadow:0 6px 0 #C44B6A,0 8px 18px rgba(255,107,157,.36);transition:transform .13s;-webkit-tap-highlight-color:transparent;}
+  .big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #C44B6A;}
+</style>
+</head>
+<body>
+<div class="sun"></div>
+<div class="cloud c1"></div>
+<div class="cloud c2"></div>
+<div class="grass-strip"></div>
+
+<div id="start-screen">
+  <div class="screen-emoji">⭐</div>
+  <div class="screen-title">Game4Dua<br>🇬🇧 Learn English!</div>
+  <div class="screen-sub">Watch the picture fly —<br>pick the correct <b>English word</b>! 📖<br><br>Only <b>text</b> in answers — read carefully! 🔤</div>
+  <div class="screen-sub" id="start-best" style="display:none;color:#E84393;font-weight:800;"></div>
+  <button class="big-btn" onclick="startGame()">▶ Play!</button>
+</div>
+
+<div id="gameover-screen" style="display:none">
+  <div class="screen-emoji" id="go-emoji">🎉</div>
+  <div class="screen-title" id="go-title">Great job!</div>
+  <div class="screen-sub" id="go-sub">Score: 0</div>
+  <button class="big-btn" onclick="startGame()">🔄 Play Again!</button>
+</div>
+
+<div id="levelup-screen" style="display:none">
+  <div class="screen-emoji" id="lu-gift">🏅</div>
+  <div class="screen-title" id="lu-title">🎉 Level 2!</div>
+  <div class="screen-sub" id="lu-sub">Amazing progress!</div>
+</div>
+
+<div id="game" style="display:none">
+  <div class="topbar">
+    <div class="score-box">⭐ <span id="score">0</span></div>
+    <div class="level-box">Lvl <span id="lvl">1</span></div>
+    <div class="lives" id="lives">❤️❤️❤️</div>
+    <button id="music-btn" onclick="toggleMusic()">🎵</button>
+  </div>
+  <div class="theme-tabs" id="theme-tabs"></div>
+  <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+  <div id="stage"></div>
+  <div id="prompt-row">
+    <div id="prompt">What is this? 👀</div>
+    <button id="repeat-btn" onclick="repeatWord()">🔊</button>
+  </div>
+  <div id="combo-badge"></div>
+  <div id="choices"></div>
+</div>
+
+<div id="feedback">
+  <div id="fb-e">⭐</div>
+  <div class="fb-text" id="fb-t"></div>
+</div>
+
+<script>
+// ── THEMES ──────────────────────────────────────────────
+const THEMES = {
+  'Animals':{icon:'🐾',items:[
+    {e:'🐱',w:'Cat'},{e:'🐶',w:'Dog'},{e:'🐰',w:'Rabbit'},{e:'🐸',w:'Frog'},
+    {e:'🐘',w:'Elephant'},{e:'🦁',w:'Lion'},{e:'🐼',w:'Panda'},{e:'🦋',w:'Butterfly'},
+    {e:'🦆',w:'Duck'},{e:'🐟',w:'Fish'},{e:'🦜',w:'Parrot'},{e:'🐢',w:'Turtle'},
+    {e:'🐧',w:'Penguin'},{e:'🦊',w:'Fox'},{e:'🐮',w:'Cow'},{e:'🐷',w:'Pig'},
+    {e:'🐑',w:'Sheep'},{e:'🦒',w:'Giraffe'},{e:'🐬',w:'Dolphin'},{e:'🦈',w:'Shark'},
+    {e:'🐨',w:'Koala'},{e:'🦔',w:'Hedgehog'},{e:'🦄',w:'Unicorn'},{e:'🐉',w:'Dragon'},
+    {e:'🦅',w:'Eagle'},{e:'🐊',w:'Crocodile'},
+  ]},
+  'Fruits':{icon:'🍎',items:[
+    {e:'🍎',w:'Apple'},{e:'🍌',w:'Banana'},{e:'🍓',w:'Strawberry'},{e:'🍉',w:'Watermelon'},
+    {e:'🍇',w:'Grapes'},{e:'🍊',w:'Orange'},{e:'🍍',w:'Pineapple'},{e:'🥭',w:'Mango'},
+    {e:'🍑',w:'Peach'},{e:'🍒',w:'Cherry'},{e:'🥝',w:'Kiwi'},{e:'🍋',w:'Lemon'},
+    {e:'🍐',w:'Pear'},{e:'🥥',w:'Coconut'},{e:'🍈',w:'Melon'},{e:'🫐',w:'Blueberry'},{e:'🍅',w:'Tomato'},
+  ]},
+  'Nature':{icon:'🌈',items:[
+    {e:'☀️',w:'Sun'},{e:'🌙',w:'Moon'},{e:'⭐',w:'Star'},{e:'🌈',w:'Rainbow'},
+    {e:'🌸',w:'Blossom'},{e:'🌺',w:'Flower'},{e:'🌻',w:'Sunflower'},{e:'🌊',w:'Wave'},
+    {e:'🌴',w:'Palm tree'},{e:'⛄',w:'Snowman'},{e:'🌋',w:'Volcano'},{e:'🌿',w:'Leaf'},
+    {e:'🍄',w:'Mushroom'},{e:'⛅',w:'Cloud'},{e:'❄️',w:'Snowflake'},{e:'🌵',w:'Cactus'},{e:'🌏',w:'Earth'},
+  ]},
+  'Food':{icon:'🍕',items:[
+    {e:'🍕',w:'Pizza'},{e:'🍔',w:'Burger'},{e:'🍜',w:'Noodles'},{e:'🍣',w:'Sushi'},
+    {e:'🍦',w:'Ice cream'},{e:'🎂',w:'Cake'},{e:'🍪',w:'Cookie'},{e:'🥐',w:'Croissant'},
+    {e:'🥚',w:'Egg'},{e:'🧀',w:'Cheese'},{e:'🥕',w:'Carrot'},{e:'🌽',w:'Corn'},
+    {e:'🍞',w:'Bread'},{e:'🧁',w:'Cupcake'},{e:'🍩',w:'Donut'},{e:'🍫',w:'Chocolate'},
+    {e:'🥛',w:'Milk'},{e:'🍵',w:'Tea'},{e:'🧃',w:'Juice'},
+  ]},
+  'Transport':{icon:'🚗',items:[
+    {e:'🚗',w:'Car'},{e:'🚌',w:'Bus'},{e:'🚂',w:'Train'},{e:'✈️',w:'Airplane'},
+    {e:'🚀',w:'Rocket'},{e:'🚢',w:'Ship'},{e:'🚁',w:'Helicopter'},{e:'🚲',w:'Bike'},
+    {e:'🛵',w:'Scooter'},{e:'🚒',w:'Fire truck'},{e:'🚑',w:'Ambulance'},{e:'⛵',w:'Sailboat'},
+    {e:'🚜',w:'Tractor'},{e:'🛸',w:'UFO'},{e:'🛶',w:'Boat'},
+  ]},
+  'Colors':{icon:'🎨',type:'color',items:[
+    {color:'#E53935',w:'Red'},{color:'#FB8C00',w:'Orange'},{color:'#FDD835',w:'Yellow'},
+    {color:'#43A047',w:'Green'},{color:'#1E88E5',w:'Blue'},{color:'#8E24AA',w:'Purple'},
+    {color:'#F06292',w:'Pink'},{color:'#6D4C41',w:'Brown'},{color:'#00ACC1',w:'Cyan'},
+    {color:'#212121',w:'Black'},{color:'#FFFFFF',w:'White',border:true},{color:'#9E9E9E',w:'Gray'},
+  ]},
+  'Numbers':{icon:'🔢',type:'number',items:[
+    {num:'1',numColor:'#E53935',w:'One'},{num:'2',numColor:'#FB8C00',w:'Two'},
+    {num:'3',numColor:'#FDD835',w:'Three'},{num:'4',numColor:'#43A047',w:'Four'},
+    {num:'5',numColor:'#1E88E5',w:'Five'},{num:'6',numColor:'#8E24AA',w:'Six'},
+    {num:'7',numColor:'#F06292',w:'Seven'},{num:'8',numColor:'#F4511E',w:'Eight'},
+    {num:'9',numColor:'#00ACC1',w:'Nine'},{num:'10',numColor:'#7B1FA2',w:'Ten'},
+    {num:'11',numColor:'#E53935',w:'Eleven'},{num:'12',numColor:'#FB8C00',w:'Twelve'},
+  ]},
+  'Shapes':{icon:'🔷',type:'shape',items:[
+    {shape:'circle',  w:'Circle',    svg:'<circle cx="45" cy="45" r="40" fill="#FF6B9D"/>'},
+    {shape:'square',  w:'Square',    svg:'<rect x="5" y="5" width="80" height="80" rx="6" fill="#60A5FA"/>'},
+    {shape:'triangle',w:'Triangle',  svg:'<polygon points="45,5 85,85 5,85" fill="#4ADE80"/>'},
+    {shape:'star',    w:'Star',      svg:'<polygon points="45,5 55,35 85,35 62,55 70,85 45,65 20,85 28,55 5,35 35,35" fill="#FFD700"/>'},
+    {shape:'heart',   w:'Heart',     svg:'<path d="M45 75 C45 75 10 52 10 30 C10 18 20 10 30 10 C37 10 43 15 45 20 C47 15 53 10 60 10 C70 10 80 18 80 30 C80 52 45 75 45 75Z" fill="#EF4444"/>'},
+    {shape:'diamond', w:'Diamond',   svg:'<polygon points="45,5 85,45 45,85 5,45" fill="#A855F7"/>'},
+    {shape:'oval',    w:'Oval',      svg:'<ellipse cx="45" cy="45" rx="40" ry="25" fill="#FB8C00"/>'},
+    {shape:'rect',    w:'Rectangle', svg:'<rect x="5" y="22" width="80" height="46" rx="7" fill="#00ACC1"/>'},
+  ]},
+  'Body':{icon:'👁️',items:[
+    {e:'👁️',w:'Eye'},{e:'👂',w:'Ear'},{e:'👃',w:'Nose'},{e:'👄',w:'Mouth'},
+    {e:'🦷',w:'Tooth'},{e:'✋',w:'Hand'},{e:'🦶',w:'Foot'},{e:'💪',w:'Arm'},
+    {e:'🦵',w:'Leg'},{e:'🧠',w:'Brain'},{e:'🦴',w:'Bone'},{e:'💇',w:'Hair'},
+  ]},
+  'Home':{icon:'🏠',items:[
+    {e:'🛏️',w:'Bed'},{e:'🪑',w:'Chair'},{e:'🚪',w:'Door'},{e:'🪟',w:'Window'},
+    {e:'💡',w:'Lamp'},{e:'📺',w:'TV'},{e:'🛁',w:'Bathtub'},{e:'🚿',w:'Shower'},
+    {e:'🍳',w:'Pan'},{e:'🧹',w:'Broom'},{e:'🛋️',w:'Sofa'},{e:'📚',w:'Books'},
+    {e:'🎒',w:'Backpack'},{e:'🖊️',w:'Pen'},{e:'✏️',w:'Pencil'},{e:'📱',w:'Phone'},
+    {e:'⌚',w:'Watch'},{e:'🧸',w:'Teddy bear'},
+  ]},
+  'Weather':{icon:'⛅',items:[
+    {e:'☀️',w:'Sunny'},{e:'🌧️',w:'Rainy'},{e:'❄️',w:'Snowy'},{e:'⛈️',w:'Stormy'},
+    {e:'🌬️',w:'Windy'},{e:'🌫️',w:'Foggy'},{e:'🌈',w:'Rainbow'},{e:'⚡',w:'Lightning'},
+    {e:'🌡️',w:'Hot'},{e:'🧊',w:'Cold'},{e:'🌤️',w:'Cloudy'},
+  ]},
+  'Actions':{icon:'🏃',items:[
+    {e:'🏃',w:'Run'},{e:'🚶',w:'Walk'},{e:'🤸',w:'Jump'},{e:'🏊',w:'Swim'},
+    {e:'🚴',w:'Ride'},{e:'✍️',w:'Write'},{e:'📖',w:'Read'},{e:'🎨',w:'Draw'},
+    {e:'🍳',w:'Cook'},{e:'😴',w:'Sleep'},{e:'😂',w:'Laugh'},{e:'😢',w:'Cry'},
+    {e:'🎵',w:'Sing'},{e:'💃',w:'Dance'},{e:'🏋️',w:'Lift'},
+  ]},
+};
+
+// Combined "Mixed" theme — samples across every topic. This is the default
+// mode so first-time players get variety before picking a single theme.
+THEMES.Mixed = {
+  icon: '🎲',
+  type: 'mixed',
+  items: Object.keys(THEMES).flatMap(name => {
+    const th = THEMES[name];
+    return th.items.map(it => ({ ...it, _type: th.type || 'emoji' }));
+  }),
+};
+
+// ── AUDIO ENGINE ─────────────────────────────────────────
+let audioCtx = null;
+let musicOn = true;
+let musicInterval = null;
+let melodyIdx = 0;
+const MELODY = [523,587,659,698,784,698,659,587,523,494,523,587,659,784,880,784];
+
+// Must call this inside a user-gesture handler (click/tap)
+function unlockAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  // play a silent buffer to fully unlock on iOS
+  const buf = audioCtx.createBuffer(1, 1, 22050);
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+  src.connect(audioCtx.destination);
+  src.start(0);
+}
+
+function playTone(freq, dur, type='sine', vol=0.28, delay=0) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = audioCtx.currentTime + delay;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+  } catch(e) {}
+}
+
+function playCorrect() {
+  [523, 659, 784, 1047].forEach((f, i) => playTone(f, .18, 'triangle', .32, i * .1));
+}
+function playWrong() {
+  playTone(200, .3, 'sawtooth', .28);
+  playTone(150, .25, 'sawtooth', .22, .15);
+}
+function playMusicNote() {
+  if (!musicOn || !audioCtx) return;
+  playTone(MELODY[melodyIdx % MELODY.length], .2, 'triangle', .1);
+  playTone(MELODY[melodyIdx % MELODY.length] / 4, .4, 'sine', .05);
+  melodyIdx++;
+}
+function startMusic() {
+  if (musicInterval) clearInterval(musicInterval);
+  melodyIdx = 0;
+  musicInterval = setInterval(playMusicNote, 390);
+}
+function stopMusic() {
+  clearInterval(musicInterval);
+  musicInterval = null;
+}
+function toggleMusic() {
+  musicOn = !musicOn;
+  document.getElementById('music-btn').textContent = musicOn ? '🎵' : '🔇';
+  if (musicOn) startMusic(); else stopMusic();
+}
+
+// ── TTS ──────────────────────────────────────────────────
+let voicesLoaded = false;
+let enVoice = null;
+
+function loadVoices() {
+  const voices = speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    // prefer en-US, fallback to any en
+    enVoice = voices.find(v => v.lang === 'en-US') ||
+              voices.find(v => v.lang.startsWith('en')) ||
+              null;
+    voicesLoaded = true;
+  }
+}
+
+if (window.speechSynthesis) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.82;
+  u.pitch = 1.15;
+  u.volume = 1.0;
+  if (!voicesLoaded) loadVoices();
+  if (enVoice) u.voice = enVoice;
+  speechSynthesis.speak(u);
+}
+
+// ── STATE ─────────────────────────────────────────────────
+let score=0, lives=3, level=1, cur=null;
+let flyTimer=null, progTimer=null;
+let active=false, answering=false, flyMs=4500;
+let recent=[], curTheme='Mixed';
+let streak=0, bestStreak=0, correctCount=0;
+
+// ── PERSISTENCE ───────────────────────────────────────────
+// Remembers the last-chosen theme, high score, and best streak on THIS
+// browser/device. If storage is unavailable (e.g. private browsing), the
+// game still works — it just won't remember anything between visits.
+const SAVE_KEY = 'game4dua_en_progress_v1';
+let progress = { theme: 'Mixed', highScore: 0, bestStreakEver: 0 };
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) progress = { ...progress, ...JSON.parse(raw) };
+  } catch (e) { /* no storage available — play without saving */ }
+}
+function saveProgress(patch) {
+  progress = { ...progress, ...patch };
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(progress)); } catch (e) {}
+}
+loadProgress();
+curTheme = (progress.theme && THEMES[progress.theme]) ? progress.theme : 'Mixed';
+if (progress.highScore > 0) {
+  const bestEl = document.getElementById('start-best');
+  bestEl.textContent = `🏆 Best score: ${progress.highScore}`;
+  bestEl.style.display = 'block';
+}
+
+// ── TABS ──────────────────────────────────────────────────
+function buildTabs() {
+  const el = document.getElementById('theme-tabs');
+  el.innerHTML = '';
+  const order = ['Mixed', ...Object.keys(THEMES).filter(n => n !== 'Mixed')];
+  order.forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'theme-tab' + (name === curTheme ? ' active' : '');
+    btn.textContent = THEMES[name].icon + ' ' + name;
+    btn.onclick = () => {
+      curTheme = name; recent = []; buildTabs();
+      saveProgress({ theme: name });
+      if (active) { clearTimers(); nextRound(); }
+    };
+    el.appendChild(btn);
+  });
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function renderFlying(item, th) {
+  const type = th.type === 'mixed' ? item._type : th.type;
+  if (type === 'color') return `<div class="color-swatch" style="background:${item.color};${item.border?'border:3px solid #bbb;':''}"></div>`;
+  if (type === 'number') return `<div class="flying-number" style="color:${item.numColor}">${item.num}</div>`;
+  if (type === 'shape') return `<div class="flying-shape"><svg viewBox="0 0 90 90" width="90" height="90">${item.svg}</svg></div>`;
+  return `<div class="flying-emoji">${item.e}</div>`;
+}
+
+// ── PICK ─────────────────────────────────────────────────
+function pickItem() {
+  // Bias word difficulty (by length) toward the current level: easier words at
+  // low levels, longer/less common words at higher levels.
+  const all = THEMES[curTheme].items;
+  const sorted = [...all].sort((a, b) => a.w.length - b.w.length);
+  const n = sorted.length;
+  const windowSize = Math.max(4, Math.ceil(n * 0.6));
+  const maxStart = Math.max(0, n - windowSize);
+  const levelFrac = Math.min(1, (level - 1) / 6);
+  const start = Math.round(maxStart * levelFrac);
+  const window = sorted.slice(start, start + windowSize);
+
+  let pool = window.filter(i => !recent.slice(-4).includes(i));
+  if (pool.length === 0) pool = sorted.filter(i => !recent.slice(-4).includes(i));
+  if (pool.length === 0) pool = sorted;
+
+  const item = pool[Math.floor(Math.random() * pool.length)];
+  recent.push(item);
+  return item;
+}
+function pickChoices(correct) {
+  const pool = THEMES[curTheme].items.filter(i => i.w !== correct.w);
+  return [correct, ...pool.sort(() => Math.random() - .5).slice(0, 3)].sort(() => Math.random() - .5);
+}
+
+// ── UI ────────────────────────────────────────────────────
+function updateUI() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('lvl').textContent = level;
+  let h = ''; for (let i = 0; i < 3; i++) h += i < lives ? '❤️' : '🖤';
+  document.getElementById('lives').textContent = h;
+}
+
+// ── GAME FLOW ─────────────────────────────────────────────
+function startGame() {
+  // 1. Unlock AudioContext & TTS inside this user-gesture click
+  unlockAudio();
+  // warm up TTS — speak empty string just to activate engine
+  if (window.speechSynthesis) {
+    const warm = new SpeechSynthesisUtterance(' ');
+    warm.volume = 0;
+    speechSynthesis.speak(warm);
+  }
+
+  score=0; lives=3; level=1; recent=[]; flyMs=4500;
+  streak=0; bestStreak=0; correctCount=0;
+  active=true; answering=false; musicOn=true;
+
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('gameover-screen').style.display = 'none';
+  document.getElementById('game').style.display = 'flex';
+  document.getElementById('music-btn').textContent = '🎵';
+
+  buildTabs();
+  updateUI();
+  startMusic();
+  nextRound();
+}
+
+function nextRound() {
+  if (!active) return;
+  clearTimers(); answering = false;
+  document.getElementById('combo-badge').classList.remove('show');
+  cur = pickItem();
+  const th = THEMES[curTheme];
+  const choices = pickChoices(cur);
+
+  // Stage
+  const stage = document.getElementById('stage');
+  stage.innerHTML = '';
+  const el = document.createElement('div');
+  el.className = 'flying-item';
+  el.innerHTML = renderFlying(cur, th);
+  el.style.animationDuration = flyMs + 'ms';
+  stage.appendChild(el);
+
+  // Speak the word shortly after it appears
+  setTimeout(() => speak(cur.w), 500);
+
+  document.getElementById('prompt').innerHTML = 'What is this? 👀 <strong>Choose the correct word!</strong>';
+
+  // Choices — text only, Times New Roman
+  const cEl = document.getElementById('choices');
+  cEl.innerHTML = '';
+  choices.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = item.w;
+    btn.dataset.w = item.w;
+    btn.addEventListener('click', () => onChoice(item, btn));
+    cEl.appendChild(btn);
+  });
+
+  // Progress
+  document.getElementById('pbar').style.width = '100%';
+  const t0 = Date.now();
+  progTimer = setInterval(() => {
+    const p = Math.max(0, 100 - ((Date.now() - t0) / flyMs) * 100);
+    document.getElementById('pbar').style.width = p + '%';
+  }, 50);
+
+  flyTimer = setTimeout(() => {
+    if (!answering && active) loseLife('Too slow! 🐢');
+  }, flyMs + 300);
+}
+
+function onChoice(item, btn) {
+  if (!active || answering) return;
+  answering = true; clearTimers();
+  if (item.w === cur.w) {
+    btn.classList.add('correct');
+    score += 10 + level * 5; updateUI();
+    streak++; bestStreak = Math.max(bestStreak, streak);
+    correctCount++;
+    if (score > progress.highScore || bestStreak > progress.bestStreakEver) {
+      saveProgress({
+        highScore: Math.max(progress.highScore, score),
+        bestStreakEver: Math.max(progress.bestStreakEver, bestStreak),
+      });
+    }
+    playCorrect();
+    speak(cur.w);
+    showFB('🌟', PRAISE[Math.floor(Math.random() * PRAISE.length)], '#E8FFF0');
+    spawnConfetti();
+    showCombo();
+    if (correctCount >= 10 && level < 7) {
+      correctCount = 0;
+      level++;
+      flyMs = Math.max(1700, 4500 - (level - 1) * 430);
+      setTimeout(showLevelUp, 1500);
+    } else {
+      setTimeout(nextRound, 1500);
+    }
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      if (b.dataset.w === cur.w) b.classList.add('correct');
+    });
+    playWrong();
+    streak = 0;
+    document.getElementById('combo-badge').classList.remove('show');
+    loseLife('Try again! 💪');
+  }
+}
+
+const COMBO_TIERS = [
+  {min:5,  text:'🔥 Combo x5'},
+  {min:10, text:'🌈 Amazing!'},
+  {min:15, text:'🏆 Super English!'},
+];
+function showCombo() {
+  const badge = document.getElementById('combo-badge');
+  // find the highest tier reached exactly at this streak count so it fires once per tier
+  const tier = COMBO_TIERS.find(t => t.min === streak);
+  if (!tier) { badge.classList.remove('show'); return; }
+  badge.textContent = tier.text;
+  badge.classList.remove('show');
+  void badge.offsetWidth; // restart animation
+  badge.classList.add('show');
+}
+
+function repeatWord() {
+  if (!cur) return;
+  unlockAudio();
+  speak(cur.w);
+}
+
+function loseLife(msg) {
+  lives--; updateUI();
+  showFB('💔', msg, '#FFF0F0');
+  if (lives <= 0) setTimeout(showGameOver, 1500);
+  else setTimeout(nextRound, 1500);
+}
+
+function showGameOver() {
+  active = false; clearTimers(); stopMusic();
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('gameover-screen').style.display = 'flex';
+  let em='😊', ti='Keep trying!';
+  if (score >= 150) { em='🏆'; ti='Super star!'; }
+  else if (score >= 90) { em='🌟'; ti='Great job!'; }
+  else if (score >= 40) { em='😄'; ti='Well done!'; }
+  document.getElementById('go-emoji').textContent = em;
+  document.getElementById('go-title').textContent = ti;
+  document.getElementById('go-sub').innerHTML =
+    `⭐ Score: ${score} &nbsp;|&nbsp; Level ${level}<br>🏆 Best score: ${progress.highScore} &nbsp;|&nbsp; 🔥 Best streak: ${progress.bestStreakEver}`;
+  speak(ti);
+}
+
+function clearTimers() { clearTimeout(flyTimer); clearInterval(progTimer); }
+
+const PRAISE = ['Great job! 🎉','Awesome! ✨','Correct! 🎊','So smart! 🧠','Excellent! 🏆','You rock! 🔥'];
+
+const LEVELUP_GIFTS = ['🏅','🎖️','🌟','🦄','🎁','🚀','🐬','🦋','🍀','👑','🎈','🏆'];
+const LEVELUP_PRAISE = [
+  'Wow, you are learning so fast!',
+  'Amazing progress! Keep going!',
+  'You are becoming an English star!',
+  'Fantastic! You leveled up!',
+];
+function showLevelUp() {
+  const gift = LEVELUP_GIFTS[Math.floor(Math.random() * LEVELUP_GIFTS.length)];
+  const praise = LEVELUP_PRAISE[Math.floor(Math.random() * LEVELUP_PRAISE.length)];
+  document.getElementById('lu-gift').textContent = gift;
+  document.getElementById('lu-title').textContent = `🎉 Level ${level}!`;
+  document.getElementById('lu-sub').textContent = praise;
+  document.getElementById('levelup-screen').style.display = 'flex';
+  spawnConfetti();
+  speak(praise);
+  setTimeout(() => {
+    document.getElementById('levelup-screen').style.display = 'none';
+    nextRound();
+  }, 2800);
+}
+
+function showFB(em, txt, bg) {
+  const fb = document.getElementById('feedback');
+  document.getElementById('fb-e').textContent = em;
+  document.getElementById('fb-t').textContent = txt;
+  fb.style.background = bg + 'D0';
+  fb.classList.add('show');
+  setTimeout(() => fb.classList.remove('show'), 1200);
+}
+
+function spawnConfetti() {
+  const cols = ['#FF6B9D','#FFD700','#26D0CE','#C084FC','#FF8E53','#87CEEB','#7BC67E'];
+  for (let i = 0; i < 34; i++) {
+    const c = document.createElement('div'); c.className = 'conf';
+    c.style.cssText = `left:${Math.random()*100}vw;top:${-8+Math.random()*22}px;
+      background:${cols[i%cols.length]};transform:rotate(${Math.random()*360}deg);
+      animation-duration:${.9+Math.random()*.65}s;animation-delay:${Math.random()*.3}s;
+      border-radius:${Math.random()>.5?'50%':'3px'};`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 1900);
+  }
+}
+</script>
+</body>
+</html>
