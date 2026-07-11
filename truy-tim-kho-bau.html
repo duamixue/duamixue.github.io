@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hòn Đảo Kho Báu Huyền Bí</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0b0618;
+    --void2:#160b30;
+    --twilight:#241148;
+    --nebula:#3a1f68;
+    --amethyst:#7a4fd6;
+    --amethyst-glow:#a276ff;
+    --gold:#d4af37;
+    --gold-light:#f5da85;
+    --gold-deep:#9c7a1f;
+    --parchment:#efe1c2;
+    --parchment-dark:#ddc796;
+    --ink:#2b1b3d;
+    --ink-soft:#57406f;
+    --emerald:#2e9e77;
+    --emerald-dark:#1f7057;
+    --ruby:#c1435a;
+    --ruby-dark:#8f2f42;
+    --starlight:#f3ecff;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:"Baloo 2", "Segoe UI", sans-serif;
+    background:
+      radial-gradient(ellipse at 15% 8%, rgba(122,79,214,0.35) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 15%, rgba(212,175,55,0.10) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 100%, rgba(58,31,104,0.55) 0%, transparent 60%),
+      linear-gradient(165deg, var(--void), var(--void2) 55%, var(--void));
+    min-height:100vh;
+    overflow-x:hidden;
+    color:var(--ink);
+    position:relative;
+  }
+
+  .star-dot{position:fixed; border-radius:50%; background:var(--starlight); pointer-events:none; z-index:0; animation:twinkle ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:0.15;} 50%{opacity:0.95;}}
+  .sparkle-float{position:fixed; border-radius:50%; pointer-events:none; z-index:0; animation:floatUp linear infinite;
+    background:radial-gradient(circle, rgba(245,218,133,0.95), rgba(212,175,55,0.15) 70%, transparent 75%);
+    box-shadow:0 0 8px rgba(245,218,133,0.7);}
+  @keyframes floatUp{
+    0%{transform:translateY(0) translateX(0); opacity:0;}
+    12%{opacity:0.85;}
+    100%{transform:translateY(-110vh) translateX(24px); opacity:0;}
+  }
+
+  .screen{position:relative; z-index:2; min-height:100vh; display:none; align-items:center; justify-content:center; padding:20px;}
+  .screen.active{display:flex; animation:screenFade 0.5s ease;}
+  @keyframes screenFade{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+  .ornate-frame{position:relative;}
+  .ornate-frame::before, .ornate-frame::after{
+    content:"✦"; position:absolute; color:var(--gold); font-size:20px; opacity:0.85;
+    filter:drop-shadow(0 0 4px rgba(212,175,55,0.7));
+  }
+  .ornate-frame::before{top:10px; left:14px;}
+  .ornate-frame::after{bottom:10px; right:14px;}
+
+  #screen-start .card{
+    background: radial-gradient(ellipse at top left, #fbf3dc, var(--parchment) 62%);
+    border-radius:26px;
+    padding:36px 30px 30px;
+    max-width:500px;
+    width:100%;
+    text-align:center;
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.4), 0 25px 60px rgba(0,0,0,0.55), inset 0 0 0 3px rgba(212,175,55,0.55), inset 0 0 30px rgba(122,79,214,0.08);
+    border: 2px solid var(--gold-deep);
+    position:relative;
+  }
+  .title-emoji{font-size:46px; display:block; margin-bottom:6px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.35));}
+  h1.game-title{
+    font-family:"Cormorant Garamond", serif;
+    font-size:34px;
+    font-weight:900;
+    margin:0 0 10px;
+    color:var(--twilight);
+    letter-spacing:0.5px;
+    text-shadow: 0 2px 0 rgba(212,175,55,0.35);
+    line-height:1.15;
+  }
+  .story-text{
+    font-size:12.5px; color:var(--ink-soft); line-height:1.65; margin:0 0 16px;
+    text-align:left; background:rgba(122,79,214,0.08); border-left:3px solid var(--amethyst);
+    padding:10px 12px; border-radius:8px; font-weight:600;
+  }
+  .name-input{
+    width:100%;
+    padding:14px 16px;
+    font-size:18px;
+    border-radius:16px;
+    border:3px solid var(--gold);
+    background:#fffbef;
+    text-align:center;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:16px;
+    font-family:inherit;
+  }
+  .name-input:focus{outline:none; border-color:var(--amethyst);}
+  .preset-names{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:18px;}
+  .preset-chip{
+    font-family:inherit; font-weight:800; font-size:13px;
+    padding:8px 14px; border-radius:20px; border:2px solid var(--amethyst);
+    background:rgba(122,79,214,0.08); color:var(--twilight); cursor:pointer;
+    transition: transform 0.1s ease, background 0.2s;
+  }
+  .preset-chip:active{transform:scale(0.95);}
+  .preset-chip.selected{background:linear-gradient(180deg, var(--amethyst-glow), var(--amethyst)); color:#fff; border-color:var(--gold);}
+  .btn{
+    display:inline-block;
+    font-family:inherit;
+    font-weight:800;
+    font-size:17px;
+    padding:14px 28px;
+    border-radius:50px;
+    border:none;
+    cursor:pointer;
+    color:#fff;
+    letter-spacing:0.3px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.25), 0 8px 18px rgba(0,0,0,0.3);
+    transition: transform 0.08s ease;
+  }
+  .btn:active{transform:translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.25), 0 4px 8px rgba(0,0,0,0.25);}
+  .btn-gold{background:linear-gradient(180deg, var(--gold-light), var(--gold) 55%, var(--gold-deep)); color:var(--twilight); text-shadow:0 1px 0 rgba(255,255,255,0.3);}
+  .btn-amethyst{background:linear-gradient(180deg, var(--amethyst-glow), var(--amethyst) 60%, #532f9e);}
+  .btn-emerald{background:linear-gradient(180deg, #4fc39a, var(--emerald) 60%, var(--emerald-dark));}
+  .btn-ghost{background:transparent; color:var(--ink-soft); box-shadow:none; border:2px solid var(--ink-soft); font-size:14px; padding:9px 18px;}
+  .hint-text{margin-top:16px; font-size:12px; color:var(--ink-soft); font-style:italic;}
+  .btn-row{display:flex; flex-direction:column; gap:10px; align-items:center;}
+  .continue-box{
+    background:rgba(122,79,214,0.10); border:2px dashed var(--amethyst);
+    border-radius:14px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:var(--ink-soft); font-weight:700;
+  }
+
+  #screen-map{flex-direction:column; padding:14px;}
+  .map-wrap{width:100%; max-width:920px; margin:0 auto;}
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:linear-gradient(180deg, rgba(239,225,194,0.97), rgba(221,199,150,0.97));
+    border-radius:18px;
+    padding:10px 16px;
+    margin-bottom:12px;
+    border:2px solid var(--gold-deep);
+    box-shadow:0 8px 24px rgba(0,0,0,0.4), inset 0 0 0 2px rgba(255,255,255,0.4);
+    flex-wrap:wrap;
+  }
+  .topbar .name-badge{font-weight:800; color:var(--twilight); font-family:"Cormorant Garamond", serif; font-size:19px;}
+  .topbar-right{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .fragments-row{display:flex; gap:3px; font-size:14px;}
+  .fragments-row span{opacity:0.28; transition:opacity 0.3s, transform 0.3s;}
+  .fragments-row span.filled{opacity:1; transform:scale(1.15); filter:drop-shadow(0 0 3px rgba(212,175,55,0.8));}
+  .gem-counter{font-weight:800; font-size:12.5px; color:var(--twilight); display:flex; align-items:center; gap:3px; background:rgba(122,79,214,0.12); padding:4px 9px; border-radius:20px;}
+  .sound-btn{
+    background:var(--twilight); color:var(--gold-light); border:2px solid var(--gold-deep);
+    border-radius:50%; width:34px; height:34px; font-size:15px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+
+  .mascot-bubble{
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(239,225,194,0.9));
+    border-radius:16px;
+    padding:8px 14px;
+    margin-bottom:10px;
+    border:2px solid var(--gold);
+    box-shadow:0 4px 14px rgba(0,0,0,0.3);
+    font-weight:700;
+    font-size:13.5px;
+    color:var(--ink);
+    max-width:920px;
+  }
+  .mascot-emoji{font-size:26px; flex-shrink:0; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.3)); white-space:nowrap;}
+
+  .map-canvas{
+    position:relative;
+    width:100%;
+    aspect-ratio: 5 / 3.4;
+    background:
+      radial-gradient(circle at 30% 15%, rgba(122,79,214,0.12), transparent 42%),
+      radial-gradient(circle at 75% 85%, rgba(212,175,55,0.08), transparent 45%),
+      linear-gradient(135deg, #e6d3a2, var(--parchment-dark) 55%, #cdb073);
+    border-radius:22px;
+    border:3px solid var(--gold-deep);
+    box-shadow: inset 0 0 50px rgba(43,27,61,0.35), 0 0 0 1px rgba(212,175,55,0.4), 0 18px 40px rgba(0,0,0,0.5);
+    overflow:hidden;
+  }
+  .map-canvas::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(43,27,61,0.045) 0px, rgba(43,27,61,0.045) 1px, transparent 1px, transparent 26px),
+      repeating-linear-gradient(90deg, rgba(43,27,61,0.045) 0px, rgba(43,27,61,0.045) 1px, transparent 1px, transparent 26px);
+    pointer-events:none;
+  }
+  .compass{
+    position:absolute; top:12px; right:14px; font-size:24px; opacity:0.6;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+  }
+  .branch-label{
+    position:absolute; transform:translate(-50%,-50%); font-size:11px; font-weight:800; color:var(--twilight);
+    background:rgba(255,255,255,0.6); padding:2px 9px; border-radius:9px; pointer-events:none; white-space:nowrap; z-index:2;
+  }
+  .start-flag{position:absolute; transform:translate(-50%,-50%); font-size:22px; opacity:0.9; filter:drop-shadow(0 2px 3px rgba(0,0,0,.4)); z-index:2;}
+
+  svg.path-svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible;}
+  .path-seg{
+    fill:none;
+    stroke:var(--ink-soft);
+    stroke-width:0.6;
+    stroke-linecap:round;
+    stroke-dasharray:2 2.4;
+    opacity:0.3;
+  }
+  .path-seg.done{
+    opacity:0.95;
+    stroke:var(--gold-deep);
+    stroke-width:0.85;
+    stroke-dasharray:3 2;
+    filter:drop-shadow(0 0 2.5px rgba(212,175,55,0.9));
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash{ to { stroke-dashoffset:-20; } }
+
+  .island{
+    position:absolute;
+    transform:translate(-50%,-50%);
+    width:14%;
+    aspect-ratio:1/1;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    cursor:pointer;
+    border:3px solid var(--gold-deep);
+    background: radial-gradient(circle at 35% 30%, #d9c2ff, var(--amethyst-glow) 55%, var(--amethyst));
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45), inset 0 0 0 3px rgba(255,255,255,0.3), 0 0 16px rgba(162,118,255,0.5);
+    transition: transform 0.15s ease;
+    user-select:none;
+    z-index:3;
+  }
+  .island:active{transform:translate(-50%,-50%) scale(0.94);}
+  .island .isl-emoji{font-size:min(5.6vw, 26px); line-height:1; filter:drop-shadow(0 2px 2px rgba(0,0,0,0.35));}
+  .island .isl-label{
+    position:absolute; bottom:-24px; left:50%; transform:translateX(-50%);
+    font-size:10px; font-weight:800; color:var(--starlight);
+    background:var(--twilight); padding:2px 8px; border-radius:10px;
+    white-space:nowrap; border:1px solid var(--gold-deep);
+  }
+  .island.locked{
+    background: radial-gradient(circle at 35% 30%, #4a4258, #362f45 70%, #241e33);
+    cursor:not-allowed; box-shadow:0 8px 16px rgba(0,0,0,0.4); border-color:#5a5268;
+  }
+  .island.locked .isl-emoji{filter:grayscale(1) opacity(0.55);}
+  .island.done{
+    background: radial-gradient(circle at 35% 30%, #b9f0da, #56c79c 65%, var(--emerald));
+    animation:doneGlow 1.8s ease-in-out infinite;
+    border-color:var(--gold);
+  }
+  @keyframes doneGlow{
+    0%,100%{box-shadow:0 8px 20px rgba(0,0,0,0.4), 0 0 0 0 rgba(46,158,119,0.55);}
+    50%{box-shadow:0 8px 20px rgba(0,0,0,0.4), 0 0 0 11px rgba(46,158,119,0);}
+  }
+  .island .badge-check{
+    position:absolute; top:-6px; right:-6px; background:var(--emerald);
+    color:#fff; border-radius:50%; width:22px; height:22px;
+    display:flex; align-items:center; justify-content:center; font-size:12px;
+    border:2px solid var(--gold-light); box-shadow:0 2px 6px rgba(0,0,0,0.35);
+  }
+  .island.final{
+    background: radial-gradient(circle at 35% 30%, #ffe9b0, #caa23d 60%, #8a6c1e);
+  }
+  .island.final.locked{
+    background: radial-gradient(circle at 35% 30%, #4a4258, #362f45 70%, #241e33);
+  }
+  .island.treasure{
+    width:18%;
+    background: radial-gradient(circle at 35% 30%, #fff2c2, var(--gold) 60%, var(--gold-deep));
+    animation:pulseTreasure 2s ease-in-out infinite;
+    z-index:4;
+  }
+  .island.treasure::before{
+    content:"";
+    position:absolute; inset:-55%;
+    background:conic-gradient(from 0deg, transparent, rgba(245,218,133,0.55), transparent 25%, transparent 70%, rgba(212,175,55,0.4), transparent);
+    border-radius:50%;
+    animation:rotateRays 7s linear infinite;
+    z-index:-1;
+  }
+  @keyframes rotateRays{ to{ transform:rotate(360deg); } }
+  @keyframes pulseTreasure{
+    0%,100%{transform:translate(-50%,-50%) scale(1);}
+    50%{transform:translate(-50%,-50%) scale(1.07);}
+  }
+  .island.treasure.locked{animation:none;}
+  .island.treasure.locked::before{display:none;}
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(11,6,24,0.78);
+    display:none; align-items:center; justify-content:center; z-index:50; padding:16px;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.active{display:flex;}
+  .modal-card{
+    background: radial-gradient(ellipse at top left, #fbf3dc, var(--parchment) 65%);
+    border-radius:24px;
+    border:2px solid var(--gold-deep);
+    max-width:480px; width:100%;
+    padding:26px 22px 22px;
+    box-shadow:0 0 0 1px rgba(212,175,55,0.4), 0 25px 60px rgba(0,0,0,0.6);
+    text-align:center;
+    animation: popIn 0.28s cubic-bezier(.2,1.4,.4,1);
+    position:relative;
+  }
+  @keyframes popIn{
+    0%{transform:scale(0.7); opacity:0;}
+    100%{transform:scale(1); opacity:1;}
+  }
+  .modal-close{
+    position:absolute; top:12px; right:12px; width:28px; height:28px; border-radius:50%;
+    background:var(--twilight); color:var(--gold-light); border:1px solid var(--gold-deep);
+    font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .modal-island-title{font-family:"Cormorant Garamond", serif; font-size:20px; font-weight:800; color:var(--twilight); margin-bottom:2px;}
+  .modal-progress{font-size:11.5px; color:var(--ink-soft); margin-bottom:6px; font-weight:700; letter-spacing:0.5px;}
+  .progress-dots{display:flex; justify-content:center; gap:6px; margin-bottom:12px;}
+  .progress-dots span{width:8px; height:8px; border-radius:50%; background:rgba(87,64,111,0.25);}
+  .progress-dots span.on{background:var(--gold-deep);}
+  .progress-dots span.now{background:var(--amethyst); transform:scale(1.3);}
+  .modal-question{font-size:18px; font-weight:800; margin:8px 0 16px; line-height:1.4;}
+  .question-visual{font-size:28px; letter-spacing:5px; margin-bottom:12px; line-height:1.3; white-space:pre-line;}
+  .speak-btn{
+    background:var(--twilight); color:var(--gold-light); border:1px solid var(--gold-deep);
+    border-radius:50%; width:28px; height:28px; font-size:12px; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px;
+  }
+  .answers-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px;}
+  .ans-btn{
+    font-family:inherit; font-weight:800; font-size:17px;
+    padding:14px 8px; border-radius:16px; border:3px solid var(--ink-soft);
+    background:#fffbef; cursor:pointer; color:var(--ink);
+    box-shadow:0 4px 0 rgba(0,0,0,0.18);
+    transition: transform 0.08s ease, background 0.2s;
+  }
+  .ans-btn:active{transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,0.18);}
+  .ans-btn.correct{background:var(--emerald); color:#fff; border-color:var(--emerald-dark);}
+  .ans-btn.wrong{background:var(--ruby); color:#fff; border-color:var(--ruby-dark); animation:shake 0.4s ease;}
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+  .feedback-msg{min-height:26px; font-weight:800; font-size:15px; margin-top:8px;}
+  .feedback-msg.ok{color:var(--emerald-dark);}
+  .feedback-msg.no{color:var(--ruby-dark);}
+
+  #screen-treasure .cert-card{
+    background: radial-gradient(ellipse at top left, #fdf7e4, var(--parchment) 65%);
+    border-radius:26px;
+    padding:36px 26px;
+    max-width:520px; width:100%;
+    text-align:center;
+    border: 3px double var(--gold);
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.4), 0 30px 70px rgba(0,0,0,0.6), inset 0 0 0 8px rgba(217,164,65,0.12);
+    position:relative;
+  }
+  .chest-emoji{font-size:62px; animation:chestBounce 1.4s ease-in-out infinite; filter:drop-shadow(0 6px 10px rgba(0,0,0,0.4));}
+  @keyframes chestBounce{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-8px) rotate(-3deg);}
+  }
+  .cert-heading{font-size:13px; letter-spacing:4px; color:var(--gold-deep); font-weight:800; margin:10px 0 4px;}
+  .cert-title{font-family:"Cormorant Garamond", serif; font-size:27px; font-weight:900; color:var(--twilight); margin:0 0 12px; line-height:1.3;}
+  .cert-name{
+    font-family:"Cormorant Garamond", serif;
+    font-size:30px; font-weight:900; color:var(--ink);
+    padding:8px 16px; border-bottom:3px solid var(--gold); display:inline-block; margin-bottom:12px;
+  }
+  .cert-desc{font-size:13.5px; color:var(--ink-soft); font-weight:600; margin-bottom:6px; line-height:1.6;}
+  .cert-gems{font-size:14px; color:var(--gold-deep); font-weight:800; margin-bottom:6px;}
+  .cert-date{font-size:12px; color:var(--ink-soft); margin-bottom:16px; font-style:italic;}
+  .seal{
+    position:absolute; bottom:18px; right:22px; font-size:40px;
+    filter:drop-shadow(0 3px 5px rgba(0,0,0,0.35)); transform:rotate(-8deg);
+  }
+  .stars-final{font-size:22px; margin-bottom:14px; letter-spacing:4px; filter:drop-shadow(0 0 6px rgba(212,175,55,0.7));}
+
+  .confetti-piece{
+    position:fixed; top:-20px; width:10px; height:16px; z-index:60; pointer-events:none;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall{
+    0%{transform:translateY(0) rotate(0deg); opacity:1;}
+    100%{transform:translateY(110vh) rotate(540deg); opacity:0.9;}
+  }
+
+  @media (max-width:520px){
+    h1.game-title{font-size:27px;}
+    .modal-question{font-size:16px;}
+    .cert-title{font-size:20px;}
+    .cert-name{font-size:23px;}
+    .island .isl-label{font-size:8.5px;}
+  }
+
+  .footer-credit{
+    text-align:center; font-size:11px; color:rgba(243,236,255,0.45);
+    margin-top:14px; font-weight:600; letter-spacing:0.5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="screen active" id="screen-start">
+  <div class="card ornate-frame">
+    <span class="title-emoji">🏴‍☠️🌙</span>
+    <h1 class="game-title">Hòn Đảo<br>Kho Báu Huyền Bí</h1>
+    <p class="story-text">📜 Truyền thuyết kể rằng một thuyền trưởng đã đánh mất tấm bản đồ báu vật, chia thành 7 mảnh và giấu trên 2 con đường: <b>Biển Xanh</b> và <b>Rừng Bí Ẩn</b>. Hai đường sẽ gặp nhau ở <b>Đền Cổ</b> — nơi giữ chìa khóa cuối cùng dẫn tới kho báu thật sự!</p>
+    <div id="continueBox" class="continue-box" style="display:none;"></div>
+    <input type="text" id="playerNameInput" class="name-input" placeholder="Bé tên là gì?" maxlength="16">
+    <div class="preset-names" id="presetNames"></div>
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="startGame(false)">🚀 Bắt đầu phiêu lưu</button>
+      <button class="btn btn-ghost" id="continueBtn" style="display:none;" onclick="startGame(true)">✨ Tiếp tục hành trình cũ</button>
+    </div>
+    <p class="hint-text">Gợi ý: bé có thể chọn đi Biển Xanh hoặc Rừng Bí Ẩn trước, tùy thích!</p>
+  </div>
+</div>
+
+<div class="screen" id="screen-map">
+  <div class="map-wrap">
+    <div class="topbar">
+      <div class="name-badge" id="topbarName">Nhà thám hiểm</div>
+      <div class="topbar-right">
+        <div class="gem-counter" id="gemCounter">💎 0</div>
+        <div class="fragments-row" id="fragmentsRow"></div>
+        <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊</button>
+      </div>
+    </div>
+    <div class="mascot-bubble">
+      <span class="mascot-emoji" id="mascotEmoji">🦜</span>
+      <span id="mascotText">Xin chào! Hãy chọn một hòn đảo để bắt đầu nhé!</span>
+    </div>
+    <div class="map-canvas" id="mapCanvas">
+      <span class="compass">🔮</span>
+      <svg class="path-svg" viewBox="0 0 100 68" preserveAspectRatio="none" id="pathSvg"></svg>
+    </div>
+  </div>
+  <div class="footer-credit">© Dừa &amp; Mixue — Trò chơi Kho Báu Huyền Bí</div>
+</div>
+
+<div class="screen" id="screen-treasure">
+  <div class="cert-card ornate-frame">
+    <div class="chest-emoji">🏆</div>
+    <div class="stars-final">⭐⭐⭐⭐⭐⭐⭐</div>
+    <div class="cert-heading">CHỨNG NHẬN HUYỀN BÍ</div>
+    <div class="cert-title">Nhà Giải Mã<br>Huyền Thoại</div>
+    <div class="cert-name" id="certName">Bé Yêu</div>
+    <div class="cert-desc">Đã ghép đủ 7 mảnh bản đồ, vượt qua Biển Xanh và Rừng Bí Ẩn,<br>giải mã Đền Cổ và tìm ra kho báu huyền thoại!</div>
+    <div class="cert-gems" id="certGems">💎 Đã thu thập 0/20 viên đá quý phép thuật</div>
+    <div class="cert-date" id="certDate"></div>
+    <button class="btn btn-emerald" onclick="resetGame()">🔄 Chơi lại từ đầu</button>
+    <div class="seal">🏅</div>
+  </div>
+</div>
+
+<audio id="bgMusic" src="La_Mer_Phan2.mp3" loop preload="auto"></audio>
+<script>
+/* ================= DATA ================= */
+const ISLAND_DEFS = [
+  { id:'math', branch:'A', order:0, name:'Đảo Số Học', emoji:'🔢', x:18, y:82, pool:[
+    {visual:'7 + 5 = ?', q:'Bé hãy tính xem 7 cộng 5 bằng bao nhiêu?', options:['11','12','13','10'], correct:'12'},
+    {visual:'15 − 6 = ?', q:'15 trừ 6 bằng bao nhiêu nhỉ?', options:['9','8','7','10'], correct:'9'},
+    {visual:'🥥×14', q:'Trên đảo có 14 quả dừa, thuyền trưởng lấy đi 3 quả. Còn lại bao nhiêu quả?', options:['10','11','12','9'], correct:'11'},
+    {visual:'9 + 8 = ?', q:'Bé tính giúp: 9 cộng 8 bằng bao nhiêu?', options:['16','17','18','15'], correct:'17'},
+    {visual:'20 − 12 = ?', q:'20 trừ 12 còn lại bao nhiêu?', options:['9','8','7','10'], correct:'8'},
+    {visual:'6 + 6 = ?', q:'6 cộng 6 bằng bao nhiêu?', options:['11','12','13','10'], correct:'12'},
+    {visual:'18 − 9 = ?', q:'18 trừ 9 còn lại bao nhiêu?', options:['9','8','10','7'], correct:'9'},
+    {visual:'🐚×8 + 🐚×5', q:'Bé nhặt 8 vỏ ốc buổi sáng, 5 vỏ ốc buổi chiều. Tổng cộng bé có bao nhiêu vỏ ốc?', options:['12','13','14','15'], correct:'13'},
+    {visual:'12, 13, ?, 15', q:'Số nào còn thiếu trong dãy số 12, 13, ?, 15?', options:['11','14','16','10'], correct:'14'},
+    {visual:'🦀×9 + 🦀×6', q:'Bé bắt 9 con cua buổi sáng, 6 con cua buổi chiều. Tổng có bao nhiêu con cua?', options:['14','15','16','13'], correct:'15'}
+  ]},
+  { id:'shapes', branch:'A', order:1, name:'Đảo Hình Học', emoji:'🔺', x:12, y:54, pool:[
+    {visual:'🔴 🔴 🔴 🔵 🔴', q:'Hình nào có màu khác các hình còn lại?', options:['Hình 1','Hình 2','Hình 4','Hình 5'], correct:'Hình 4'},
+    {visual:'🔺 🔲 🔺 🔺 🔲 🔺', q:'Có bao nhiêu hình tam giác 🔺 ?', options:['3','4','5','6'], correct:'4'},
+    {visual:'⬛⬛⬛\n⬛⬜⬛\n⬛⬛⬛', q:'Ô vuông lớn ghép từ 9 ô nhỏ, có 1 ô màu trắng. Vậy có bao nhiêu ô màu đen?', options:['6','7','8','9'], correct:'8'},
+    {visual:'⭐', q:'Ngôi sao này có bao nhiêu cánh?', options:['4','5','6','7'], correct:'5'},
+    {visual:'⚪⚪⚪⬛⚪⚪', q:'Có bao nhiêu hình tròn ⚪ trong dãy này?', options:['3','4','5','6'], correct:'5'},
+    {visual:'🟦 🟦 🔺 🟦 🔺 🟦', q:'Có bao nhiêu hình vuông 🟦 ?', options:['3','4','5','6'], correct:'4'},
+    {visual:'🔷 🔷 🔷 🔶 🔷 🔷', q:'Hình nào có màu khác các hình còn lại?', options:['Hình 2','Hình 4','Hình 5','Hình 6'], correct:'Hình 4'},
+    {visual:'📐', q:'Hình tam giác có bao nhiêu cạnh?', options:['2','3','4','5'], correct:'3'},
+    {visual:'⬡', q:'Hình lục giác (tổ ong) có bao nhiêu cạnh?', options:['5','6','7','8'], correct:'6'},
+    {visual:'🟨🟨🟨\n🟨🟨🟨', q:'Có 2 hàng, mỗi hàng 3 hình vuông vàng. Tổng cộng có bao nhiêu hình vuông?', options:['5','6','7','8'], correct:'6'}
+  ]},
+  { id:'nature', branch:'A', order:2, name:'Đảo Muôn Thú', emoji:'🦋', x:22, y:28, pool:[
+    {visual:'🐕', q:'Con vật nào kêu "gâu gâu"?', options:['Mèo','Chó','Gà','Vịt'], correct:'Chó'},
+    {visual:'🦒', q:'Con vật nào có cái cổ dài nhất?', options:['Voi','Sư tử','Hươu cao cổ','Gấu'], correct:'Hươu cao cổ'},
+    {visual:'🐛 → ?', q:'Con sâu bướm lớn lên sẽ biến thành con gì?', options:['Con ong','Con bướm','Con ruồi','Con kiến'], correct:'Con bướm'},
+    {visual:'🐦', q:'Loài vật nào biết bay và có lông vũ?', options:['Cá','Chim','Rắn','Ếch'], correct:'Chim'},
+    {visual:'🌱☀️💧', q:'Cây cần gì để lớn lên xanh tốt?', options:['Ánh sáng và nước','Chỉ cần bóng tối','Chỉ cần đá','Chỉ cần cát'], correct:'Ánh sáng và nước'},
+    {visual:'🐘', q:'Con vật nào to lớn nhất trên cạn?', options:['Con voi','Con mèo','Con thỏ','Con gà'], correct:'Con voi'},
+    {visual:'🐧', q:'Con vật nào không biết bay dù có cánh?', options:['Đại bàng','Chim cánh cụt','Bồ câu','Chim sẻ'], correct:'Chim cánh cụt'},
+    {visual:'🐝', q:'Con vật nào làm ra mật ong?', options:['Con kiến','Con ong','Con bướm','Con ruồi'], correct:'Con ong'},
+    {visual:'🐬', q:'Con vật nào sống dưới biển nhưng phải ngoi lên thở?', options:['Con cá','Con cá heo','Con sao biển','Con sứa'], correct:'Con cá heo'},
+    {visual:'🌻', q:'Loài hoa nào luôn quay mặt về phía Mặt Trời?', options:['Hoa hồng','Hoa hướng dương','Hoa sen','Hoa cúc'], correct:'Hoa hướng dương'}
+  ]},
+  { id:'letters', branch:'B', order:0, name:'Đảo Chữ & Vần', emoji:'🔤', x:82, y:82, pool:[
+    {visual:'🐟', q:'Con cá bắt đầu bằng chữ gì?', options:['C','B','Đ','H'], correct:'C'},
+    {visual:'🐶', q:'Con chó bắt đầu bằng vần gì?', options:['TR','CH','PH','KH'], correct:'CH'},
+    {visual:'THUYỀN', q:'Từ "thuyền" có bao nhiêu chữ cái?', options:['5','6','7','8'], correct:'6'},
+    {visual:'🐘', q:'Con voi bắt đầu bằng chữ gì?', options:['V','D','GI','NH'], correct:'V'},
+    {visual:'BIỂN', q:'Từ "biển" có bao nhiêu chữ cái?', options:['3','4','5','6'], correct:'4'},
+    {visual:'🦀', q:'Con cua bắt đầu bằng chữ gì?', options:['C','K','Q','X'], correct:'C'},
+    {visual:'🐦', q:'Con chim bắt đầu bằng vần gì?', options:['CH','TR','GI','NH'], correct:'CH'},
+    {visual:'ĐẢO', q:'Từ "đảo" có bao nhiêu chữ cái?', options:['2','3','4','5'], correct:'3'},
+    {visual:'🐢', q:'Con rùa bắt đầu bằng chữ gì?', options:['R','D','GI','L'], correct:'R'},
+    {visual:'KHO BÁU', q:'Cụm từ "kho báu" có bao nhiêu chữ cái (không tính dấu cách)?', options:['5','6','7','8'], correct:'6'}
+  ]},
+  { id:'colors', branch:'B', order:1, name:'Đảo Sắc Màu', emoji:'🎨', x:88, y:54, pool:[
+    {visual:'🔵 + 🟡 = ?', q:'Trộn màu xanh dương và màu vàng, bé được màu gì?', options:['Xanh lá','Tím','Cam','Hồng'], correct:'Xanh lá'},
+    {visual:'🔴 + 🔵 = ?', q:'Trộn màu đỏ và màu xanh dương, bé được màu gì?', options:['Tím','Xanh lá','Vàng','Nâu'], correct:'Tím'},
+    {visual:'🍉', q:'Bổ quả dưa hấu ra, ruột bên trong màu gì?', options:['Vàng','Cam','Đỏ','Xanh'], correct:'Đỏ'},
+    {visual:'🍌', q:'Quả chuối chín có màu gì?', options:['Xanh lá','Vàng','Đỏ','Tím'], correct:'Vàng'},
+    {visual:'🔴 + ⚪ = ?', q:'Trộn màu đỏ với màu trắng, bé được màu gì?', options:['Hồng','Tím','Cam','Nâu'], correct:'Hồng'},
+    {visual:'🥕', q:'Củ cà rốt có màu gì?', options:['Tím','Cam','Xanh lá','Đen'], correct:'Cam'},
+    {visual:'🍇', q:'Chùm nho chín thường có màu gì?', options:['Tím','Vàng','Đỏ','Xanh lá'], correct:'Tím'},
+    {visual:'⚪ + ⚫ = ?', q:'Trộn màu trắng với màu đen, bé được màu gì?', options:['Xám','Xanh','Vàng','Hồng'], correct:'Xám'},
+    {visual:'🌈', q:'Cầu vồng có mấy màu chính?', options:['5','6','7','8'], correct:'7'},
+    {visual:'🍋', q:'Quả chanh có màu gì?', options:['Vàng','Đỏ','Tím','Nâu'], correct:'Vàng'}
+  ]},
+  { id:'riddle', branch:'B', order:2, name:'Đảo Bí Ẩn', emoji:'🧩', x:78, y:28, pool:[
+    {visual:'🌙 ✨', q:'Ban ngày ẩn mình, ban đêm mới lung linh xuất hiện trên trời. Đó là gì?', options:['Mặt Trời','Ngôi sao','Cầu vồng','Đám mây'], correct:'Ngôi sao'},
+    {visual:'🕯️', q:'Vật gì càng cháy thì càng nhỏ đi?', options:['Cây nến','Quả bóng','Viên đá','Cái ghế'], correct:'Cây nến'},
+    {visual:'🔑 🔒', q:'Vật gì dùng để mở một chiếc khóa?', options:['Cái kéo','Chìa khóa','Cái thìa','Cây bút'], correct:'Chìa khóa'},
+    {visual:'☂️', q:'Vật gì giúp bé không bị ướt khi trời mưa?', options:['Cái quạt','Cái ô','Đôi giày','Cái mũ'], correct:'Cái ô'},
+    {visual:'🐚', q:'Vật gì bé thường nhặt trên bãi biển, áp vào tai nghe được tiếng sóng?', options:['Vỏ ốc','Viên đá','Cành cây','Chiếc lá'], correct:'Vỏ ốc'},
+    {visual:'🪞', q:'Vật gì càng soi vào càng thấy chính mình?', options:['Cái gương','Cái bàn','Cái ghế','Cái đèn'], correct:'Cái gương'},
+    {visual:'🕰️', q:'Vật gì có kim nhưng không biết khâu, luôn chỉ giờ cho bé biết?', options:['Cái quạt','Đồng hồ','Cái tủ','Cái bàn'], correct:'Đồng hồ'},
+    {visual:'🧵 🪡', q:'Vật gì có lỗ nhỏ để xâu chỉ qua, dùng để may vá?', options:['Cây kim','Cây bút','Cây kéo','Cây thước'], correct:'Cây kim'},
+    {visual:'📖', q:'Vật gì có nhiều trang, giúp bé học chữ và kể chuyện?', options:['Quyển sách','Cái bàn','Cái cặp','Cái ghế'], correct:'Quyển sách'},
+    {visual:'🧦', q:'Vật gì bé mang vào chân trước khi đi giày?', options:['Đôi tất','Cái mũ','Đôi găng tay','Cái khăn'], correct:'Đôi tất'}
+  ]}
+];
+const FINAL = { id:'final', name:'Đền Cổ Hội Ngộ', emoji:'🏛️', x:50, y:34, pool:[
+  {visual:'🔺 + "KHÓA"', q:'Đếm số cạnh của hình tam giác 🔺, rồi cộng với số chữ cái trong từ "KHÓA". Kết quả là bao nhiêu?', options:['6','7','8','5'], correct:'7'},
+  {visual:'🔵+🟡 → 🐸', q:'Trộn xanh dương với vàng được màu xanh lá. Con vật nào cũng màu xanh lá và kêu "ộp ộp"?', options:['Con ếch','Con chó','Con mèo','Con voi'], correct:'Con ếch'},
+  {visual:'⭐ cánh + 🔺 cạnh', q:'Ngôi sao có 5 cánh, hình tam giác có 3 cạnh. Cộng lại được bao nhiêu?', options:['7','8','9','6'], correct:'8'},
+  {visual:'🔴+⚪ → 🦩', q:'Trộn đỏ với trắng được màu hồng. Con vật nào cũng có màu hồng và có chân dài?', options:['Con hồng hạc','Con cá voi','Con cua','Con sứa'], correct:'Con hồng hạc'},
+  {visual:'"KHO BÁU" − 🔺 cạnh', q:'Từ "kho báu" có 6 chữ cái, hình tam giác có 3 cạnh. Lấy 6 trừ 3 được bao nhiêu?', options:['2','3','4','5'], correct:'3'},
+  {visual:'🌈 màu + "CHÌA KHÓA"', q:'Cầu vồng có 7 màu. Từ "chìa khóa" có bao nhiêu chữ cái (không tính dấu cách)?', options:['7','8','9','6'], correct:'8'}
+]};
+const TREASURE = { id:'treasure', name:'Đảo Kho Báu', emoji:'🏝️', x:50, y:10 };
+const START_NODE = { x:50, y:96 };
+const PRESET_NAMES = ['DỪA', 'MIXUE', 'ĐỘI Nấm Nhím Thỏ', 'Đội ĐẬU & MUN'];
+const STORAGE_KEY = 'khobau_progress_v3';
+const TOTAL_QUESTIONS = 20;
+
+let playerName = '';
+let completed = {};
+let gemCount = 0;
+let currentNode = null;
+let currentQIdx = 0;
+let selectedQuestions = {};
+let answeredWrongOnce = false;
+let soundOn = true;
+let audioCtx = null;
+let savedProfile = null;
+let speechOk = false;
+let currentQuestionText = '';
+
+const mascotStages = ['🦜','🦜🧣','🦜🧣','🦜⚡','🦜⚡','🦜👑','🦜👑','🦜✨👑'];
+const mascotLines = {
+  welcome:(n)=>`Xin chào ${n}! Bé muốn khám phá Biển Xanh hay Rừng Bí Ẩn trước nào?`,
+  progress:[
+    'Một mảnh bản đồ đã tìm thấy! Đi tiếp nào!',
+    'Tuyệt vời! Bé thông minh quá!',
+    'Chú vẹt Cối Xay rất tự hào về bé!',
+    'Phép thuật đang lan tỏa khắp bản đồ rồi!',
+    'Sắp ghép đủ bản đồ rồi, cố lên nào!',
+    'Chỉ còn vài mảnh nữa thôi!'
+  ],
+  bothBranchesDone:'Cả hai con đường đã hoàn thành! Đền Cổ đang chờ bé giải mã bí mật cuối cùng!',
+  allDone:'Bé đã giải mã Đền Cổ! Chạm vào Đảo Kho Báu để nhận thưởng nào! 🎉'
+};
+
+/* ================= PERSISTENCE ================= */
+async function saveProgress(){
+  try{
+    if(window.storage){
+      await window.storage.set(STORAGE_KEY, JSON.stringify({playerName, completed, gemCount}));
+    }
+  }catch(e){ /* degrade gracefully, in-memory only */ }
+}
+async function loadProgress(){
+  try{
+    if(window.storage){
+      const res = await window.storage.get(STORAGE_KEY);
+      if(res && res.value) return JSON.parse(res.value);
+    }
+  }catch(e){ /* nothing saved yet */ }
+  return null;
+}
+
+/* ================= SOUND ================= */
+function ensureAudio(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+}
+function tone(freq, start, dur, type, gainVal){
+  if(!soundOn || !audioCtx) return;
+  const t0 = audioCtx.currentTime + start;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(gainVal || 0.14, t0+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(t0); osc.stop(t0+dur+0.03);
+}
+function playClick(){ ensureAudio(); tone(500,0,0.08,'triangle',0.09); }
+function playCorrect(){ ensureAudio(); tone(523.25,0,0.16,'sine',0.13); tone(659.25,0.1,0.16,'sine',0.13); tone(783.99,0.2,0.26,'sine',0.14); }
+function playWrong(){ ensureAudio(); tone(220,0,0.2,'sawtooth',0.08); tone(180,0.1,0.24,'sawtooth',0.07); }
+function playGem(){ ensureAudio(); tone(1046.5,0,0.12,'sine',0.1); tone(1318.5,0.06,0.14,'sine',0.1); }
+function playWin(){ ensureAudio(); [523.25,659.25,783.99,1046.5].forEach((f,i)=>tone(f,i*0.15,0.3,'sine',0.12)); }
+
+/* ================= BACKGROUND MUSIC ================= */
+const bgMusic = document.getElementById('bgMusic');
+let musicStarted = false;
+bgMusic.volume = 0;
+function startBackgroundMusic(){
+  if(musicStarted || !soundOn) return;
+  musicStarted = true;
+  bgMusic.play().then(()=>{
+    let v = 0;
+    const fadeIn = setInterval(()=>{
+      v += 0.03;
+      if(v >= 0.35){ v = 0.35; clearInterval(fadeIn); }
+      bgMusic.volume = v;
+    }, 120);
+  }).catch(()=>{ musicStarted = false; });
+}
+function firstInteractionHandler(){
+  startBackgroundMusic();
+  window.removeEventListener('pointerdown', firstInteractionHandler);
+  window.removeEventListener('keydown', firstInteractionHandler);
+}
+window.addEventListener('pointerdown', firstInteractionHandler);
+window.addEventListener('keydown', firstInteractionHandler);
+
+function toggleSound(){
+  soundOn = !soundOn;
+  ensureAudio();
+  document.querySelectorAll('#soundBtn').forEach(b=>b.textContent = soundOn ? '🔊' : '🔇');
+  if(soundOn){
+    playClick();
+    if(!musicStarted) startBackgroundMusic();
+    else bgMusic.play().catch(()=>{});
+  } else {
+    bgMusic.pause();
+  }
+}
+
+/* ================= TEXT-TO-SPEECH ================= */
+function speakText(text){
+  if(!speechOk) return;
+  try{
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'vi-VN';
+    utter.rate = 0.92;
+    window.speechSynthesis.speak(utter);
+  }catch(e){}
+}
+
+/* ================= HELPERS ================= */
+function branchIslands(branch){
+  return ISLAND_DEFS.filter(i=>i.branch===branch).sort((a,b)=>a.order-b.order);
+}
+function isIslandLocked(def){
+  const arr = branchIslands(def.branch);
+  const idx = arr.findIndex(i=>i.id===def.id);
+  if(idx===0) return false;
+  return !completed[arr[idx-1].id];
+}
+function isFinalLocked(){
+  const lastA = branchIslands('A').slice(-1)[0];
+  const lastB = branchIslands('B').slice(-1)[0];
+  return !(completed[lastA.id] && completed[lastB.id]);
+}
+function isTreasureLocked(){ return !completed['final']; }
+function pickQuestions(pool, n){
+  const arr = pool.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    const tmp = arr[i]; arr[i]=arr[j]; arr[j]=tmp;
+  }
+  return arr.slice(0, n);
+}
+function doneCount(){
+  return ISLAND_DEFS.filter(i=>completed[i.id]).length + (completed['final']?1:0);
+}
+
+/* ================= PRESET NAMES ================= */
+function renderPresetNames(){
+  const wrap = document.getElementById('presetNames');
+  wrap.innerHTML = '';
+  const input = document.getElementById('playerNameInput');
+  PRESET_NAMES.forEach(name=>{
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'preset-chip' + (input.value === name ? ' selected' : '');
+    chip.textContent = name;
+    chip.onclick = ()=>{
+      playClick();
+      input.value = name;
+      wrap.querySelectorAll('.preset-chip').forEach(c=>c.classList.remove('selected'));
+      chip.classList.add('selected');
+    };
+    wrap.appendChild(chip);
+  });
+}
+
+/* ================= INIT ================= */
+async function initApp(){
+  spawnStars();
+  spawnSparkles();
+  renderPresetNames();
+  speechOk = ('speechSynthesis' in window);
+  savedProfile = await loadProgress();
+  if(savedProfile && savedProfile.playerName && Object.keys(savedProfile.completed||{}).length){
+    document.getElementById('continueBtn').style.display = 'inline-block';
+    const box = document.getElementById('continueBox');
+    box.style.display = 'block';
+    const n = Object.keys(savedProfile.completed).length;
+    box.textContent = `✨ Tìm thấy hành trình của ${savedProfile.playerName} (${n}/7 mảnh bản đồ đã tìm thấy)`;
+    document.getElementById('playerNameInput').value = savedProfile.playerName;
+    renderPresetNames();
+  }
+}
+
+function startGame(useContinue){
+  ensureAudio();
+  if(useContinue && savedProfile){
+    playerName = savedProfile.playerName;
+    completed = savedProfile.completed || {};
+    gemCount = savedProfile.gemCount || 0;
+  } else {
+    const input = document.getElementById('playerNameInput');
+    playerName = input.value.trim() || PRESET_NAMES[0];
+    completed = {};
+    gemCount = 0;
+  }
+  selectedQuestions = {};
+  document.getElementById('topbarName').textContent = '🧙 ' + playerName;
+  switchScreen('screen-map');
+  renderMap();
+  saveProgress();
+}
+
+function switchScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ================= MAP RENDER ================= */
+function renderMap(){
+  const canvas = document.getElementById('mapCanvas');
+  canvas.querySelectorAll('.island, .branch-label, .start-flag').forEach(e=>e.remove());
+
+  const flag = document.createElement('div');
+  flag.className = 'start-flag';
+  flag.style.left = START_NODE.x + '%';
+  flag.style.top = START_NODE.y + '%';
+  flag.textContent = '⛵';
+  canvas.appendChild(flag);
+
+  const labelA = document.createElement('div');
+  labelA.className = 'branch-label';
+  labelA.style.left = '20%'; labelA.style.top = '16%';
+  labelA.textContent = '🌊 Biển Xanh';
+  canvas.appendChild(labelA);
+
+  const labelB = document.createElement('div');
+  labelB.className = 'branch-label';
+  labelB.style.left = '80%'; labelB.style.top = '16%';
+  labelB.textContent = '🌳 Rừng Bí Ẩn';
+  canvas.appendChild(labelB);
+
+  ISLAND_DEFS.forEach(def=>{
+    const locked = isIslandLocked(def);
+    const done = !!completed[def.id];
+    const div = document.createElement('div');
+    div.className = 'island' + (locked ? ' locked' : '') + (done ? ' done' : '');
+    div.style.left = def.x + '%';
+    div.style.top = def.y + '%';
+    div.innerHTML = `<span class="isl-emoji">${locked ? '🔒' : def.emoji}</span>
+      <span class="isl-label">${def.name}</span>
+      ${done ? '<span class="badge-check">✓</span>' : ''}`;
+    if(!locked){ div.onclick = ()=>{ playClick(); openNode(def); }; }
+    canvas.appendChild(div);
+  });
+
+  const finalLocked = isFinalLocked();
+  const finalDone = !!completed['final'];
+  const fDiv = document.createElement('div');
+  fDiv.className = 'island final' + (finalLocked ? ' locked' : '') + (finalDone ? ' done' : '');
+  fDiv.style.left = FINAL.x + '%';
+  fDiv.style.top = FINAL.y + '%';
+  fDiv.innerHTML = `<span class="isl-emoji">${finalLocked ? '🔒' : FINAL.emoji}</span>
+    <span class="isl-label">${FINAL.name}</span>
+    ${finalDone ? '<span class="badge-check">✓</span>' : ''}`;
+  if(!finalLocked){ fDiv.onclick = ()=>{ playClick(); openNode(FINAL); }; }
+  canvas.appendChild(fDiv);
+
+  const tLocked = isTreasureLocked();
+  const tDiv = document.createElement('div');
+  tDiv.className = 'island treasure' + (tLocked ? ' locked' : '');
+  tDiv.style.left = TREASURE.x + '%';
+  tDiv.style.top = TREASURE.y + '%';
+  tDiv.innerHTML = `<span class="isl-emoji">${tLocked ? '🔒' : '💎'}</span><span class="isl-label">${TREASURE.name}</span>`;
+  if(!tLocked){ tDiv.onclick = ()=>{ playClick(); openTreasure(); }; }
+  canvas.appendChild(tDiv);
+
+  renderPath();
+  renderFragments();
+  renderGems();
+  renderMascot();
+}
+
+function renderPath(){
+  const svg = document.getElementById('pathSvg');
+  svg.innerHTML = '';
+  const branchA = branchIslands('A');
+  const branchB = branchIslands('B');
+  function drawChain(chain){
+    for(let i=0;i<chain.length-1;i++){
+      const a = chain[i], b = chain[i+1];
+      const x1=a.x, y1=a.y*0.68, x2=b.x, y2=b.y*0.68;
+      const midX=(x1+x2)/2, midY=Math.min(y1,y2)-7;
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`);
+      const done = completed[b.id] || (b.id==='treasure');
+      path.setAttribute('class','path-seg' + (completed[b.id] ? ' done' : ''));
+      svg.appendChild(path);
+    }
+  }
+  drawChain([START_NODE, ...branchA, FINAL, TREASURE]);
+  drawChain([START_NODE, ...branchB, FINAL, TREASURE]);
+}
+
+function renderFragments(){
+  const row = document.getElementById('fragmentsRow');
+  row.innerHTML = '';
+  const all = [...ISLAND_DEFS, FINAL];
+  all.forEach(def=>{
+    const s = document.createElement('span');
+    s.textContent = '📜';
+    if(completed[def.id]) s.classList.add('filled');
+    row.appendChild(s);
+  });
+}
+function renderGems(){
+  document.getElementById('gemCounter').textContent = '💎 ' + gemCount;
+}
+function renderMascot(){
+  const dc = doneCount();
+  const emojiEl = document.getElementById('mascotEmoji');
+  emojiEl.textContent = mascotStages[Math.min(dc, mascotStages.length-1)];
+  const el = document.getElementById('mascotText');
+  if(dc === 0) el.textContent = mascotLines.welcome(playerName);
+  else if(dc === 7) el.textContent = mascotLines.allDone;
+  else if(dc === 6 && !isFinalLocked() && !completed['final']) el.textContent = mascotLines.bothBranchesDone;
+  else el.textContent = mascotLines.progress[(dc-1) % mascotLines.progress.length];
+}
+
+/* ================= QUESTION MODAL ================= */
+function openNode(def){
+  currentNode = def;
+  currentQIdx = 0;
+  if(!selectedQuestions[def.id]){
+    const n = def.id === 'final' ? def.pool.length : 3;
+    selectedQuestions[def.id] = pickQuestions(def.pool, n);
+  }
+  showQuestion();
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function showQuestion(){
+  const qs = selectedQuestions[currentNode.id];
+  const q = qs[currentQIdx];
+  answeredWrongOnce = false;
+  document.getElementById('modalIslandTitle').textContent = currentNode.emoji + ' ' + currentNode.name;
+  document.getElementById('modalProgress').textContent = `Câu ${currentQIdx+1} / ${qs.length}`;
+  document.getElementById('questionVisual').textContent = q.visual;
+  document.getElementById('questionText').textContent = q.q;
+  currentQuestionText = q.q;
+  document.getElementById('feedbackMsg').textContent = '';
+  document.getElementById('feedbackMsg').className = 'feedback-msg';
+  document.getElementById('speakBtn').style.display = speechOk ? 'inline-flex' : 'none';
+
+  const dots = document.getElementById('progressDots');
+  dots.innerHTML = '';
+  qs.forEach((_,i)=>{
+    const d = document.createElement('span');
+    if(i < currentQIdx) d.className = 'on';
+    else if(i === currentQIdx) d.className = 'now';
+    dots.appendChild(d);
+  });
+
+  const grid = document.getElementById('answersGrid');
+  grid.innerHTML = '';
+  q.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.textContent = opt;
+    btn.onclick = ()=>checkAnswer(opt, btn, q.correct);
+    grid.appendChild(btn);
+  });
+}
+
+function checkAnswer(selected, btnEl, correctVal){
+  const buttons = document.querySelectorAll('#answersGrid .ans-btn');
+  if(selected === correctVal){
+    playCorrect();
+    buttons.forEach(b=>b.disabled=true);
+    btnEl.classList.add('correct');
+    if(!answeredWrongOnce){
+      gemCount++;
+      playGem();
+    }
+    const fb = document.getElementById('feedbackMsg');
+    fb.textContent = ['Chính xác! 🎉','Giỏi quá! 👏','Tuyệt vời! ⭐','Đúng rồi đó! 🥳'][Math.floor(Math.random()*4)];
+    fb.className = 'feedback-msg ok';
+    renderGems();
+    setTimeout(()=>{
+      const qs = selectedQuestions[currentNode.id];
+      if(currentQIdx < qs.length - 1){
+        currentQIdx++;
+        showQuestion();
+      } else {
+        completed[currentNode.id] = true;
+        closeModal();
+        renderMap();
+        saveProgress();
+      }
+    }, 900);
+  } else {
+    playWrong();
+    btnEl.classList.add('wrong');
+    btnEl.disabled = true;
+    const fb = document.getElementById('feedbackMsg');
+    fb.textContent = 'Chưa đúng, thử lại nhé! 💪';
+    fb.className = 'feedback-msg no';
+    answeredWrongOnce = true;
+  }
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('active');
+  if(speechOk){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+}
+
+/* ================= TREASURE SCREEN ================= */
+function openTreasure(){
+  document.getElementById('certName').textContent = playerName;
+  document.getElementById('certGems').textContent = `💎 Đã thu thập ${gemCount}/${TOTAL_QUESTIONS} viên đá quý phép thuật`;
+  const d = new Date();
+  document.getElementById('certDate').textContent = 'Ngày ' + d.getDate() + ' tháng ' + (d.getMonth()+1) + ' năm ' + d.getFullYear();
+  switchScreen('screen-treasure');
+  playWin();
+  launchConfetti();
+}
+
+function launchConfetti(){
+  const colors = ['#d4af37','#f5da85','#a276ff','#7a4fd6','#2e9e77','#f3ecff'];
+  for(let i=0;i<70;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random()*100 + 'vw';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDuration = (2.2 + Math.random()*1.8) + 's';
+    piece.style.animationDelay = (Math.random()*0.6) + 's';
+    piece.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
+    document.body.appendChild(piece);
+    setTimeout(()=>piece.remove(), 4500);
+  }
+}
+
+function resetGame(){
+  completed = {};
+  gemCount = 0;
+  currentNode = null;
+  currentQIdx = 0;
+  selectedQuestions = {};
+  document.getElementById('playerNameInput').value = playerName;
+  renderPresetNames();
+  document.getElementById('continueBtn').style.display = 'none';
+  document.getElementById('continueBox').style.display = 'none';
+  savedProfile = null;
+  saveProgress();
+  switchScreen('screen-start');
+}
+
+/* ================= AMBIENT STARS & SPARKLES ================= */
+function spawnStars(){
+  for(let i=0;i<50;i++){
+    const s = document.createElement('div');
+    s.className = 'star-dot';
+    const size = 1 + Math.random()*2;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = Math.random()*100+'vw';
+    s.style.top = Math.random()*70+'vh';
+    s.style.animationDuration = (2+Math.random()*3)+'s';
+    s.style.animationDelay = (Math.random()*4)+'s';
+    document.body.appendChild(s);
+  }
+}
+function spawnSparkles(){
+  for(let i=0;i<12;i++){
+    const b = document.createElement('div');
+    b.className = 'sparkle-float';
+    const size = 4 + Math.random()*8;
+    b.style.width = size+'px';
+    b.style.height = size+'px';
+    b.style.left = Math.random()*100+'vw';
+    b.style.bottom = '-20px';
+    b.style.animationDuration = (12+Math.random()*16)+'s';
+    b.style.animationDelay = (Math.random()*12)+'s';
+    document.body.appendChild(b);
+  }
+}
+
+/* ================= MODAL DOM (injected once) ================= */
+const overlay = document.createElement('div');
+overlay.id = 'modalOverlay';
+overlay.className = 'modal-overlay';
+overlay.innerHTML = `
+  <div class="modal-card">
+    <button class="modal-close" onclick="playClick(); closeModal();">✕</button>
+    <div class="modal-island-title" id="modalIslandTitle"></div>
+    <div class="modal-progress" id="modalProgress"></div>
+    <div class="progress-dots" id="progressDots"></div>
+    <div class="question-visual" id="questionVisual"></div>
+    <div class="modal-question"><span id="questionText"></span><button class="speak-btn" id="speakBtn" onclick="speakText(currentQuestionText)">🔊</button></div>
+    <div class="answers-grid" id="answersGrid"></div>
+    <div class="feedback-msg" id="feedbackMsg"></div>
+  </div>
+`;
+document.body.appendChild(overlay);
+
+document.getElementById('playerNameInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') startGame(false);
+});
+document.getElementById('playerNameInput').addEventListener('input', ()=>{
+  document.querySelectorAll('.preset-chip').forEach(c=>{
+    c.classList.toggle('selected', c.textContent === document.getElementById('playerNameInput').value);
+  });
+});
+
+initApp();
+</script>
+</body>
+</html>
