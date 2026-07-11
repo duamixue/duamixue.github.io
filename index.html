@@ -1277,7 +1277,7 @@ const SUBJECT_DISPLAY = {
   "Giải trí":"🎡 Vương Quốc Vui Chơi",
   "Tổng hợp":"🏕️ Trạm Nghỉ Chân",
   "Âm nhạc":"🎵 Đồi Âm Nhạc",
-  "Tin học":"💻 Trạm Tin Học"
+  "Tin học":"💻 Tháp Tin Học"
 };
 function subjectDisplay(s){ return SUBJECT_DISPLAY[s] || s; }
 /* Màu riêng cho từng "vùng đất" trên bản đồ — để các đảo trông sinh động, dễ phân biệt */
@@ -1380,13 +1380,14 @@ let mapTotalLen = 0;
 const LABEL_LAYOUT = {
   "all":        { pos: 'top', gap: 46 },
   "Toán":       { pos: 'top', dx: 2, nudge: { dx: -14, dy: 0 } },
-  "Khoa học":   { pos: 'bottom', nudge: { dx: 15, dy: 0 } },
+  "Khoa học":   { pos: 'top', nudge: { dx: 15, dy: 0 } },
   "Tư duy":     { pos: 'top' },
   "Nghệ thuật": { curved: true, curveSide: 'top', radius: 44 },
-  "Đạo đức":    { pos: 'top', dx: -4 },
-  "Âm nhạc":    { pos: 'bottom', nudge: { dx: -34, dy: 14 } },
-  "Tiếng Việt": { curved: true, curveSide: 'bottom', radius: 44 },
+  "Đạo đức":    { curved: true, curveSide: 'top', radius: 40 },
+  "Âm nhạc":    { pos: 'left', stacked: true, nudge: { dx: -34, dy: 14 } },
+  "Tiếng Việt": { pos: 'right', stacked: true, nudge: { dx: -24, dy: 0 } },
   "Tiếng Anh":  { pos: 'bottom' },
+  "Tin học":    { pos: 'left', stacked: true, nudge: { dx: 10, dy: 0 } },
   "Tổng hợp":   { pos: 'bottom' },
   "Giải trí":   { nudge: { dx: -28, dy: 0 } },
 };
