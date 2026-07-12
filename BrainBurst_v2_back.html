@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚡ BRAINBURST — Bùng Nổ Trí Não</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root{
+  --ink:#0A0A16;
+  --ink2:#14142B;
+  --panel: rgba(255,255,255,0.055);
+  --panel2: rgba(255,255,255,0.09);
+  --border: rgba(255,255,255,0.10);
+  --gold:#FFD700;
+  --orange:#FF8C00;
+  --red:#E63946;
+  --correct:#2DC653;
+  --burst:#B14EFF;
+  --burst2:#FF3DA6;
+  --txt:#F4F2FF;
+  --txt-dim: rgba(244,242,255,0.55);
+}
+
+html,body{ height:100%; }
+body{
+  font-family:'Be Vietnam Pro', sans-serif;
+  background: var(--ink);
+  color: var(--txt);
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  overflow-x:hidden;
+  position:relative;
+}
+
+.bg-fx{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 40% at 15% 8%, rgba(255,140,0,0.14), transparent),
+    radial-gradient(ellipse 50% 55% at 90% 90%, rgba(177,78,255,0.10), transparent),
+    radial-gradient(ellipse 70% 45% at 50% 50%, rgba(20,15,50,0.9), transparent);
+  transition: background 0.6s ease;
+}
+body.burst-active .bg-fx{
+  background:
+    radial-gradient(ellipse 60% 45% at 15% 8%, rgba(177,78,255,0.28), transparent),
+    radial-gradient(ellipse 55% 60% at 90% 90%, rgba(255,61,166,0.22), transparent),
+    radial-gradient(ellipse 70% 45% at 50% 50%, rgba(30,10,55,0.95), transparent);
+}
+
+.frame{
+  position:relative; z-index:1;
+  width:100%; max-width:440px;
+  min-height:100vh;
+  padding:20px 18px 26px;
+  display:flex; flex-direction:column;
+}
+
+.screen{ display:none; flex:1; flex-direction:column; }
+.screen.active{ display:flex; }
+
+.logo-row{ text-align:center; margin-top:10px; margin-bottom:6px; }
+.logo-bolt{ font-size:42px; display:block; filter: drop-shadow(0 0 18px rgba(255,215,0,0.5)); animation: pulse-bolt 2.2s ease-in-out infinite; }
+@keyframes pulse-bolt{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.08); } }
+.logo-title{
+  font-family:'Baloo 2', cursive; font-weight:900; font-size:30px; letter-spacing:1px;
+  background: linear-gradient(120deg, var(--gold), var(--orange), var(--burst2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-top:2px;
+}
+.logo-sub{ font-size:11.5px; letter-spacing:2.5px; text-transform:uppercase; color: var(--txt-dim); margin-top:4px; }
+
+/* ── name entry ── */
+.section-label{
+  font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color: var(--txt-dim);
+  margin: 14px 0 8px;
+}
+.name-input{
+  width:100%; background: var(--panel2); border:1.5px solid var(--border); border-radius:16px;
+  padding:14px 16px; font-family:'Baloo 2', cursive; font-weight:700; font-size:16px;
+  color: var(--txt); outline:none; text-align:center;
+}
+.name-input::placeholder{ color: var(--txt-dim); font-weight:600; }
+.name-input:focus{ border-color: var(--gold); }
+
+.preset-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+.preset-chip{
+  font-family:'Be Vietnam Pro', sans-serif; font-weight:700; font-size:12.5px;
+  background: var(--panel); border:1.5px solid var(--border); border-radius:14px;
+  padding:11px 8px; color: var(--txt-dim); cursor:pointer; text-align:center;
+  transition: all 0.15s ease;
+}
+.preset-chip.selected{
+  background: linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,140,0,0.12));
+  border-color: var(--gold); color: var(--gold);
+}
+.preset-chip:active{ transform: scale(0.96); }
+
+.lb-preview{
+  margin-top:12px; background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding:10px 14px; font-size:12px; color: var(--txt-dim); display:none;
+}
+.lb-preview.show{ display:block; }
+.lb-preview b{ color: var(--gold); }
+.lb-preview .lb-row{ display:flex; justify-content:space-between; margin-top:3px; }
+
+.resume-banner{
+  margin-top:12px; background: rgba(177,78,255,0.12); border:1px solid rgba(177,78,255,0.4);
+  border-radius:14px; padding:12px 14px; font-size:12.5px; color:#E3C6FF; display:none;
+  text-align:center; line-height:1.5;
+}
+.resume-banner.show{ display:block; }
+.resume-banner button{
+  margin-top:8px; font-family:'Baloo 2', cursive; font-weight:700; font-size:13px;
+  background: var(--burst); color:#fff; border:none; border-radius:20px; padding:8px 18px; cursor:pointer;
+}
+
+.rules-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; margin-top:14px; }
+.rule-chip{
+  background: var(--panel2); border:1px solid var(--border); border-radius:14px;
+  padding:10px 8px; font-size:11.5px; text-align:center; line-height:1.4;
+}
+.rule-chip .ic{ font-size:18px; display:block; margin-bottom:3px; }
+
+.btn-main{
+  font-family:'Baloo 2', cursive; font-weight:800; font-size:17px;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color:#1a1200; border:none; border-radius:50px;
+  padding:15px 40px; cursor:pointer; width:100%;
+  box-shadow: 0 8px 26px rgba(255,140,0,0.35);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  margin-top:16px;
+}
+.btn-main:active{ transform: scale(0.97); }
+.btn-main:disabled{ opacity:0.35; box-shadow:none; }
+.btn-secondary{
+  font-family:'Baloo 2', cursive; font-weight:700; font-size:14px;
+  background: transparent; border:1.5px solid var(--border); color: var(--txt-dim);
+  border-radius:50px; padding:11px 24px; cursor:pointer; width:100%; margin-top:8px;
+}
+
+/* ── HUD ── */
+.hud{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+.player-chip{
+  font-family:'Baloo 2', cursive; font-weight:700; font-size:12px; color: var(--gold);
+  background: var(--panel2); border:1px solid var(--border); border-radius:20px; padding:5px 11px;
+  max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.tally{ display:flex; gap:8px; font-family:'Baloo 2', cursive; font-weight:800; font-size:13px; }
+.tally .ok{ color: var(--correct); }
+.tally .no{ color: var(--red); }
+
+.timer-wrap{ position:relative; width:44px; height:44px; flex-shrink:0; }
+.timer-wrap svg{ transform: rotate(-90deg); width:44px; height:44px; }
+.timer-bg{ fill:none; stroke: rgba(255,255,255,0.08); stroke-width:5; }
+.timer-fg{ fill:none; stroke: var(--gold); stroke-width:5; stroke-linecap:round;
+  stroke-dasharray: 125.6; stroke-dashoffset:0; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+.timer-num{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'Baloo 2', cursive; font-weight:800; font-size:13px; }
+
+.score-box{ text-align:right; }
+.score-num{ font-family:'Baloo 2', cursive; font-weight:900; font-size:18px; }
+.score-label{ font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color: var(--txt-dim); }
+
+.sticker-tray{
+  display:flex; gap:4px; min-height:26px; margin-bottom:10px; flex-wrap:wrap;
+}
+.sticker-tray .st{ font-size:19px; animation: pop-in 0.35s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes pop-in{ from{ transform: scale(0); opacity:0; } to{ transform: scale(1); opacity:1; } }
+
+.burst-meter-wrap{ margin-bottom:12px; }
+.burst-meter-label{ display:flex; justify-content:space-between; font-size:10px; letter-spacing:1.5px;
+  text-transform:uppercase; color: var(--txt-dim); margin-bottom:5px; }
+.burst-meter-label b{ color: var(--burst2); }
+.burst-meter{ height:9px; border-radius:20px; background: rgba(255,255,255,0.06);
+  border:1px solid var(--border); overflow:hidden; position:relative; }
+.burst-meter-fill{ height:100%; width:0%; border-radius:20px;
+  background: linear-gradient(90deg, var(--burst), var(--burst2), var(--gold));
+  background-size:200% 100%; transition: width 0.4s cubic-bezier(.2,1,.3,1); }
+.burst-meter.full .burst-meter-fill{ animation: shimmer 0.9s linear infinite; }
+@keyframes shimmer{ 0%{ background-position:0% 0; } 100%{ background-position:200% 0; } }
+
+.burst-banner{
+  text-align:center; font-family:'Baloo 2', cursive; font-weight:900; font-size:14px;
+  letter-spacing:1px; color:#fff; padding:8px; border-radius:14px; margin-bottom:10px;
+  background: linear-gradient(120deg, var(--burst), var(--burst2));
+  box-shadow: 0 0 24px rgba(177,78,255,0.55);
+  opacity:0; transform: translateY(-8px) scale(0.9); pointer-events:none;
+  transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.burst-banner.show{ opacity:1; transform: translateY(0) scale(1); }
+
+.cat-tag{
+  display:inline-block; align-self:flex-start; font-size:11px; font-weight:700;
+  padding:5px 12px; border-radius:20px; margin-bottom:9px;
+  background: var(--panel2); border:1px solid var(--border); color: var(--txt-dim);
+}
+.cat-meo{ color:#FF8A8A; border-color: rgba(230,57,70,0.35); }
+.cat-chu{ color:#7FC1FF; border-color: rgba(52,152,219,0.35); }
+.cat-logic{ color:#7CE0A0; border-color: rgba(45,198,83,0.35); }
+.cat-kthuc{ color:#D7A6FF; border-color: rgba(177,78,255,0.35); }
+.cat-hanviet{ color:#FFD37F; border-color: rgba(255,140,0,0.35); }
+
+.q-card{
+  background: var(--panel); border:1.5px solid var(--border); border-radius:22px;
+  padding:20px 18px; min-height:108px; display:flex; align-items:center;
+  margin-bottom:14px; animation: slide-up 0.35s ease both;
+}
+@keyframes slide-up{ from{ opacity:0; transform: translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+.q-text{ font-family:'Baloo 2', cursive; font-weight:700; font-size:18px; line-height:1.4; }
+
+.opts-grid{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.opt-btn{
+  font-family:'Be Vietnam Pro', sans-serif; font-weight:600; font-size:13px; line-height:1.35;
+  background: var(--panel2); border:1.5px solid var(--border); border-radius:16px;
+  color: var(--txt); padding:13px 11px; min-height:72px;
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  cursor:pointer; transition: transform 0.12s ease, background 0.2s, border-color 0.2s;
+}
+.opt-btn:active{ transform: scale(0.96); }
+.opt-btn.correct{ background: rgba(45,198,83,0.22); border-color: var(--correct); color:#B9F5CC; }
+.opt-btn.wrong{ background: rgba(230,57,70,0.22); border-color: var(--red); color:#FFC9CD; animation: shake 0.4s ease; }
+.opt-btn.dim{ opacity:0.4; }
+@keyframes shake{ 0%,100%{ transform:translateX(0); } 25%{ transform:translateX(-5px); } 75%{ transform:translateX(5px); } }
+
+.explain-box{
+  margin-top:12px; background: rgba(255,215,0,0.07); border:1px solid rgba(255,215,0,0.25);
+  border-radius:14px; padding:11px 13px; font-size:12px; line-height:1.5; color: #FFE9A8;
+  opacity:0; max-height:0; overflow:hidden; transition: all 0.35s ease;
+}
+.explain-box.show{ opacity:1; max-height:200px; margin-top:12px; }
+
+.particle-layer{ position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden; }
+.particle{ position:absolute; border-radius:50%; opacity:0.9; animation: burst-fly 0.9s ease-out forwards; }
+@keyframes burst-fly{ 0%{ transform: translate(0,0) scale(1); opacity:1; } 100%{ transform: translate(var(--dx), var(--dy)) scale(0); opacity:0; } }
+
+.float-sticker{ position:fixed; z-index:6; font-size:24px; pointer-events:none; animation: float-up 1s ease-out forwards; }
+@keyframes float-up{ 0%{ transform: translateY(0) scale(0.6); opacity:0; } 20%{ opacity:1; transform: translateY(-10px) scale(1.2); } 100%{ transform: translateY(-70px) scale(1); opacity:0; } }
+
+/* ── result ── */
+#screen-result{ align-items:center; justify-content:center; text-align:center; gap:12px; }
+.result-ring{ position:relative; width:140px; height:140px; margin:4px 0; }
+.result-ring svg{ transform: rotate(-90deg); width:140px; height:140px; }
+.result-ring-bg{ fill:none; stroke: rgba(255,255,255,0.08); stroke-width:10; }
+.result-ring-fg{ fill:none; stroke: url(#gradResult); stroke-width:10; stroke-linecap:round;
+  stroke-dasharray:377; stroke-dashoffset:377; transition: stroke-dashoffset 1.1s cubic-bezier(.2,1,.3,1); }
+.result-num{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.result-score-big{ font-family:'Baloo 2', cursive; font-weight:900; font-size:34px; }
+.result-score-total{ font-size:11px; color: var(--txt-dim); }
+
+.result-grade{ font-family:'Baloo 2', cursive; font-weight:800; font-size:20px; }
+.result-msg{ font-size:13px; color: var(--txt-dim); max-width:320px; line-height:1.5; }
+
+.hero-pet{
+  width:100%; max-width:320px; border-radius:20px; padding:18px 16px; margin-top:4px;
+  background: linear-gradient(135deg, rgba(255,215,0,0.14), rgba(255,61,166,0.10));
+  border:1.5px solid rgba(255,215,0,0.35); text-align:center;
+}
+.hero-pet .emoji{ font-size:52px; display:block; margin-bottom:4px; }
+.hero-pet .name{ font-family:'Baloo 2', cursive; font-weight:800; font-size:16px; color: var(--gold); }
+.hero-pet .desc{ font-size:11.5px; color: var(--txt-dim); margin-top:3px; }
+
+.sticker-collection{
+  display:flex; flex-wrap:wrap; gap:6px; justify-content:center; max-width:320px; margin-top:2px;
+}
+.sticker-collection .st{ font-size:22px; background: var(--panel); border:1px solid var(--border);
+  border-radius:10px; padding:5px 7px; }
+
+.stat-row{ display:flex; gap:8px; margin-top:2px; }
+.stat-chip{ background: var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding:9px 14px; font-size:11px; text-align:center; }
+.stat-chip b{ display:block; font-family:'Baloo 2', cursive; font-size:17px; color: var(--gold); }
+
+.lb-section{ width:100%; max-width:360px; margin-top:4px; text-align:left; }
+.lb-title{ font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color: var(--txt-dim);
+  margin-bottom:6px; text-align:center; }
+.lb-list{ background: var(--panel); border:1px solid var(--border); border-radius:16px;
+  padding:6px 12px; max-height:130px; overflow-y:auto; }
+.lb-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px;
+  padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.lb-row:last-child{ border-bottom:none; }
+.lb-row.best{ color: var(--gold); font-weight:700; }
+.lb-date{ color: var(--txt-dim); font-size:10.5px; }
+
+.btn-row{ display:flex; gap:8px; width:100%; max-width:320px; margin-top:6px; }
+.footer-note{ text-align:center; font-size:10px; color: rgba(255,255,255,0.25); margin-top:14px; line-height:1.6; }
+
+.audio-toggle{
+  position:fixed; top:16px; right:16px; z-index:20;
+  width:38px; height:38px; border-radius:50%; border:1.5px solid var(--border);
+  background: var(--panel2); color: var(--txt); font-size:16px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  backdrop-filter: blur(6px);
+}
+.audio-toggle:active{ transform: scale(0.92); }
+</style>
+</head>
+<body>
+
+<div class="bg-fx"></div>
+<div class="particle-layer" id="particle-layer"></div>
+<audio id="bg-audio" preload="auto"></audio>
+<button class="audio-toggle" id="audio-toggle" onclick="toggleAudio()">🔊</button>
+
+<div class="frame">
+
+  <!-- ══════════════ INTRO / NAME SELECT ══════════════ -->
+  <div class="screen active" id="screen-intro">
+    <div class="logo-row">
+      <span class="logo-bolt">⚡</span>
+      <div class="logo-title">BRAINBURST</div>
+      <div class="logo-sub">Bùng Nổ Trí Não</div>
+    </div>
+
+    <div class="section-label">Ai đang chơi?</div>
+    <input type="text" class="name-input" id="name-input" placeholder="Nhập tên của bạn..." maxlength="24">
+    <div class="preset-grid" id="preset-grid"></div>
+
+    <div class="lb-preview" id="lb-preview"></div>
+    <div class="resume-banner" id="resume-banner">
+      <div id="resume-text"></div>
+      <button onclick="resumeGame()">▶️ Tiếp Tục Lượt Chơi</button>
+    </div>
+
+    <div class="rules-grid">
+      <div class="rule-chip"><span class="ic">🎯</span>10 câu đố mỗi lượt</div>
+      <div class="rule-chip"><span class="ic">⏱️</span>8 giây/câu — nhanh có thưởng</div>
+      <div class="rule-chip"><span class="ic">🔥</span>3 câu đúng liên tiếp = Bùng Nổ x2</div>
+      <div class="rule-chip"><span class="ic">🐾</span>Đúng câu = nhận thú cưng</div>
+    </div>
+
+    <button class="btn-main" id="start-btn" onclick="startGame()" disabled>⚡ Bùng Nổ Thôi!</button>
+    <div class="footer-note">© Dừa & Mixue · Mùa Bão 2026<br>Bảo lưu mọi quyền</div>
+  </div>
+
+  <!-- ══════════════ GAME ══════════════ -->
+  <div class="screen" id="screen-game">
+    <div class="hud">
+      <div class="player-chip" id="player-chip">—</div>
+      <div class="tally"><span class="ok" id="tally-ok">✅0</span><span class="no" id="tally-no">❌0</span></div>
+      <div class="timer-wrap">
+        <svg viewBox="0 0 44 44">
+          <circle class="timer-bg" cx="22" cy="22" r="19"/>
+          <circle class="timer-fg" id="timer-fg" cx="22" cy="22" r="19"/>
+        </svg>
+        <div class="timer-num" id="timer-num">8</div>
+      </div>
+      <div class="score-box">
+        <div class="score-num" id="score-num">0</div>
+        <div class="score-label">Điểm</div>
+      </div>
+    </div>
+
+    <div class="sticker-tray" id="sticker-tray"></div>
+
+    <div class="burst-meter-wrap">
+      <div class="burst-meter-label"><span>Thanh Năng Lượng</span><b id="mult-label">x1</b></div>
+      <div class="burst-meter" id="burst-meter"><div class="burst-meter-fill" id="burst-meter-fill"></div></div>
+    </div>
+
+    <div class="burst-banner" id="burst-banner">⚡ BÙNG NỔ! ĐIỂM NHÂN ĐÔI ⚡</div>
+
+    <div class="cat-tag" id="cat-tag">Câu 1 / 10</div>
+    <div class="q-card"><div class="q-text" id="q-text">...</div></div>
+
+    <div class="opts-grid" id="opts-grid"></div>
+
+    <div class="explain-box" id="explain-box"></div>
+  </div>
+
+  <!-- ══════════════ RESULT ══════════════ -->
+  <div class="screen" id="screen-result">
+    <div class="logo-row" style="margin-top:0">
+      <span class="logo-bolt" style="font-size:32px">⚡</span>
+      <div class="logo-title" style="font-size:24px">Kết Quả Bùng Nổ</div>
+      <div class="logo-sub" id="result-player">—</div>
+    </div>
+
+    <div class="result-ring">
+      <svg viewBox="0 0 140 140">
+        <defs>
+          <linearGradient id="gradResult" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFD700"/>
+            <stop offset="60%" stop-color="#FF8C00"/>
+            <stop offset="100%" stop-color="#FF3DA6"/>
+          </linearGradient>
+        </defs>
+        <circle class="result-ring-bg" cx="70" cy="70" r="60"/>
+        <circle class="result-ring-fg" id="result-ring-fg" cx="70" cy="70" r="60"/>
+      </svg>
+      <div class="result-num">
+        <div class="result-score-big" id="result-score-big">0</div>
+        <div class="result-score-total" id="result-score-total">/ 1500 điểm</div>
+      </div>
+    </div>
+
+    <div class="result-grade" id="result-grade">🏆</div>
+    <div class="result-msg" id="result-msg"></div>
+
+    <div class="hero-pet" id="hero-pet">
+      <span class="emoji" id="hero-emoji">🐶</span>
+      <div class="name" id="hero-name">Cún Vàng</div>
+      <div class="desc" id="hero-desc">Phần thưởng của bạn!</div>
+    </div>
+
+    <div class="sticker-collection" id="sticker-collection"></div>
+
+    <div class="stat-row">
+      <div class="stat-chip"><b id="stat-correct">0/10</b>Câu đúng</div>
+      <div class="stat-chip"><b id="stat-time">0s</b>Tổng thời gian</div>
+      <div class="stat-chip"><b id="stat-burst">0</b>Lần bùng nổ</div>
+    </div>
+
+    <div class="lb-section">
+      <div class="lb-title">Lịch Sử Gần Đây</div>
+      <div class="lb-list" id="lb-list"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-main" style="margin-top:6px" onclick="restartGame()">⚡ Chơi Lại</button>
+    </div>
+    <button class="btn-secondary" onclick="backToIntro()">👤 Đổi Người Chơi</button>
+    <div class="footer-note">© Dừa & Mixue · Mùa Bão 2026<br>Đố Vui Bùng Nổ · Bảo lưu mọi quyền</div>
+  </div>
+
+</div>
+
+<script>
+const BANK = [
+  {"cat":"meo","q":"Từ gì mà 100% người Việt Nam đều phát âm sai?","a":"Từ \"sai\"","explain":"Nếu 100% người đọc vậy thì đó là cách phát âm đúng — câu hỏi tự phủ nhận chính nó!"},
+  {"cat":"meo","q":"Trước khi đỉnh Everest được khám phá, đỉnh núi nào cao nhất thế giới?","a":"Vẫn là đỉnh Everest","explain":"Chưa được khám phá không có nghĩa là chưa tồn tại — nó vẫn là ngọn núi cao nhất."},
+  {"cat":"meo","q":"Con gà trống và gà mái thi bơi qua sông — con nào về đích trước?","a":"Không con nào — vì gà không biết bơi!","explain":"Bẫy nằm ở tiền đề sai: người nghe tự chấp nhận gà biết bơi rồi bắt đầu so sánh."},
+  {"cat":"meo","q":"Cái gì tay trái cầm được nhưng tay phải cầm không được?","a":"Tay phải (của chính mình)","explain":"Tay phải không thể tự cầm chính nó — nhưng tay trái thì cầm được tay phải!"},
+  {"cat":"meo","q":"Điều gì mà người CÓ lại đi xin người KHÔNG CÓ?","a":"Lời xin lỗi","explain":"\"Có\" và \"không có\" ở đây là về đạo đức: người có lỗi đi xin người không có lỗi tha thứ."},
+  {"cat":"meo","q":"Trên bàn có 5 con ruồi. A đập chết 2 con. Hỏi còn mấy con ruồi trên bàn?","a":"Còn 2 con","explain":"3 con còn sống bị tiếng động làm sợ, chúng bay đi hết. Chỉ còn 2 con đã chết nằm trên bàn!"},
+  {"cat":"meo","q":"Một tá móc khóa gồm bao nhiêu chiếc chìa khóa?","a":"Không có chiếc nào","explain":"Đề bài chỉ hỏi \"móc khóa\", không đề cập đến chìa khóa nào cả!"},
+  {"cat":"meo","q":"Con gì đập thì sống, không đập thì chết?","a":"Con tim","explain":"Tim đập thì người còn sống. Tim ngừng đập thì chết. Bẫy nằm ở chỗ \"đập\" thường gợi ý hành động bạo lực!"},
+  {"cat":"chu","q":"Cây nhang càng đốt càng ngắn — vậy cây gì càng đốt càng dài?","a":"Cây tre","explain":"\"Đốt\" có hai nghĩa: đốt lửa (như nhang) và đốt tre. Tre càng nhiều đốt thì càng dài."},
+  {"cat":"chu","q":"Hoa gì càng tưới càng héo?","a":"Hoa tay","explain":"Ngâm tay vào nước lâu, da hoa tay nhăn nhúm lại — tức là \"héo\"."},
+  {"cat":"chu","q":"Ăn gì mà càng ăn càng ốm?","a":"Ăn kiêng","explain":"Bẫy nghĩa đôi của \"ốm\": não hiểu \"ốm\" = đau bệnh, nhưng đáp án dùng \"ốm\" = gầy/mảnh."},
+  {"cat":"chu","q":"Cái gì cầm càng nhiều càng dễ mất?","a":"Cầm đồ","explain":"\"Cầm\" trong câu hỏi = nắm giữ, nhưng đáp án dùng \"cầm\" theo nghĩa cầm cố tài sản."},
+  {"cat":"chu","q":"Thứ gì xuất khẩu được nhưng nhập khẩu thì không?","a":"Lời nói","explain":"\"Xuất khẩu thành chương\" = nói trôi chảy. Không ai \"nhập khẩu lời nói\" về miệng mình được!"},
+  {"cat":"chu","q":"Độc gì càng trúng càng thích?","a":"Độc đắc","explain":"\"Độc\" gợi ngay đến chất độc, nguy hiểm. Nhưng \"độc đắc\" là giải cao nhất xổ số — càng trúng càng phấn khởi!"},
+  {"cat":"chu","q":"Mật nào không ăn được?","a":"Mật mã","explain":"Mật mã là thứ để giải mã, không phải để ăn!"},
+  {"cat":"chu","q":"Cắn gì mà không cần dùng đến răng?","a":"Cắn rứt lương tâm","explain":"\"Cắn rứt\" là cảm giác ân hận, dằn vặt trong lòng — không cần dùng răng!"},
+  {"cat":"chu","q":"Mai gì không bao giờ thấy nở?","a":"Mai mốt","explain":"\"Mai mốt\" là từ chỉ thời gian (ngày mai, ngày mốt) — không phải hoa mai nên không bao giờ \"nở\" được!"},
+  {"cat":"chu","q":"Ốc móng tay có bao nhiêu móng?","a":"Không có móng nào","explain":"\"Ốc móng tay\" là tên một loài ốc biển — ốc không có tay nên tất nhiên không có móng!"},
+  {"cat":"logic","q":"Khi nào thì 9 bỏ 1 thành 10?","a":"Khi viết số La Mã: IX bỏ chữ I còn lại X = 10","explain":"Não mặc định ở hệ thập phân nên bị kẹt — đáp án nằm ở hệ La Mã."},
+  {"cat":"logic","q":"Khi nào thì 4 : 3 = 2 mà không phải phép tính sai?","a":"\"Tứ chia tam\" nói lái thành \"tám chia tư\" → 8 : 4 = 2","explain":"Đọc '4:3' thành 'tứ chia tam' (Hán Việt), nói lái thành 'tám chia tư'. Hai bước liên tiếp: Hán Việt → nói lái."},
+  {"cat":"logic","q":"Nếu 3 con mèo bắt được 3 con chuột trong 3 phút, thì 100 con mèo cần bao lâu để bắt 100 con chuột?","a":"3 phút","explain":"100 con mèo hoạt động song song cùng lúc, không phải nối tiếp nhau. Mỗi mèo vẫn chỉ mất 3 phút."},
+  {"cat":"logic","q":"Trò chơi nào mà 5 thua 2, nhưng 2 lại thua 0, còn 0 lại thua 5?","a":"Oẳn tù tì (kéo búa bao)","explain":"Búa (5 ngón) thua Kéo (2 ngón), Kéo thua Bao (0 ngón), Bao thua Búa — vòng tròn hoàn hảo!"},
+  {"cat":"kthuc","q":"Cái gì người mua biết, người bán biết, nhưng người dùng không bao giờ biết?","a":"Quan tài","explain":"Người dùng đã mất rồi nên không thể biết được."},
+  {"cat":"kthuc","q":"Thứ gì luôn ở trước mặt bạn nhưng không bao giờ nhìn thấy được?","a":"Tương lai","explain":"Não tìm vật thể hữu hình: gương, tờ giấy... Nhưng tương lai luôn ở phía trước (về thời gian), mà không ai nhìn thấy."},
+  {"cat":"kthuc","q":"Ai chỉ làm việc đúng 1 ngày trong năm mà chưa bao giờ bị sa thải?","a":"Ông già Noel","explain":"Chỉ làm đêm 24/12 mỗi năm, nhưng không ai có thể sa thải ông được!"},
+  {"cat":"kthuc","q":"Bệnh nào mang tên từ 3 bộ phận cơ thể trở lên?","a":"Bệnh Tay – Chân – Miệng","explain":"Ba bộ phận: tay, chân, miệng — bệnh rất phổ biến ở trẻ nhỏ, gây loét miệng và phát ban."},
+  {"cat":"hanviet","q":"Nước là thủy, gió là phong — vậy lửa gọi là gì?","a":"Hỏa","explain":"Ví dụ: hỏa hoạn (cháy), hỏa tiễn (tên lửa)."},
+  {"cat":"hanviet","q":"Đỏ là hồng, vàng là kim — vậy màu tím gọi là gì?","a":"Tử","explain":"Ví dụ: Tử Cấm Thành (Cung điện màu tím cấm vào)."}
+];
+
+const CAT_LABELS = { meo:"🧠 Câu Mẹo", chu:"🔤 Đố Chữ", logic:"🔢 Logic", kthuc:"📚 Kiến Thức", hanviet:"🀄 Hán–Việt" };
+const PRESET_NAMES = ["Dừa & Mixue", "Nấm & Nhím & Thỏ", "Đậu & Mun", "Jack & Hector"];
+const REWARD_ANIMALS = ["🐶","🐱","🐰","🐼","🦊","🐨","🐹","🐧","🦋","🐬","🐯","🦄"];
+
+const QUESTIONS_PER_GAME = 10;
+const TIME_PER_Q = 8;
+const CIRC_TIMER = 2 * Math.PI * 19;
+const CIRC_RESULT = 2 * Math.PI * 60;
+const MAX_SCORE = QUESTIONS_PER_GAME * 150;
+
+const LS_LEADERBOARD = 'bb_leaderboard_v1';
+const LS_PROGRESS = 'bb_progress_v1';
+
+let playerName = '';
+let queue = [];
+let current = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let streak = 0;
+let bestStreak = 0;
+let burstCount = 0;
+let multiplier = 1;
+let burstActive = false;
+let burstQuestionsLeft = 0;
+let answered = false;
+let timerInterval = null;
+let timeLeft = TIME_PER_Q;
+let qStartTime = 0;
+let totalElapsedMs = 0;
+let results = [];
+let stickers = [];
+let audioMuted = false;
+
+/* ───────── storage helpers ───────── */
+function safeGet(key){
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+  catch(e){ return null; }
+}
+function safeSet(key, val){
+  try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+  catch(e){ return false; }
+}
+
+function getLeaderboard(){ return safeGet(LS_LEADERBOARD) || {}; }
+
+function saveResultToLeaderboard(name, record){
+  const lb = getLeaderboard();
+  if (!lb[name]) lb[name] = [];
+  lb[name].unshift(record);
+  lb[name] = lb[name].slice(0, 10);
+  safeSet(LS_LEADERBOARD, lb);
+}
+
+function saveProgress(){
+  safeSet(LS_PROGRESS, {
+    playerName, queue, current, score, correctCount, wrongCount,
+    streak, bestStreak, burstCount, multiplier, burstActive, burstQuestionsLeft,
+    totalElapsedMs, results, stickers, ts: Date.now()
+  });
+}
+function loadProgress(){ return safeGet(LS_PROGRESS); }
+function clearProgress(){ try { localStorage.removeItem(LS_PROGRESS); } catch(e){} }
+
+/* ───────── background music ───────── */
+function playOpeningMusic(){
+  const audio = document.getElementById('bg-audio');
+  audio.onended = null;
+  audio.loop = false;
+  audio.muted = audioMuted;
+  audio.src = 'open.mp3';
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
+  audio.onended = () => {
+    audio.src = 'music2.mp3';
+    audio.loop = true;
+    audio.play().catch(() => {});
+  };
+}
+
+function playLoopMusic(){
+  const audio = document.getElementById('bg-audio');
+  audio.onended = null;
+  audio.muted = audioMuted;
+  audio.src = 'music2.mp3';
+  audio.loop = true;
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
+}
+
+function toggleAudio(){
+  const audio = document.getElementById('bg-audio');
+  audioMuted = !audioMuted;
+  audio.muted = audioMuted;
+  document.getElementById('audio-toggle').textContent = audioMuted ? '🔇' : '🔊';
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ───────── intro screen ───────── */
+function initIntro(){
+  const grid = document.getElementById('preset-grid');
+  grid.innerHTML = '';
+  PRESET_NAMES.forEach(name => {
+    const chip = document.createElement('div');
+    chip.className = 'preset-chip';
+    chip.textContent = name;
+    chip.onclick = () => {
+      document.getElementById('name-input').value = name;
+      refreshPresetSelection();
+      onNameChange();
+    };
+    chip.dataset.name = name;
+    grid.appendChild(chip);
+  });
+
+  const input = document.getElementById('name-input');
+  input.addEventListener('input', () => { refreshPresetSelection(); onNameChange(); });
+
+  const saved = safeGet('bb_last_name');
+  if (saved){ input.value = saved; refreshPresetSelection(); }
+  onNameChange();
+}
+
+function refreshPresetSelection(){
+  const val = document.getElementById('name-input').value.trim();
+  document.querySelectorAll('.preset-chip').forEach(chip => {
+    chip.classList.toggle('selected', chip.dataset.name === val);
+  });
+}
+
+function onNameChange(){
+  const val = document.getElementById('name-input').value.trim();
+  document.getElementById('start-btn').disabled = val.length === 0;
+  updateLeaderboardPreview(val);
+  updateResumeBanner(val);
+}
+
+function updateLeaderboardPreview(name){
+  const box = document.getElementById('lb-preview');
+  if (!name){ box.classList.remove('show'); return; }
+  const lb = getLeaderboard();
+  const history = lb[name];
+  if (!history || !history.length){ box.classList.remove('show'); return; }
+  const best = history.reduce((m, r) => r.score > m.score ? r : m, history[0]);
+  box.innerHTML = `<div>🏆 <b>${name}</b> — điểm cao nhất: <b>${best.score}</b> (${best.correct}/10 đúng)</div>
+    <div class="lb-row"><span>Lần chơi gần nhất</span><span>${formatDate(history[0].date)}</span></div>`;
+  box.classList.add('show');
+}
+
+function updateResumeBanner(name){
+  const banner = document.getElementById('resume-banner');
+  const prog = loadProgress();
+  if (prog && name && prog.playerName === name && prog.current < prog.queue.length){
+    document.getElementById('resume-text').textContent =
+      `Bạn đang chơi dở — Câu ${prog.current + 1}/${prog.queue.length}, ${prog.score} điểm. Tiếp tục nhé?`;
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+function formatDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+}
+
+/* ───────── game flow ───────── */
+function startGame(){
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) return;
+  playerName = name;
+  safeSet('bb_last_name', name);
+  clearProgress();
+  playOpeningMusic();
+
+  queue = shuffle(BANK).slice(0, QUESTIONS_PER_GAME);
+  current = 0; score = 0; correctCount = 0; wrongCount = 0;
+  streak = 0; bestStreak = 0; burstCount = 0; multiplier = 1;
+  burstActive = false; burstQuestionsLeft = 0; totalElapsedMs = 0;
+  results = []; stickers = [];
+
+  document.getElementById('player-chip').textContent = '👤 ' + playerName;
+  document.getElementById('sticker-tray').innerHTML = '';
+  updateHud();
+  showScreen('screen-game');
+  loadQuestion();
+}
+
+function resumeGame(){
+  const prog = loadProgress();
+  if (!prog) return;
+  playLoopMusic();
+  playerName = prog.playerName;
+  queue = prog.queue; current = prog.current; score = prog.score;
+  correctCount = prog.correctCount; wrongCount = prog.wrongCount;
+  streak = prog.streak; bestStreak = prog.bestStreak; burstCount = prog.burstCount;
+  multiplier = prog.multiplier; burstActive = prog.burstActive; burstQuestionsLeft = prog.burstQuestionsLeft;
+  totalElapsedMs = prog.totalElapsedMs; results = prog.results; stickers = prog.stickers;
+
+  document.getElementById('player-chip').textContent = '👤 ' + playerName;
+  document.body.classList.toggle('burst-active', burstActive);
+  renderStickerTray();
+  updateHud();
+  showScreen('screen-game');
+  loadQuestion();
+}
+
+function buildOptions(item){
+  const others = BANK.filter(x => x.q !== item.q);
+  const decoys = shuffle(others).slice(0, 3).map(x => x.a);
+  return shuffle([item.a, ...decoys]);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function updateHud(){
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('tally-ok').textContent = '✅' + correctCount;
+  document.getElementById('tally-no').textContent = '❌' + wrongCount;
+  document.getElementById('mult-label').textContent = 'x' + multiplier;
+  const pos = streak % 3;
+  const meterPct = streak > 0 && pos === 0 ? 100 : (pos / 3) * 100;
+  const fill = document.getElementById('burst-meter-fill');
+  const meter = document.getElementById('burst-meter');
+  fill.style.width = meterPct + '%';
+  meter.classList.toggle('full', meterPct >= 100);
+}
+
+function loadQuestion(){
+  if (current >= queue.length){ finishGame(); return; }
+  answered = false;
+  qStartTime = Date.now();
+  const item = queue[current];
+  document.getElementById('cat-tag').textContent = CAT_LABELS[item.cat] + ' · Câu ' + (current + 1) + ' / ' + queue.length;
+  document.getElementById('cat-tag').className = 'cat-tag cat-' + item.cat;
+  document.getElementById('q-text').textContent = item.q;
+  document.getElementById('explain-box').classList.remove('show');
+  document.getElementById('explain-box').textContent = '';
+
+  const opts = buildOptions(item);
+  const grid = document.getElementById('opts-grid');
+  grid.innerHTML = '';
+  opts.forEach(optText => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = optText;
+    btn.onclick = () => selectAnswer(btn, optText, item);
+    grid.appendChild(btn);
+  });
+
+  const card = document.querySelector('.q-card');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'slide-up 0.35s ease both';
+
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  timeLeft = TIME_PER_Q;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0){
+      clearInterval(timerInterval);
+      if (!answered) handleTimeout();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  document.getElementById('timer-num').textContent = timeLeft;
+  const offset = CIRC_TIMER * (1 - timeLeft / TIME_PER_Q);
+  const fg = document.getElementById('timer-fg');
+  fg.style.strokeDashoffset = offset;
+  fg.style.stroke = timeLeft <= 2 ? 'var(--red)' : (timeLeft <= 4 ? 'var(--orange)' : 'var(--gold)');
+}
+
+function reactionSeconds(){
+  const sec = (Date.now() - qStartTime) / 1000;
+  return Math.min(TIME_PER_Q, Math.max(0, sec));
+}
+
+function handleTimeout(){
+  answered = true;
+  const item = queue[current];
+  document.querySelectorAll('.opt-btn').forEach(b => {
+    if (b.textContent === item.a) b.classList.add('correct');
+    b.classList.add('dim');
+  });
+  totalElapsedMs += TIME_PER_Q * 1000;
+  registerWrong(item);
+  showExplain(item);
+  saveProgress();
+  setTimeout(nextQuestion, 1600);
+}
+
+function selectAnswer(btn, chosen, item){
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  const reactSec = reactionSeconds();
+  totalElapsedMs += reactSec * 1000;
+  const isCorrect = chosen === item.a;
+
+  document.querySelectorAll('.opt-btn').forEach(b => {
+    b.classList.add('dim');
+    if (b.textContent === item.a) b.classList.add('correct');
+  });
+  if (!isCorrect) btn.classList.add('wrong');
+  else btn.classList.remove('dim');
+
+  if (isCorrect){
+    handleCorrect(btn, reactSec, item);
+  } else {
+    registerWrong(item);
+    streak = 0; multiplier = 1; burstQuestionsLeft = 0;
+    setActive(false);
+    updateHud();
+  }
+  showExplain(item);
+  saveProgress();
+  setTimeout(nextQuestion, 1500);
+}
+
+function handleCorrect(btn, reactSec, item){
+  correctCount++;
+  streak++;
+  bestStreak = Math.max(bestStreak, streak);
+
+  const speedBonus = Math.round((TIME_PER_Q - reactSec) * 6.25); // 0–50
+  let points = 100 + speedBonus;
+
+  if (streak > 0 && streak % 3 === 0){
+    triggerBurst();
+  }
+  if (burstActive){
+    points *= 2;
+    burstQuestionsLeft--;
+    if (burstQuestionsLeft <= 0) setActive(false);
+  }
+  score += points;
+
+  const rect = btn.getBoundingClientRect();
+  const color = burstActive ? '#FF3DA6' : '#2DC653';
+  spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, color);
+  awardSticker(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+  results.push({ q: item.q, correct: true, points });
+  updateHud();
+}
+
+function registerWrong(item){
+  wrongCount++;
+  results.push({ q: item.q, correct: false, points: 0 });
+  updateHud();
+}
+
+function triggerBurst(){
+  burstCount++;
+  multiplier = 2;
+  burstQuestionsLeft = 3;
+  setActive(true);
+  const banner = document.getElementById('burst-banner');
+  banner.classList.add('show');
+  setTimeout(() => banner.classList.remove('show'), 1300);
+  spawnParticles(window.innerWidth / 2, window.innerHeight / 2, '#B14EFF', 22);
+}
+
+function setActive(on){
+  burstActive = on;
+  document.body.classList.toggle('burst-active', on);
+  if (!on) multiplier = 1;
+}
+
+function awardSticker(x, y){
+  const emoji = REWARD_ANIMALS[Math.floor(Math.random() * REWARD_ANIMALS.length)];
+  stickers.push(emoji);
+  renderStickerTray();
+
+  const floater = document.createElement('div');
+  floater.className = 'float-sticker';
+  floater.textContent = emoji;
+  floater.style.left = (x - 12) + 'px';
+  floater.style.top = (y - 12) + 'px';
+  document.body.appendChild(floater);
+  setTimeout(() => floater.remove(), 1000);
+}
+
+function renderStickerTray(){
+  const tray = document.getElementById('sticker-tray');
+  tray.innerHTML = '';
+  stickers.forEach(s => {
+    const span = document.createElement('span');
+    span.className = 'st';
+    span.textContent = s;
+    tray.appendChild(span);
+  });
+}
+
+function showExplain(item){
+  const box = document.getElementById('explain-box');
+  box.textContent = '💡 ' + item.explain;
+  box.classList.add('show');
+}
+
+function nextQuestion(){
+  current++;
+  if (current >= queue.length) finishGame();
+  else loadQuestion();
+}
+
+function spawnParticles(x, y, color, count = 12){
+  const layer = document.getElementById('particle-layer');
+  for (let i = 0; i < count; i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 5 + Math.random() * 6;
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 40 + Math.random() * 90;
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.background = color;
+    p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+    p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+    layer.appendChild(p);
+    setTimeout(() => p.remove(), 950);
+  }
+}
+
+/* ───────── result ───────── */
+function finishGame(){
+  clearInterval(timerInterval);
+  setActive(false);
+  clearProgress();
+
+  const record = {
+    score, correct: correctCount, total: queue.length,
+    timeSec: Math.round(totalElapsedMs / 100) / 10,
+    bestStreak, burstCount, date: new Date().toISOString()
+  };
+  saveResultToLeaderboard(playerName, record);
+
+  showScreen('screen-result');
+  document.getElementById('result-player').textContent = playerName;
+  document.getElementById('result-score-big').textContent = score;
+  document.getElementById('result-score-total').textContent = '/ ' + MAX_SCORE + ' điểm';
+
+  const pct = Math.min(1, score / MAX_SCORE);
+  setTimeout(() => {
+    document.getElementById('result-ring-fg').style.strokeDashoffset = CIRC_RESULT * (1 - pct);
+  }, 150);
+
+  const ratio = correctCount / queue.length;
+  let grade, msg;
+  if (ratio >= 0.9) { grade = '🏆 Bộ Não Kim Cương!'; msg = 'Cực đỉnh! Vừa nhanh vừa chuẩn — đúng là bậc thầy Bùng Nổ!'; }
+  else if (ratio >= 0.7) { grade = '⭐ Xuất Sắc!'; msg = 'Phản xạ cực nhanh! Chỉ vài câu tinh quái là qua mặt được bạn.'; }
+  else if (ratio >= 0.5) { grade = '👍 Khá Ổn!'; msg = 'Bạn đã vượt qua hơn nửa chặng đường. Chơi thêm để lên hạng Kim Cương nhé!'; }
+  else { grade = '😅 Bị Bẫy Khá Nhiều!'; msg = 'Không sao — những câu này đánh lừa cả người lớn. Chơi lại lần nữa xem sao!'; }
+  document.getElementById('result-grade').textContent = grade;
+  document.getElementById('result-msg').textContent = msg;
+
+  const heroTiers = [
+    { min: 0.9, emoji: '🦄', name: 'Kỳ Lân Ánh Kim', desc: 'Phần thưởng huyền thoại dành cho nhà vô địch!' },
+    { min: 0.7, emoji: '🐶', name: 'Cún Vàng Đáng Yêu', desc: 'Chú cún trung thành chúc mừng bạn!' },
+    { min: 0.5, emoji: '🐱', name: 'Mèo Con Tinh Nghịch', desc: 'Bé mèo dễ thương đồng hành cùng bạn!' },
+    { min: 0,   emoji: '🐰', name: 'Thỏ Bông Dễ Thương', desc: 'Cố lên nhé, thỏ con luôn ủng hộ bạn!' }
+  ];
+  const tier = heroTiers.find(t => ratio >= t.min);
+  document.getElementById('hero-emoji').textContent = tier.emoji;
+  document.getElementById('hero-name').textContent = tier.name;
+  document.getElementById('hero-desc').textContent = tier.desc;
+
+  const collectionBox = document.getElementById('sticker-collection');
+  collectionBox.innerHTML = stickers.map(s => `<span class="st">${s}</span>`).join('');
+
+  document.getElementById('stat-correct').textContent = correctCount + '/' + queue.length;
+  document.getElementById('stat-time').textContent = record.timeSec + 's';
+  document.getElementById('stat-burst').textContent = burstCount;
+
+  renderLeaderboardList();
+}
+
+function renderLeaderboardList(){
+  const lb = getLeaderboard();
+  const history = lb[playerName] || [];
+  const bestScore = history.reduce((m, r) => Math.max(m, r.score), 0);
+  const list = document.getElementById('lb-list');
+  if (!history.length){
+    list.innerHTML = '<div class="lb-row"><span>Chưa có lịch sử — đây là lượt đầu tiên!</span></div>';
+    return;
+  }
+  list.innerHTML = history.map(r => `
+    <div class="lb-row ${r.score === bestScore ? 'best' : ''}">
+      <span>${r.score === bestScore ? '🏆 ' : ''}${r.score} điểm · ${r.correct}/${r.total} đúng</span>
+      <span class="lb-date">${formatDate(r.date)}</span>
+    </div>
+  `).join('');
+}
+
+function restartGame(){ startGame(); }
+
+function backToIntro(){
+  showScreen('screen-intro');
+  initIntro();
+}
+
+initIntro();
+</script>
+</body>
+</html>
