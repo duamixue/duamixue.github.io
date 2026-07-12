@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🪄 Dừa & Mixue: Hành Trình Diệu Kỳ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07060f;--gold:#ffe066;--mint:#00e5b0;--rose:#ff6b9d;
+  --sky:#5ee7ff;--lime:#c6f135;--orange:#ff9f43;--purple:#c084fc;
+  --r:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;touch-action:manipulation;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:#fff;user-select:none;}
+
+/* ── SKY BG ── */
+#sceneBg{
+  position:fixed;inset:0;z-index:0;
+  transition:background 1.2s ease;
+}
+
+/* ── STARS ── */
+.star{position:fixed;background:#fff;border-radius:50%;pointer-events:none;z-index:1;animation:twinkle linear infinite;}
+@keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.9}}
+
+/* ── APP ── */
+#app{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;
+  height:100vh;max-width:820px;margin:0 auto;
+  padding:8px 10px;gap:7px;
+}
+
+/* ── HUD ── */
+.hud{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);
+  border-radius:50px;padding:6px 16px;backdrop-filter:blur(14px);flex-shrink:0;
+}
+.logo{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--gold);}
+.hud-r{display:flex;gap:10px;align-items:center;}
+.hs{font-size:.82rem;font-weight:800;}
+.hs.sc{color:var(--gold);}.hs.st{color:var(--mint);}.hs.lf{color:var(--rose);font-size:1rem;}
+
+/* ── SCENE CARD ── */
+.scene-card{
+  flex-shrink:0;
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:22px;padding:12px 16px;
+  backdrop-filter:blur(16px);
+  position:relative;overflow:hidden;
+}
+.scene-card::before{
+  content:'';position:absolute;inset:0;border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);
+  pointer-events:none;
+}
+.scene-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.chapter-badge{
+  font-size:.65rem;font-weight:800;padding:2px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;
+  background:rgba(255,224,102,.2);color:var(--gold);border:1px solid rgba(255,224,102,.3);
+}
+.mood-badge{
+  font-size:.78rem;font-weight:800;margin-top:4px;
+  display:flex;align-items:center;gap:5px;color:rgba(255,255,255,.75);
+  transition:transform .25s ease;
+}
+.mood-badge .mood-emoji{font-size:1.05rem;display:inline-block;transition:transform .3s ease;}
+.mood-badge.mood-bump .mood-emoji{animation:moodPop .4s ease;}
+@keyframes moodPop{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.scene-emoji{font-size:2.2rem;animation:sceneFloat 2.5s ease-in-out infinite alternate;flex-shrink:0;}
+@keyframes sceneFloat{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+
+/* STORY TEXT — typewriter */
+#storyText{
+  font-family:'Times New Roman',Times,serif;
+  font-size:1.05rem;font-weight:700;line-height:1.55;
+  color:rgba(255,255,255,.92);min-height:64px;
+}
+.highlight-word{
+  color:var(--gold);font-style:italic;
+  text-shadow:0 0 12px rgba(255,224,102,.5);
+}
+
+/* ── QUESTION BUBBLE ── */
+.q-bubble{
+  flex-shrink:0;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;padding:9px 14px;
+  text-align:center;backdrop-filter:blur(10px);
+}
+.q-sub-badge{display:inline-block;font-size:.65rem;font-weight:800;padding:2px 10px;border-radius:20px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.qsb-viet{background:rgba(255,107,157,.22);color:var(--rose);}
+.qsb-eng {background:rgba(94,231,255,.22); color:var(--sky);}
+.qsb-math{background:rgba(198,241,53,.22); color:var(--lime);}
+.lvl-1{background:rgba(0,229,176,.2);color:var(--mint);margin-left:6px;}
+.lvl-2{background:rgba(255,159,67,.22);color:var(--orange);margin-left:6px;}
+.lvl-3{background:rgba(255,107,157,.25);color:var(--rose);margin-left:6px;}
+.lvl-4{background:rgba(192,132,252,.28);color:var(--purple);margin-left:6px;box-shadow:0 0 10px rgba(192,132,252,.4);}
+#qText{font-family:'Times New Roman',Times,serif;font-size:1.05rem;font-weight:700;color:#fff;line-height:1.3;}
+
+/* ── CHOICES ── */
+#choices{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;min-height:0;
+}
+.choice-btn{
+  border-radius:var(--r);border:2.5px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  padding:10px 8px;text-align:center;gap:4px;
+  cursor:pointer;transition:transform .15s,border-color .15s,background .15s;
+  backdrop-filter:blur(8px);position:relative;overflow:hidden;
+}
+.choice-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.05),transparent);pointer-events:none;}
+.choice-emoji{font-size:1.6rem;line-height:1;}
+.choice-text{
+  font-family:'Times New Roman',Times,serif;
+  font-size:.98rem;font-weight:700;color:#fff;line-height:1.2;
+}
+.choice-btn:active{transform:scale(.91);}
+.choice-btn:hover {transform:scale(1.03);border-color:rgba(255,255,255,.3);}
+.choice-btn.correct{
+  border-color:var(--mint)!important;background:rgba(0,229,176,.18)!important;
+  animation:choicePop .45s ease;
+}
+.choice-btn.wrong  {
+  border-color:var(--rose)!important;background:rgba(255,107,157,.15)!important;
+  animation:choiceShake .38s ease;
+}
+@keyframes choicePop  {0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes choiceShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* ── PROGRESS ── */
+.prog-wrap{flex-shrink:0;height:6px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;}
+.prog-bar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--purple),var(--rose));transition:width .5s;}
+
+/* OUTCOME OVERLAY */
+#outcomeOverlay{
+  position:fixed;inset:0;z-index:300;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:28px;text-align:center;
+  backdrop-filter:blur(6px);display:none;
+}
+.out-icon{font-size:72px;animation:scFloat2 1.5s ease-in-out infinite alternate;}
+@keyframes scFloat2{from{transform:translateY(0)rotate(-3deg)}to{transform:translateY(-12px)rotate(3deg)}}
+.out-title{font-family:'Fredoka One',cursive;font-size:1.9rem;line-height:1.15;}
+.out-story{
+  font-family:'Times New Roman',Times,serif;
+  font-size:.98rem;line-height:1.55;color:rgba(255,255,255,.85);
+  max-width:340px;font-weight:700;
+}
+.out-btn{
+  background:linear-gradient(135deg,var(--purple),var(--rose));
+  color:#fff;border:none;border-radius:50px;
+  padding:12px 42px;font-family:'Fredoka One',cursive;font-size:1.2rem;
+  cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.3);transition:transform .15s;margin-top:4px;
+}
+.out-btn:active{transform:translateY(4px);}
+
+/* ── SCREENS ── */
+.screen{
+  position:fixed;inset:0;z-index:600;
+  background:radial-gradient(ellipse at 40% 35%,#1a0840,#07060f);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;padding:26px;text-align:center;
+}
+.sc-icon{font-size:78px;animation:scF 2s ease-in-out infinite alternate;}
+@keyframes scF{from{transform:translateY(0)rotate(-4deg)}to{transform:translateY(-15px)rotate(4deg)}}
+.sc-title{font-family:'Fredoka One',cursive;font-size:2.1rem;color:var(--gold);line-height:1.1;}
+.sc-sub{font-size:.9rem;color:rgba(255,255,255,.6);max-width:310px;line-height:1.65;font-weight:700;}
+.sc-epilogue{
+  font-family:'Times New Roman',Times,serif;font-style:italic;
+  font-size:.92rem;line-height:1.6;color:rgba(255,255,255,.8);
+  max-width:340px;font-weight:700;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;padding:12px 16px;
+}
+.sc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:100%;max-width:320px;}
+.sc-stat{background:rgba(255,255,255,.07);border-radius:13px;padding:11px 5px;}
+.sc-val{font-family:'Fredoka One',cursive;font-size:1.6rem;}
+.sc-lbl{font-size:.62rem;color:rgba(255,255,255,.4);margin-top:2px;font-weight:800;}
+.play-btn{
+  background:linear-gradient(135deg,var(--purple),var(--rose));color:#fff;
+  border:none;border-radius:50px;padding:14px 50px;
+  font-family:'Fredoka One',cursive;font-size:1.35rem;cursor:pointer;
+  box-shadow:0 6px 0 #5a0a40,0 10px 22px rgba(192,132,252,.4);transition:transform .15s;
+}
+.play-btn:active{transform:translateY(5px);box-shadow:0 1px 0 #5a0a40;}
+
+/* NAME INPUT */
+.name-wrap{width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;}
+.name-label{font-size:.78rem;font-weight:800;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px;}
+#playerNameInput{
+  width:100%;padding:12px 16px;border-radius:50px;border:2px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.07);color:#fff;font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:800;text-align:center;outline:none;
+}
+#playerNameInput:focus{border-color:var(--gold);}
+#playerNameInput::placeholder{color:rgba(255,255,255,.35);}
+.name-presets{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.name-chip{
+  padding:7px 15px;border-radius:50px;border:2px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);
+  font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:800;
+  cursor:pointer;transition:transform .15s,border-color .15s,background .15s;
+}
+.name-chip:active{transform:scale(.92);}
+.name-chip.picked{border-color:var(--gold);background:rgba(255,224,102,.2);color:var(--gold);}
+
+/* CONFETTI */
+.cf{position:fixed;width:10px;height:10px;pointer-events:none;z-index:700;animation:cfFall linear forwards;}
+@keyframes cfFall{0%{transform:translateY(0)rotate(0);opacity:1}100%{transform:translateY(110vh)rotate(600deg);opacity:0}}
+
+/* TYPEWRITER cursor */
+.cursor{display:inline-block;width:2px;height:1em;background:var(--gold);margin-left:2px;vertical-align:middle;animation:blink .7s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* MODE TOGGLE (1P/2P) */
+.mode-toggle{display:flex;gap:8px;}
+.mode-btn{
+  padding:8px 18px;border-radius:50px;border:2px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.75);
+  font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:800;
+  cursor:pointer;transition:transform .15s,border-color .15s,background .15s;
+}
+.mode-btn.picked{border-color:var(--gold);background:rgba(255,224,102,.2);color:var(--gold);}
+.mode-btn:active{transform:scale(.94);}
+
+/* HIGHSCORE BADGE */
+.highscore-badge{
+  font-size:.8rem;font-weight:800;color:var(--gold);
+  background:rgba(255,224,102,.12);border:1px solid rgba(255,224,102,.25);
+  border-radius:50px;padding:6px 16px;
+}
+
+/* ICON BUTTON (voice toggle) */
+.icon-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:50%;width:30px;height:30px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;
+  cursor:pointer;color:#fff;transition:transform .15s,background .15s;
+}
+.icon-btn:active{transform:scale(.88);}
+.icon-btn.off{opacity:.4;}
+
+/* TURN BADGE (2P mode) */
+.turn-badge{
+  flex-shrink:0;text-align:center;font-size:.85rem;font-weight:800;color:var(--gold);
+  background:rgba(255,224,102,.12);border:1px solid rgba(255,224,102,.25);
+  border-radius:50px;padding:5px 14px;
+}
+
+/* HINT BUTTON */
+.hint-btn{
+  margin-top:7px;background:rgba(198,241,53,.15);border:2px solid rgba(198,241,53,.3);
+  color:var(--lime);border-radius:50px;padding:5px 14px;
+  font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;
+  cursor:pointer;transition:transform .15s,opacity .15s;
+}
+.hint-btn:active{transform:scale(.93);}
+.hint-btn:disabled{opacity:.35;cursor:not-allowed;}
+.choice-btn.hidden-hint{visibility:hidden;pointer-events:none;}
+
+/* VS STATS (2P end screen) */
+.vs-stats{display:flex;align-items:center;gap:12px;width:100%;max-width:340px;}
+.vs-card{flex:1;background:rgba(255,255,255,.07);border-radius:16px;padding:14px 8px;border:2px solid rgba(255,255,255,.1);}
+.vs-card.winner{border-color:var(--gold);background:rgba(255,224,102,.15);}
+.vs-name{font-size:.8rem;font-weight:800;color:rgba(255,255,255,.7);margin-bottom:4px;}
+.vs-score{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--gold);}
+.vs-vs{font-family:'Fredoka One',cursive;font-size:1rem;color:rgba(255,255,255,.4);}
+</style>
+</head>
+<body>
+
+<div id="sceneBg"></div>
+<audio id="bgMusic" src="bg-music.mp3" loop preload="auto"></audio>
+
+<!-- START -->
+<div class="screen" id="startScreen">
+  <div class="sc-icon">🪄</div>
+  <div class="sc-title">Dừa & Mixue: Hành Trình Diệu Kỳ!</div>
+  <div class="sc-sub">
+    Một cuộc phiêu lưu kỳ diệu đang chờ!<br>
+    Đọc câu chuyện — trả lời đúng để <b>giúp nhân vật</b> vượt qua thử thách! 🗡️<br><br>
+    📚 Tiếng Việt · 🌍 Tiếng Anh · 🔢 Toán<br>
+    <i>Mỗi lần chơi là một câu chuyện khác nhau!</i>
+  </div>
+
+  <div class="mode-toggle" id="modeToggle">
+    <button class="mode-btn picked" data-mode="1">👤 1 người chơi</button>
+    <button class="mode-btn" data-mode="2">👥 2 người chơi</button>
+  </div>
+
+  <div class="name-wrap">
+    <div class="name-label" id="nameLabel1">Tên của bạn là gì?</div>
+    <input type="text" id="playerNameInput" placeholder="Nhập tên..." maxlength="16">
+    <div class="name-presets" id="namePresets">
+      <button class="name-chip" data-name="DỪA">DỪA</button>
+      <button class="name-chip" data-name="MIXUE">MIXUE</button>
+      <button class="name-chip" data-name="ĐẬU">ĐẬU</button>
+      <button class="name-chip" data-name="MUN">MUN</button>
+      <button class="name-chip" data-name="THỎ">THỎ</button>
+      <button class="name-chip" data-name="NẤM">NẤM</button>
+      <button class="name-chip" data-name="NHÍM">NHÍM</button>
+    </div>
+  </div>
+
+  <div class="name-wrap" id="player2Wrap" style="display:none">
+    <div class="name-label">Tên người chơi thứ 2?</div>
+    <input type="text" id="playerName2Input" placeholder="Nhập tên..." maxlength="16">
+    <div class="name-presets" id="namePresets2">
+      <button class="name-chip" data-name="DỪA">DỪA</button>
+      <button class="name-chip" data-name="MIXUE">MIXUE</button>
+      <button class="name-chip" data-name="ĐẬU">ĐẬU</button>
+      <button class="name-chip" data-name="MUN">MUN</button>
+      <button class="name-chip" data-name="THỎ">THỎ</button>
+      <button class="name-chip" data-name="NẤM">NẤM</button>
+      <button class="name-chip" data-name="NHÍM">NHÍM</button>
+    </div>
+  </div>
+
+  <div class="highscore-badge" id="highscoreBadge" style="display:none">🏆 Điểm cao nhất: <span id="highscoreVal">0</span></div>
+
+  <button class="play-btn" onclick="initGame()">🪄 Bắt đầu hành trình!</button>
+</div>
+
+<!-- END -->
+<div class="screen" id="endScreen" style="display:none">
+  <div class="sc-icon" id="endIcon">🏆</div>
+  <div class="sc-title" id="endTitle">Anh hùng!</div>
+  <div class="sc-epilogue" id="epilogueText"></div>
+  <div class="sc-stats" id="soloStats">
+    <div class="sc-stat"><div class="sc-val" id="r-score"  style="color:var(--gold)">0</div><div class="sc-lbl">Điểm</div></div>
+    <div class="sc-stat"><div class="sc-val" id="r-ok"     style="color:var(--mint)">0</div><div class="sc-lbl">Đúng</div></div>
+    <div class="sc-stat"><div class="sc-val" id="r-streak" style="color:var(--sky)">0</div><div class="sc-lbl">Chuỗi</div></div>
+  </div>
+  <div class="vs-stats" id="vsStats" style="display:none">
+    <div class="vs-card" id="vsCard1">
+      <div class="vs-name" id="vsName1"></div>
+      <div class="vs-score" id="vsScore1"></div>
+    </div>
+    <div class="vs-vs">VS</div>
+    <div class="vs-card" id="vsCard2">
+      <div class="vs-name" id="vsName2"></div>
+      <div class="vs-score" id="vsScore2"></div>
+    </div>
+  </div>
+  <button class="play-btn" onclick="initGame()">🔄 Phiêu lưu lại!</button>
+</div>
+
+<!-- OUTCOME OVERLAY -->
+<div id="outcomeOverlay">
+  <div class="out-icon" id="outIcon">🌟</div>
+  <div class="out-title" id="outTitle" style="color:var(--mint)">Tuyệt vời!</div>
+  <div class="out-story" id="outStory"></div>
+  <button class="out-btn" onclick="continueStory()">Tiếp tục ➜</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="hud">
+    <div class="logo" id="hudLogo">🪄 Dừa & Mixue</div>
+    <div class="hud-r">
+      <button class="icon-btn" id="voiceBtn" onclick="toggleVoice()" title="Bật/tắt giọng đọc">🔊</button>
+      <div class="hs sc">⭐ <span id="scoreVal">0</span></div>
+      <div class="hs st">🔥 <span id="streakVal">0</span></div>
+      <div class="hs lf" id="livesEl">❤️❤️❤️</div>
+    </div>
+  </div>
+
+  <div class="turn-badge" id="turnBadge" style="display:none">👉 Lượt của: <span id="turnName"></span></div>
+
+  <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+
+  <div class="scene-card" id="sceneCard" onpointerdown="skipTypewrite()">
+    <div class="scene-top">
+      <div class="scene-emoji" id="sceneEmoji">🌟</div>
+      <div>
+        <div class="chapter-badge" id="chapterBadge">Chương 1</div>
+        <div class="mood-badge" id="moodBadge"><span class="mood-emoji" id="moodEmoji">🙂</span><span id="moodName">Mia</span></div>
+      </div>
+    </div>
+    <div id="storyText">Đang tải câu chuyện...</div>
+  </div>
+
+  <div class="q-bubble">
+    <div class="q-sub-badge qsb-viet" id="qBadge">📚 Tiếng Việt</div>
+    <div class="q-sub-badge lvl-1" id="levelBadge">★☆☆ Dễ</div>
+    <div id="qText">Câu hỏi sẽ xuất hiện ở đây</div>
+    <button class="hint-btn" id="hintBtn" onclick="useHint()">💡 Gợi ý 50/50 (<span id="hintCount">2</span>)</button>
+  </div>
+
+  <div id="choices"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  STORY NODES
+//  Mỗi node: {
+//    id, level (1=dễ,2=vừa,3=khó), emoji, bg (css gradient),
+//    scene (câu chuyện, dùng {H} thay cho tên nhân vật do người chơi chọn),
+//    sub (môn học), q (câu hỏi), choices:[{text,emoji,correct,ok,fail}]
+//  }
+// ═══════════════════════════════════════════════════════════════
+const STORIES = [
+
+  // ══ HÀNH TRÌNH 1: RỪNG MA THUẬT ══════════════════════
+  {id:'forest1', level:1, emoji:'🌲',
+   bg:'linear-gradient(180deg,#0a1628 0%,#0d2b1e 100%)',
+   scene:'Bé <b>{H}</b> bước vào khu rừng ma thuật. Có một con cáo đứng chắn đường, nó nói: <span class="highlight-word">"Ta sẽ cho mi qua nếu mi trả lời đúng!"</span> 🦊',
+   sub:'viet', q:'Con cáo có màu gì?',
+   choices:[
+     {text:'Màu cam',    emoji:'🦊', correct:true,
+      ok:'Con cáo mỉm cười và nhảy sang một bên. <b>{H}</b> tiếp tục đi vào rừng xanh mướt! 🎉',
+      fail:'Con cáo lắc đầu. <b>{H}</b> phải quay lại và thử lại...'},
+     {text:'Màu xanh',   emoji:'🟦', correct:false,ok:'',fail:''},
+     {text:'Màu tím',    emoji:'💜', correct:false,ok:'',fail:''},
+     {text:'Màu trắng',  emoji:'⬜', correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest2', level:1, emoji:'🌸',
+   bg:'linear-gradient(180deg,#0d1f0a 0%,#1a3312 100%)',
+   scene:'Đi thêm một đoạn, <b>{H}</b> gặp một bông hoa kỳ lạ đang khóc. Hoa nói: <span class="highlight-word">"Tôi bị mất tên rồi! Bạn có biết tên tôi không?"</span> 🌺',
+   sub:'viet', q:'Loài hoa nào luôn quay về phía mặt trời?',
+   choices:[
+     {text:'Hoa hướng dương',emoji:'🌻',correct:true,
+      ok:'Bông hoa reo lên vui mừng: <span class="highlight-word">"Đúng rồi! Cảm ơn bạn nhỏ!"</span> và tặng {H} một hạt ma thuật ✨',
+      fail:'Bông hoa vẫn tiếp tục khóc. {H} suy nghĩ lại...'},
+     {text:'Hoa hồng',    emoji:'🌹',correct:false,ok:'',fail:''},
+     {text:'Hoa lan',     emoji:'🌸',correct:false,ok:'',fail:''},
+     {text:'Hoa sen',     emoji:'🪷',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest3', level:1, emoji:'🐿️',
+   bg:'linear-gradient(180deg,#0c1a10 0%,#152b18 100%)',
+   scene:'Một chú sóc đang bận rộn gom hạt dẻ hỏi <b>{H}</b>: <span class="highlight-word">"Mùa nào lá cây chuyển vàng rồi rụng xuống đất bạn nhỉ?"</span> 🐿️',
+   sub:'viet', q:'Lá cây thường chuyển vàng và rụng vào mùa nào?',
+   choices:[
+     {text:'Mùa thu',   emoji:'🍂', correct:true,
+      ok:'Chú sóc gật gù: <span class="highlight-word">"Chính xác! Bạn giỏi quá!"</span> rồi tặng {H} một chiếc lá vàng may mắn 🍁',
+      fail:'Chú sóc lắc đầu, tiếp tục nhặt hạt dẻ. {H} nhìn quanh khu rừng suy nghĩ lại...'},
+     {text:'Mùa xuân',  emoji:'🌱', correct:false,ok:'',fail:''},
+     {text:'Mùa hè',    emoji:'☀️', correct:false,ok:'',fail:''},
+     {text:'Mùa đông',  emoji:'❄️', correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest4', level:2, emoji:'🌉',
+   bg:'linear-gradient(180deg,#12101e 0%,#0e1a2e 100%)',
+   scene:'{H} đến một cây cầu cũ. Một troll to béo ngồi giữa cầu hét lên: <span class="highlight-word">"Trả lời ta xong mới được qua!"</span> 👹',
+   sub:'math', q:'Cây cầu có 3 tấm ván. {H} cần đặt thêm 4 tấm nữa. Tổng cộng là?',
+   choices:[
+     {text:'7 tấm ván',  emoji:'🪵',correct:true,
+      ok:'Troll gật đầu kinh ngạc: <span class="highlight-word">"Thằng nhóc này giỏi thật!"</span> và dẫn {H} qua cầu 🌟',
+      fail:'Troll cười vang: "Sai rồi!". {H} nhìn lại các tấm ván và đếm lần nữa...'},
+     {text:'6 tấm ván',  emoji:'🪵',correct:false,ok:'',fail:''},
+     {text:'8 tấm ván',  emoji:'🪵',correct:false,ok:'',fail:''},
+     {text:'5 tấm ván',  emoji:'🪵',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest5', level:2, emoji:'🏰',
+   bg:'linear-gradient(180deg,#1a0e2e 0%,#0e0a1e 100%)',
+   scene:'{H} thấy một lâu đài xa xa. Một con chim nói: <span class="highlight-word">"Lâu đài đó gọi là <i>castle</i> trong tiếng Anh. Còn <i>butterfly</i> là con gì nhỉ?"</span> 🦜',
+   sub:'eng', q:'"Butterfly" in Vietnamese is?',
+   choices:[
+     {text:'Con bướm',   emoji:'🦋',correct:true,
+      ok:'The bird cheered: <span class="highlight-word">"Correct! You are so smart!"</span> 🎉 {H} ran happily toward the castle!',
+      fail:'The bird shook its head. {H} thought carefully again...'},
+     {text:'Con ong',    emoji:'🐝',correct:false,ok:'',fail:''},
+     {text:'Con chim',   emoji:'🐦',correct:false,ok:'',fail:''},
+     {text:'Con rùa',    emoji:'🐢',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest6', level:3, emoji:'🍎',
+   bg:'linear-gradient(180deg,#160e08 0%,#241608 100%)',
+   scene:'{H} bước vào vườn táo bí ẩn giữa rừng. Bà tiên vườn cây hỏi: <span class="highlight-word">"Vườn có 3 hàng táo, mỗi hàng trồng 4 cây. Bạn tính giúp ta có tất cả bao nhiêu cây táo nhé!"</span> 🍎',
+   sub:'math', q:'3 hàng, mỗi hàng 4 cây táo. Tổng cộng có bao nhiêu cây?',
+   choices:[
+     {text:'12 cây',  emoji:'🌳',correct:true,
+      ok:'Bà tiên vỗ tay tán thưởng: <span class="highlight-word">"Giỏi lắm! Con tính nhân thành thạo rồi đấy!"</span> và hái tặng {H} một quả táo vàng ✨',
+      fail:'Bà tiên mỉm cười hiền từ: "Con đếm lại từng hàng xem sao nhé." {H} đếm lại cẩn thận hơn...'},
+     {text:'10 cây',  emoji:'🌳',correct:false,ok:'',fail:''},
+     {text:'14 cây',  emoji:'🌳',correct:false,ok:'',fail:''},
+     {text:'9 cây',   emoji:'🌳',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest7', level:3, emoji:'🦉',
+   bg:'linear-gradient(180deg,#0a0a18 0%,#141428 100%)',
+   scene:'Một chú cú thông thái đậu trên cành cây cổ thụ, nheo mắt hỏi {H}: <span class="highlight-word">"Ta thích đố chữ lắm! Số nhiều của <i>leaf</i> (chiếc lá) trong tiếng Anh là gì nào?"</span> 🦉',
+   sub:'eng', q:'What is the plural of "leaf"?',
+   choices:[
+     {text:'Leaves',  emoji:'🍃',correct:true,
+      ok:'The owl hooted with delight: <span class="highlight-word">"Wonderful! You really know your English!"</span> 🌟 and let {H} pass through the ancient trees.',
+      fail:'The owl tilted its head. {H} thought about the tricky spelling rule again...'},
+     {text:'Leafs',   emoji:'🍂',correct:false,ok:'',fail:''},
+     {text:'Leaf',    emoji:'🌿',correct:false,ok:'',fail:''},
+     {text:'Leafes',  emoji:'🍁',correct:false,ok:'',fail:''},
+   ]},
+
+  // ══ HÀNH TRÌNH 2: VƯƠNG QUỐC BIỂN ════════════════════
+  {id:'ocean1', level:1, emoji:'🌊',
+   bg:'linear-gradient(180deg,#040e2e 0%,#061828 100%)',
+   scene:'Bé <b>{H}</b> lặn xuống đáy biển xanh thẳm. Một con cá ngựa đang bị mắc kẹt trong rong biển. Nó cầu cứu: <span class="highlight-word">"Giúp tôi với! Tôi là seahorse!"</span> 🐠',
+   sub:'eng', q:'What is "seahorse" in Vietnamese?',
+   choices:[
+     {text:'Cá ngựa',   emoji:'🐴',correct:true,
+      ok:'The seahorse swam free and said: <span class="highlight-word">"Thank you! You speak Vietnamese so well!"</span> 🌟',
+      fail:'The seahorse looked confused. {H} tried to think again...'},
+     {text:'Cá heo',    emoji:'🐬',correct:false,ok:'',fail:''},
+     {text:'Cá mập',    emoji:'🦈',correct:false,ok:'',fail:''},
+     {text:'Cá vàng',   emoji:'🐟',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean2', level:1, emoji:'🏝️',
+   bg:'linear-gradient(180deg,#0a1228 0%,#06101e 100%)',
+   scene:'{H} nổi lên một hòn đảo nhỏ. Một con vẹt đứng trên cột cờ hỏi: <span class="highlight-word">"Này cậu bé! Nước biển có vị gì?"</span> 🦜',
+   sub:'viet', q:'Nước biển có vị gì?',
+   choices:[
+     {text:'Mặn',  emoji:'🧂',correct:true,
+      ok:'Con vẹt vỗ cánh phấn khích: <span class="highlight-word">"Chuẩn! Bây giờ ta sẽ chỉ đường cho cậu!"</span> 🗺️',
+      fail:'Con vẹt cười khúc khích. {H} nhớ lại lần ra biển...'},
+     {text:'Ngọt', emoji:'🍬',correct:false,ok:'',fail:''},
+     {text:'Chua',  emoji:'🍋',correct:false,ok:'',fail:''},
+     {text:'Đắng',  emoji:'😬',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean3', level:1, emoji:'🐬',
+   bg:'linear-gradient(180deg,#03122e 0%,#051a22 100%)',
+   scene:'Một chú cá heo bơi vòng quanh {H} đầy tò mò: <span class="highlight-word">"Bạn có biết loài của tớ thở bằng gì không? Gợi ý: tớ không giống các loài cá khác đâu!"</span> 🐬',
+   sub:'viet', q:'Cá heo thở bằng gì?',
+   choices:[
+     {text:'Phổi',  emoji:'🫁',correct:true,
+      ok:'Cá heo nhảy vọt lên khỏi mặt nước vui sướng: <span class="highlight-word">"Đúng rồi! Tớ là động vật có vú đấy!"</span> 🎉',
+      fail:'Cá heo lắc đầu nhẹ nhàng. {H} nhớ lại những gì đã học...'},
+     {text:'Mang',  emoji:'🐟',correct:false,ok:'',fail:''},
+     {text:'Da',    emoji:'🫧',correct:false,ok:'',fail:''},
+     {text:'Vây',   emoji:'🐠',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean4', level:2, emoji:'🐙',
+   bg:'linear-gradient(180deg,#050f2a 0%,#080e22 100%)',
+   scene:'Sâu hơn dưới đáy biển, một con bạch tuộc khổng lồ chặn đường. Nó hỏi: <span class="highlight-word">"Ta có 8 xúc tu. Nếu ta bị mất 3 cái, ta còn mấy cái?"</span> 🐙',
+   sub:'math', q:'8 − 3 = ?',
+   choices:[
+     {text:'5',  emoji:'✋',correct:true,
+      ok:'Bạch tuộc reo lên: <span class="highlight-word">"Giỏi lắm! Ta nhường đường cho cậu!"</span> và co lại nhường lối 🎊',
+      fail:'Bạch tuộc lắc đầu và đếm lại các xúc tu của nó...'},
+     {text:'4',  emoji:'🖐️',correct:false,ok:'',fail:''},
+     {text:'6',  emoji:'✌️',correct:false,ok:'',fail:''},
+     {text:'7',  emoji:'🤚',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean5', level:2, emoji:'🦁',
+   bg:'linear-gradient(180deg,#1a0e08 0%,#0e0a04 100%)',
+   scene:'Trên đảo có một sư tử vàng đang ngủ. {H} phải trả lời thật nhẹ nhàng: <span class="highlight-word">"Con sư tử còn được gọi là gì?"</span> 🦁',
+   sub:'eng', q:'"Lion" is called "vua rừng xanh" — what does "king" mean?',
+   choices:[
+     {text:'Nhà vua',   emoji:'👑',correct:true,
+      ok:'The lion yawned and said sleepily: <span class="highlight-word">"You are clever, little one. You may pass."</span> 🏆',
+      fail:'The lion growled. {H} whispered the answer again more carefully...'},
+     {text:'Chiến sĩ',  emoji:'⚔️',correct:false,ok:'',fail:''},
+     {text:'Thám tử',   emoji:'🔍',correct:false,ok:'',fail:''},
+     {text:'Pháp sư',   emoji:'🧙',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean6', level:3, emoji:'🐟',
+   bg:'linear-gradient(180deg,#020a1c 0%,#031024 100%)',
+   scene:'{H} bơi đến một rạn san hô rộng lớn. Một bà rùa biển già hỏi: <span class="highlight-word">"Nơi đây có 4 đàn cá, mỗi đàn có 5 con. Con tính giúp ta xem có tất cả bao nhiêu con cá nhé!"</span> 🐢',
+   sub:'math', q:'4 đàn, mỗi đàn 5 con cá. Tổng cộng có bao nhiêu con cá?',
+   choices:[
+     {text:'20 con',  emoji:'🐟',correct:true,
+      ok:'Bà rùa mỉm cười hài lòng: <span class="highlight-word">"Chính xác! Con tính nhân giỏi quá!"</span> và dẫn {H} đến kho báu san hô ✨',
+      fail:'Bà rùa lắc đầu chậm rãi: "Đếm lại từng đàn xem nào." {H} đếm lại cẩn thận hơn...'},
+     {text:'18 con',  emoji:'🐟',correct:false,ok:'',fail:''},
+     {text:'24 con',  emoji:'🐟',correct:false,ok:'',fail:''},
+     {text:'16 con',  emoji:'🐟',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean7', level:3, emoji:'🪼',
+   bg:'linear-gradient(180deg,#040818 0%,#0a1428 100%)',
+   scene:'Một sinh vật trong suốt phát sáng nhẹ nhàng trôi ngang qua, hỏi {H} bằng giọng lấp lánh: <span class="highlight-word">"Bạn biết tên tiếng Anh của tớ không? Gợi ý: tớ trông giống món tráng miệng trong suốt đấy!"</span> 🪼',
+   sub:'eng', q:'What is the English word for "con sứa" (jellyfish)?',
+   choices:[
+     {text:'Jellyfish',  emoji:'🪼',correct:true,
+      ok:'It glowed brighter and sparkled with joy: <span class="highlight-word">"Yes! That is exactly right!"</span> 🌟 It guided {H} safely through the coral maze.',
+      fail:'It dimmed sadly and drifted away slightly. {H} thought about the word again...'},
+     {text:'Octopus',    emoji:'🐙',correct:false,ok:'',fail:''},
+     {text:'Squid',      emoji:'🦑',correct:false,ok:'',fail:''},
+     {text:'Starfish',   emoji:'⭐',correct:false,ok:'',fail:''},
+   ]},
+
+  // ══ HÀNH TRÌNH 3: THÀNH PHỐ TƯƠNG LAI ═══════════════
+  {id:'future1', level:1, emoji:'🚀',
+   bg:'linear-gradient(180deg,#0a0020 0%,#14003a 100%)',
+   scene:'Bé <b>{H}</b> đi tàu không gian đến thành phố tương lai. Một robot hỏi đường: <span class="highlight-word">"Xin lỗi bạn nhỏ! Bạn biết <i>robot</i> tiếng Việt gọi là gì không?"</span> 🤖',
+   sub:'viet', q:'Robot là máy móc có thể làm gì?',
+   choices:[
+     {text:'Làm việc tự động',emoji:'⚙️',correct:true,
+      ok:'Con robot gật đầu vui mừng: <span class="highlight-word">"Đúng rồi! Cảm ơn bạn nhỏ thông minh!"</span> 🌟',
+      fail:'Robot kêu bíp bíp khó hiểu. {H} suy nghĩ lại...'},
+     {text:'Chỉ biết ăn',     emoji:'🍽️',correct:false,ok:'',fail:''},
+     {text:'Chỉ biết ngủ',    emoji:'😴',correct:false,ok:'',fail:''},
+     {text:'Biết bay',        emoji:'✈️',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future2', level:1, emoji:'🌍',
+   bg:'linear-gradient(180deg,#001428 0%,#000e1e 100%)',
+   scene:'Nhìn xuống từ tàu không gian, {H} thấy Trái Đất tròn tròn. Máy tính hỏi: <span class="highlight-word">"How do you say <i>Trái Đất</i> in English?"</span> 🌍',
+   sub:'eng', q:'"Trái Đất" in English is?',
+   choices:[
+     {text:'Earth',   emoji:'🌍',correct:true,
+      ok:'The computer beeped happily: <span class="highlight-word">"Excellent! Earth is our beautiful home!"</span> 🎉',
+      fail:'The computer buzzed. {H} looked at the blue planet again...'},
+     {text:'Moon',    emoji:'🌙',correct:false,ok:'',fail:''},
+     {text:'Mars',    emoji:'🔴',correct:false,ok:'',fail:''},
+     {text:'Star',    emoji:'⭐',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future3', level:1, emoji:'🛰️',
+   bg:'linear-gradient(180deg,#04001a 0%,#0a0028 100%)',
+   scene:'Qua cửa sổ tàu, {H} thấy 2 hành tinh nhỏ bay ngang, rồi thêm 3 hành tinh nữa xuất hiện. Máy tính hỏi: <span class="highlight-word">"Con đếm giúp ta xem, tổng cộng có mấy hành tinh nhé?"</span> 🪐',
+   sub:'math', q:'2 hành tinh, thêm 3 hành tinh nữa. Tổng cộng là mấy hành tinh?',
+   choices:[
+     {text:'5 hành tinh',  emoji:'🪐',correct:true,
+      ok:'Máy tính reo vui: <span class="highlight-word">"Chính xác! Con đếm giỏi lắm!"</span> 🌟',
+      fail:'Đèn báo nhấp nháy nhẹ. {H} đếm lại từ đầu...'},
+     {text:'4 hành tinh',  emoji:'🪐',correct:false,ok:'',fail:''},
+     {text:'6 hành tinh',  emoji:'🪐',correct:false,ok:'',fail:''},
+     {text:'3 hành tinh',  emoji:'🪐',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future4', level:2, emoji:'🛸',
+   bg:'linear-gradient(180deg,#0e0030 0%,#080018 100%)',
+   scene:'Tàu của {H} cần thêm nhiên liệu. Máy tính báo: <span class="highlight-word">"Chúng ta có 6 viên năng lượng. Cần 4 viên nữa để đến đích. Tổng cộng cần bao nhiêu viên?"</span> ⚡',
+   sub:'math', q:'6 + 4 = ?',
+   choices:[
+     {text:'10 viên',  emoji:'🔋',correct:true,
+      ok:'Tàu nạp đầy năng lượng và lao vút về phía ngôi sao đích! <span class="highlight-word">"Thần tốc!"</span> 🚀',
+      fail:'Đèn báo động nhấp nháy. {H} đếm lại cẩn thận hơn...'},
+     {text:'9 viên',   emoji:'🔋',correct:false,ok:'',fail:''},
+     {text:'11 viên',  emoji:'🔋',correct:false,ok:'',fail:''},
+     {text:'8 viên',   emoji:'🔋',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future5', level:2, emoji:'🏙️',
+   bg:'linear-gradient(180deg,#1a0a30 0%,#0e0018 100%)',
+   scene:'Cuối cùng {H} đến được thành phố tương lai! Nhưng cổng vào bị khóa bởi một câu đố cuối: <span class="highlight-word">"What is the opposite of <i>small</i>?"</span> 🏙️',
+   sub:'eng', q:'Opposite of "small" is?',
+   choices:[
+     {text:'Big',    emoji:'🐘',correct:true,
+      ok:'The gates opened wide! Citizens cheered: <span class="highlight-word">"Welcome to the Future City, {H}!"</span> 🎊🏆',
+      fail:'The door stayed locked. {H} thought about sizes again...'},
+     {text:'Tall',   emoji:'📏',correct:false,ok:'',fail:''},
+     {text:'Fast',   emoji:'⚡',correct:false,ok:'',fail:''},
+     {text:'Loud',   emoji:'📢',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future6', level:3, emoji:'🤖',
+   bg:'linear-gradient(180deg,#0a0018 0%,#160030 100%)',
+   scene:'Trong nhà máy robot, viên quản lý AI hỏi {H}: <span class="highlight-word">"Nhà máy có 3 khoang lắp ráp, mỗi khoang lắp được 6 robot. Con tính giúp ta xem tổng cộng lắp được bao nhiêu robot nhé!"</span> 🏭',
+   sub:'math', q:'3 khoang, mỗi khoang 6 robot. Tổng cộng có bao nhiêu robot?',
+   choices:[
+     {text:'18 robot',  emoji:'🤖',correct:true,
+      ok:'Viên AI phát sáng vui mừng: <span class="highlight-word">"Hoàn hảo! Con tính nhân xuất sắc lắm!"</span> và mở cửa phòng điều khiển trung tâm cho {H} ✨',
+      fail:'Viên AI kêu tít tít: "Chưa đúng rồi." {H} đếm lại từng khoang cẩn thận hơn...'},
+     {text:'16 robot',  emoji:'🤖',correct:false,ok:'',fail:''},
+     {text:'21 robot',  emoji:'🤖',correct:false,ok:'',fail:''},
+     {text:'15 robot',  emoji:'🤖',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future7', level:3, emoji:'👽',
+   bg:'linear-gradient(180deg,#04001a 0%,#12002e 100%)',
+   scene:'Một người ngoài hành tinh thân thiện xuất hiện trên màn hình, hỏi {H} bằng giọng vui vẻ: <span class="highlight-word">"Trước khi tạm biệt, đố bạn nhé: từ trái nghĩa với <i>begin</i> (bắt đầu) là gì?"</span> 👽',
+   sub:'eng', q:'What is the opposite of "begin"?',
+   choices:[
+     {text:'End',      emoji:'🏁',correct:true,
+      ok:'The alien laughed warmly: <span class="highlight-word">"Perfect! You are ready for any adventure now!"</span> 🎉 and waved goodbye to {H}.',
+      fail:'The alien tilted its head, puzzled. {H} thought about the word pair again...'},
+     {text:'Start',    emoji:'🔛',correct:false,ok:'',fail:''},
+     {text:'Middle',   emoji:'➗',correct:false,ok:'',fail:''},
+     {text:'Continue', emoji:'⏩',correct:false,ok:'',fail:''},
+   ]},
+
+  // ══ THÊM CÂU HỎI — RỪNG MA THUẬT (mở rộng) ══════════════
+  {id:'forest8', level:1, emoji:'🐝',
+   bg:'linear-gradient(180deg,#0a1a10 0%,#132a18 100%)',
+   scene:'Một chú ong nhỏ bay vo ve quanh {H}, hỏi: <span class="highlight-word">"Ong thường làm ra thứ gì ngọt ngào để ăn bạn nhỉ?"</span> 🐝',
+   sub:'viet', q:'Ong làm ra thứ gì ngọt ngào?',
+   choices:[
+     {text:'Mật ong',  emoji:'🍯',correct:true,
+      ok:'Chú ong vui vẻ bay vòng quanh: <span class="highlight-word">"Đúng rồi đó! Cảm ơn bạn nhỏ thông minh!"</span> 🎉',
+      fail:'Chú ong lắc đầu nhẹ. {H} nghĩ lại xem...'},
+     {text:'Sữa',      emoji:'🥛',correct:false,ok:'',fail:''},
+     {text:'Đường cát',emoji:'🧊',correct:false,ok:'',fail:''},
+     {text:'Nước cam', emoji:'🍊',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest9', level:1, emoji:'🌧️',
+   bg:'linear-gradient(180deg,#0c1620 0%,#182838 100%)',
+   scene:'Trời bỗng đổ mưa nhẹ trong rừng. Một chú thỏ trú mưa hỏi {H}: <span class="highlight-word">"Sau cơn mưa, thứ gì thường xuất hiện trên bầu trời với nhiều màu sắc?"</span> 🐰',
+   sub:'viet', q:'Sau cơn mưa, thứ gì nhiều màu sắc xuất hiện trên trời?',
+   choices:[
+     {text:'Cầu vồng', emoji:'🌈',correct:true,
+      ok:'Chú thỏ nhảy cẫng lên vui sướng: <span class="highlight-word">"Đúng vậy! Đẹp lắm phải không?"</span> 🌈',
+      fail:'Chú thỏ ngơ ngác nhìn trời. {H} nhìn lên và suy nghĩ lại...'},
+     {text:'Mặt trăng',emoji:'🌙',correct:false,ok:'',fail:''},
+     {text:'Sao băng', emoji:'☄️',correct:false,ok:'',fail:''},
+     {text:'Diều',     emoji:'🪁',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest10', level:2, emoji:'🐺',
+   bg:'linear-gradient(180deg,#0e0e1a 0%,#181828 100%)',
+   scene:'Một chú sói con đứng chắn lối mòn, hỏi {H}: <span class="highlight-word">"Đàn của ta có 9 con sói, 3 con vừa chạy đi chơi. Còn lại mấy con ở đây?"</span> 🐺',
+   sub:'math', q:'9 − 3 = ?',
+   choices:[
+     {text:'6',  emoji:'🐾',correct:true,
+      ok:'Sói con vẫy đuôi thân thiện: <span class="highlight-word">"Giỏi lắm! Đi cùng ta khám phá rừng sâu nhé!"</span> 🌲',
+      fail:'Sói con tru nhẹ một tiếng. {H} đếm lại cẩn thận hơn...'},
+     {text:'5',  emoji:'🐾',correct:false,ok:'',fail:''},
+     {text:'7',  emoji:'🐾',correct:false,ok:'',fail:''},
+     {text:'4',  emoji:'🐾',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest11', level:2, emoji:'🦔',
+   bg:'linear-gradient(180deg,#101a0e 0%,#1c2c18 100%)',
+   scene:'Một chú nhím nhỏ cuộn tròn lăn tới, hỏi {H} bằng tiếng Anh: <span class="highlight-word">"Do you know how to say <i>con nhím</i> in English?"</span> 🦔',
+   sub:'eng', q:'"Con nhím" in English is?',
+   choices:[
+     {text:'Hedgehog', emoji:'🦔',correct:true,
+      ok:'The hedgehog uncurled happily: <span class="highlight-word">"Yes! That is exactly right!"</span> 🎉',
+      fail:'The hedgehog stayed curled up. {H} thought again...'},
+     {text:'Squirrel',  emoji:'🐿️',correct:false,ok:'',fail:''},
+     {text:'Rabbit',    emoji:'🐰',correct:false,ok:'',fail:''},
+     {text:'Mouse',     emoji:'🐭',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest12', level:3, emoji:'🕸️',
+   bg:'linear-gradient(180deg,#0a0a12 0%,#141420 100%)',
+   scene:'Một bà nhện già dệt tấm lưới lấp lánh, hỏi {H}: <span class="highlight-word">"Ta dệt được 4 tấm lưới mỗi ngày, dệt liên tục trong 5 ngày. Vậy ta dệt được bao nhiêu tấm lưới?"</span> 🕷️',
+   sub:'math', q:'4 tấm/ngày × 5 ngày = ?',
+   choices:[
+     {text:'20 tấm', emoji:'🕸️',correct:true,
+      ok:'Bà nhện gật đầu hài lòng: <span class="highlight-word">"Chuẩn không cần chỉnh!"</span> và mời {H} đi xuyên qua lối tơ lấp lánh ✨',
+      fail:'Bà nhện lắc đầu, tiếp tục dệt lưới. {H} tính lại cẩn thận hơn...'},
+     {text:'16 tấm', emoji:'🕸️',correct:false,ok:'',fail:''},
+     {text:'24 tấm', emoji:'🕸️',correct:false,ok:'',fail:''},
+     {text:'18 tấm', emoji:'🕸️',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest13', level:3, emoji:'📖',
+   bg:'linear-gradient(180deg,#120a1e 0%,#1e1030 100%)',
+   scene:'Một cuốn sách cổ tự mở ra giữa không trung, hỏi {H}: <span class="highlight-word">"Từ nào trái nghĩa với <i>chăm chỉ</i>?"</span> 📖',
+   sub:'viet', q:'Từ trái nghĩa với "chăm chỉ" là gì?',
+   choices:[
+     {text:'Lười biếng', emoji:'😴',correct:true,
+      ok:'Cuốn sách khép lại nhẹ nhàng, ánh sáng vàng tỏa ra: <span class="highlight-word">"Chính xác! Con hiểu nghĩa từ rất tốt!"</span> ✨',
+      fail:'Cuốn sách rung nhẹ. {H} suy nghĩ lại nghĩa của từ...'},
+     {text:'Vui vẻ',    emoji:'😊',correct:false,ok:'',fail:''},
+     {text:'Thông minh',emoji:'🧠',correct:false,ok:'',fail:''},
+     {text:'Nhanh nhẹn',emoji:'⚡',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest14', level:1, emoji:'🦋',
+   bg:'linear-gradient(180deg,#0c1c10 0%,#162c1a 100%)',
+   scene:'Một chú bướm sặc sỡ đậu lên vai {H}, thì thầm: <span class="highlight-word">"Trước khi thành bướm xinh đẹp, mình từng là con vật nào bạn nhỉ?"</span> 🦋',
+   sub:'viet', q:'Trước khi thành bướm, nó từng là con gì?',
+   choices:[
+     {text:'Sâu bướm', emoji:'🐛',correct:true,
+      ok:'Chú bướm bay lượn vui sướng quanh {H}: <span class="highlight-word">"Đúng rồi! Bạn học sinh học giỏi ghê!"</span> 🌸',
+      fail:'Chú bướm đậu xuống một chiếc lá. {H} suy nghĩ lại...'},
+     {text:'Con kiến', emoji:'🐜',correct:false,ok:'',fail:''},
+     {text:'Con nhện', emoji:'🕷️',correct:false,ok:'',fail:''},
+     {text:'Con ốc',   emoji:'🐌',correct:false,ok:'',fail:''},
+   ]},
+
+// ══ THÊM CÂU HỎI — VƯƠNG QUỐC BIỂN (mở rộng) ═════════════
+  {id:'ocean8', level:1, emoji:'🦀',
+   bg:'linear-gradient(180deg,#041020 0%,#081a2a 100%)',
+   scene:'Một chú cua nhỏ bò ngang qua, hỏi {H}: <span class="highlight-word">"Cua thường di chuyển theo hướng nào bạn nhỉ?"</span> 🦀',
+   sub:'viet', q:'Cua thường di chuyển theo hướng nào?',
+   choices:[
+     {text:'Đi ngang',  emoji:'↔️',correct:true,
+      ok:'Chú cua giơ càng chào mừng: <span class="highlight-word">"Đúng rồi! Bạn quan sát giỏi ghê!"</span> 🎉',
+      fail:'Chú cua bò đi mất. {H} nhớ lại cách cua di chuyển...'},
+     {text:'Đi thẳng',  emoji:'⬆️',correct:false,ok:'',fail:''},
+     {text:'Đi lùi',    emoji:'⬇️',correct:false,ok:'',fail:''},
+     {text:'Nhảy cao',  emoji:'⤴️',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean9', level:1, emoji:'🐳',
+   bg:'linear-gradient(180deg,#020c1e 0%,#041428 100%)',
+   scene:'Một chú cá voi khổng lồ nổi lên hỏi {H} bằng tiếng Anh: <span class="highlight-word">"Do you know the English word for <i>cá voi</i>?"</span> 🐳',
+   sub:'eng', q:'"Cá voi" in English is?',
+   choices:[
+     {text:'Whale',   emoji:'🐳',correct:true,
+      ok:'The whale sprayed water joyfully: <span class="highlight-word">"Yes! Perfect answer!"</span> 🌊',
+      fail:'The whale dove back down. {H} thought again...'},
+     {text:'Shark',    emoji:'🦈',correct:false,ok:'',fail:''},
+     {text:'Dolphin',  emoji:'🐬',correct:false,ok:'',fail:''},
+     {text:'Seal',     emoji:'🦭',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean10', level:1, emoji:'⭐',
+   bg:'linear-gradient(180deg,#030f22 0%,#06182e 100%)',
+   scene:'Một chú sao biển nằm trên cát hỏi {H}: <span class="highlight-word">"Bạn đếm giúp mình xem, mình có mấy cánh nhé?"</span> ⭐',
+   sub:'math', q:'Sao biển thường có mấy cánh?',
+   choices:[
+     {text:'5 cánh',  emoji:'⭐',correct:true,
+      ok:'Sao biển lấp lánh vui mừng: <span class="highlight-word">"Chính xác! Bạn đếm giỏi ghê!"</span> ✨',
+      fail:'Sao biển im lặng. {H} nhìn kỹ lại và đếm...'},
+     {text:'4 cánh',  emoji:'⭐',correct:false,ok:'',fail:''},
+     {text:'6 cánh',  emoji:'⭐',correct:false,ok:'',fail:''},
+     {text:'3 cánh',  emoji:'⭐',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean11', level:2, emoji:'🐡',
+   bg:'linear-gradient(180deg,#041428 0%,#081e32 100%)',
+   scene:'Một chú cá nóc phồng to hỏi {H}: <span class="highlight-word">"Đàn cá của ta có 14 con, 6 con đã bơi đi nơi khác. Còn lại mấy con?"</span> 🐡',
+   sub:'math', q:'14 − 6 = ?',
+   choices:[
+     {text:'8',  emoji:'🐟',correct:true,
+      ok:'Cá nóc xẹp lại vui vẻ: <span class="highlight-word">"Đúng rồi! Bạn tính giỏi thật đấy!"</span> 🎊',
+      fail:'Cá nóc phồng to hơn tỏ vẻ nghi ngờ. {H} đếm lại cẩn thận...'},
+     {text:'6',  emoji:'🐟',correct:false,ok:'',fail:''},
+     {text:'9',  emoji:'🐟',correct:false,ok:'',fail:''},
+     {text:'7',  emoji:'🐟',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean12', level:2, emoji:'🐧',
+   bg:'linear-gradient(180deg,#02101e 0%,#041a2c 100%)',
+   scene:'Một chú chim cánh cụt lạc trôi tới vùng biển ấm, hỏi {H}: <span class="highlight-word">"Bạn biết chim cánh cụt sống chủ yếu ở đâu không?"</span> 🐧',
+   sub:'viet', q:'Chim cánh cụt sống chủ yếu ở đâu?',
+   choices:[
+     {text:'Nam Cực',  emoji:'❄️',correct:true,
+      ok:'Chim cánh cụt vỗ cánh vui mừng: <span class="highlight-word">"Đúng rồi! Bạn giỏi địa lý ghê!"</span> 🧊',
+      fail:'Chim cánh cụt lắc đầu, run vì lạnh. {H} nghĩ lại...'},
+     {text:'Sa mạc',   emoji:'🏜️',correct:false,ok:'',fail:''},
+     {text:'Rừng mưa', emoji:'🌴',correct:false,ok:'',fail:''},
+     {text:'Đồng cỏ',  emoji:'🌾',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean13', level:3, emoji:'🦐',
+   bg:'linear-gradient(180deg,#020a18 0%,#061224 100%)',
+   scene:'Một đàn tôm nhỏ bơi thành 6 hàng, mỗi hàng có 7 con, hỏi {H}: <span class="highlight-word">"Bạn tính giúp bọn mình xem tổng cộng có bao nhiêu con tôm nhé!"</span> 🦐',
+   sub:'math', q:'6 hàng, mỗi hàng 7 con tôm. Tổng cộng có bao nhiêu con?',
+   choices:[
+     {text:'42 con',  emoji:'🦐',correct:true,
+      ok:'Cả đàn tôm nhảy múa vui mừng: <span class="highlight-word">"Chính xác tuyệt đối!"</span> và dẫn {H} đến hang san hô bí mật ✨',
+      fail:'Đàn tôm bơi tán loạn. {H} tính lại từng hàng cẩn thận hơn...'},
+     {text:'36 con',  emoji:'🦐',correct:false,ok:'',fail:''},
+     {text:'48 con',  emoji:'🦐',correct:false,ok:'',fail:''},
+     {text:'35 con',  emoji:'🦐',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean14', level:3, emoji:'🐋',
+   bg:'linear-gradient(180deg,#020818 0%,#051022 100%)',
+   scene:'Một cụ cá voi già hát vang dưới đáy đại dương, hỏi {H} bằng tiếng Anh: <span class="highlight-word">"What is the opposite of <i>deep</i>?"</span> 🐋',
+   sub:'eng', q:'What is the opposite of "deep"?',
+   choices:[
+     {text:'Shallow', emoji:'🏖️',correct:true,
+      ok:'The old whale hummed a happy tune: <span class="highlight-word">"Wonderful! You know your words well!"</span> 🌊',
+      fail:'The whale dove deeper, puzzled. {H} thought about the word again...'},
+     {text:'Wide',    emoji:'↔️',correct:false,ok:'',fail:''},
+     {text:'Heavy',   emoji:'⚓',correct:false,ok:'',fail:''},
+     {text:'Cold',    emoji:'🧊',correct:false,ok:'',fail:''},
+   ]},
+
+  // ══ THÊM CÂU HỎI — THÀNH PHỐ TƯƠNG LAI (mở rộng) ═════════
+  {id:'future8', level:1, emoji:'🔌',
+   bg:'linear-gradient(180deg,#08001c 0%,#100030 100%)',
+   scene:'Một chiếc đèn thông minh nhấp nháy hỏi {H}: <span class="highlight-word">"Thứ gì giúp các thiết bị điện tử hoạt động được bạn nhỉ?"</span> 💡',
+   sub:'viet', q:'Thứ gì giúp thiết bị điện tử hoạt động?',
+   choices:[
+     {text:'Điện',    emoji:'⚡',correct:true,
+      ok:'Chiếc đèn sáng rực lên vui mừng: <span class="highlight-word">"Chuẩn luôn! Bạn thông minh ghê!"</span> ✨',
+      fail:'Chiếc đèn mờ dần. {H} suy nghĩ lại...'},
+     {text:'Nước',    emoji:'💧',correct:false,ok:'',fail:''},
+     {text:'Gió',     emoji:'💨',correct:false,ok:'',fail:''},
+     {text:'Đất',     emoji:'🪨',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future9', level:1, emoji:'🌙',
+   bg:'linear-gradient(180deg,#000818 0%,#02102a 100%)',
+   scene:'Con tàu bay ngang Mặt Trăng, computer hỏi {H}: <span class="highlight-word">"How do you say <i>Mặt Trăng</i> in English?"</span> 🌙',
+   sub:'eng', q:'"Mặt Trăng" in English is?',
+   choices:[
+     {text:'Moon',    emoji:'🌙',correct:true,
+      ok:'The computer chimed happily: <span class="highlight-word">"Correct! The Moon looks beautiful tonight!"</span> ✨',
+      fail:'The computer buzzed softly. {H} looked at the sky again...'},
+     {text:'Sun',     emoji:'☀️',correct:false,ok:'',fail:''},
+     {text:'Star',    emoji:'⭐',correct:false,ok:'',fail:''},
+     {text:'Cloud',   emoji:'☁️',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future10', level:2, emoji:'🧮',
+   bg:'linear-gradient(180deg,#0a0022 0%,#140038 100%)',
+   scene:'Máy tính lượng tử của tàu báo: <span class="highlight-word">"Kho có 18 mảnh kim loại, dùng hết 9 mảnh để sửa tàu. Còn lại mấy mảnh?"</span> 🔧',
+   sub:'math', q:'18 − 9 = ?',
+   choices:[
+     {text:'9',  emoji:'🔩',correct:true,
+      ok:'Máy tính xác nhận: <span class="highlight-word">"Chính xác! Tàu đã sẵn sàng cất cánh!"</span> 🚀',
+      fail:'Đèn báo lỗi nhấp nháy đỏ. {H} tính lại cẩn thận hơn...'},
+     {text:'8',  emoji:'🔩',correct:false,ok:'',fail:''},
+     {text:'11', emoji:'🔩',correct:false,ok:'',fail:''},
+     {text:'7',  emoji:'🔩',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future11', level:2, emoji:'🎮',
+   bg:'linear-gradient(180deg,#100028 0%,#1c0040 100%)',
+   scene:'Một robot bạn đồng hành nhỏ hỏi {H} bằng tiếng Anh: <span class="highlight-word">"What is the opposite of <i>open</i>?"</span> 🤖',
+   sub:'eng', q:'What is the opposite of "open"?',
+   choices:[
+     {text:'Closed',  emoji:'🔒',correct:true,
+      ok:'The little robot beeped with joy: <span class="highlight-word">"Yes! You are getting smarter every day!"</span> 🌟',
+      fail:'The robot tilted its head. {H} thought about the word again...'},
+     {text:'Broken',  emoji:'💥',correct:false,ok:'',fail:''},
+     {text:'Small',   emoji:'🔹',correct:false,ok:'',fail:''},
+     {text:'Loud',    emoji:'📢',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future12', level:3, emoji:'🌌',
+   bg:'linear-gradient(180deg,#04001a 0%,#0e0030 100%)',
+   scene:'Trạm vũ trụ có 5 tầng, mỗi tầng chứa 8 khoang ngủ. Máy chủ hỏi {H}: <span class="highlight-word">"Bạn tính giúp ta xem tổng cộng có bao nhiêu khoang ngủ nhé!"</span> 🛌',
+   sub:'math', q:'5 tầng, mỗi tầng 8 khoang. Tổng cộng có bao nhiêu khoang?',
+   choices:[
+     {text:'40 khoang', emoji:'🛌',correct:true,
+      ok:'Máy chủ xác nhận với ánh đèn xanh: <span class="highlight-word">"Hoàn hảo! Trạm đã sẵn sàng đón khách!"</span> ✨',
+      fail:'Đèn báo lỗi màu vàng nhấp nháy. {H} tính lại từng tầng...'},
+     {text:'35 khoang', emoji:'🛌',correct:false,ok:'',fail:''},
+     {text:'45 khoang', emoji:'🛌',correct:false,ok:'',fail:''},
+     {text:'32 khoang', emoji:'🛌',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future13', level:3, emoji:'🔮',
+   bg:'linear-gradient(180deg,#0e0020 0%,#1c0038 100%)',
+   scene:'Một quả cầu tiên tri lơ lửng hỏi {H}: <span class="highlight-word">"Từ nào trái nghĩa với <i>increase</i> (tăng lên) trong tiếng Anh?"</span> 🔮',
+   sub:'eng', q:'What is the opposite of "increase"?',
+   choices:[
+     {text:'Decrease', emoji:'📉',correct:true,
+      ok:'Quả cầu phát sáng rực rỡ: <span class="highlight-word">"Chính xác! Con hiểu từ vựng rất sâu!"</span> 🌟',
+      fail:'Quả cầu mờ đi. {H} suy nghĩ lại nghĩa của từ...'},
+     {text:'Repeat',   emoji:'🔁',correct:false,ok:'',fail:''},
+     {text:'Continue', emoji:'⏩',correct:false,ok:'',fail:''},
+     {text:'Multiply', emoji:'✖️',correct:false,ok:'',fail:''},
+   ]},
+
+  // ══ CẤP ĐỘ SIÊU KHÓ (10-13 tuổi) — chỉ dành riêng cho NẤM & NHÍM ══
+  {id:'forest_h1', level:4, emoji:'🧙',
+   bg:'linear-gradient(180deg,#0a0018 0%,#180030 100%)',
+   scene:'Một pháp sư già bí ẩn hiện ra giữa vòng tròn nấm phát sáng, nhìn thẳng vào {H}: <span class="highlight-word">"Ta chỉ thử thách những ai thực sự bản lĩnh. Một khu vườn hình chữ nhật dài 12m, rộng 7m. Diện tích khu vườn là bao nhiêu mét vuông?"</span> 🧙',
+   sub:'math', q:'Chiều dài 12m, chiều rộng 7m. Diện tích hình chữ nhật là?',
+   choices:[
+     {text:'84 m²',  emoji:'📐',correct:true,
+      ok:'Pháp sư mỉm cười tán thưởng: <span class="highlight-word">"Xuất sắc! Con đã nắm vững công thức diện tích!"</span> và trao {H} một cuốn sách phép thuật cổ ✨',
+      fail:'Pháp sư lắc đầu: "Nhớ lại công thức dài nhân rộng nhé." {H} tính lại cẩn thận hơn...'},
+     {text:'19 m²',  emoji:'📐',correct:false,ok:'',fail:''},
+     {text:'78 m²',  emoji:'📐',correct:false,ok:'',fail:''},
+     {text:'96 m²',  emoji:'📐',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest_h2', level:4, emoji:'📜',
+   bg:'linear-gradient(180deg,#100a1e 0%,#1e1432 100%)',
+   scene:'Một cuộn giấy da cổ mở ra trước mặt {H}, hiện lên dòng chữ: <span class="highlight-word">"Câu tục ngữ <i>‘Ăn quả nhớ kẻ trồng cây’</i> muốn khuyên chúng ta điều gì?"</span> 📜',
+   sub:'viet', q:'Câu tục ngữ "Ăn quả nhớ kẻ trồng cây" khuyên điều gì?',
+   choices:[
+     {text:'Biết ơn người đã giúp đỡ mình', emoji:'🙏',correct:true,
+      ok:'Cuộn giấy phát sáng rực rỡ: <span class="highlight-word">"Chính xác! Con hiểu sâu sắc ý nghĩa câu tục ngữ!"</span> 🌟',
+      fail:'Cuộn giấy cuộn lại mờ dần. {H} suy ngẫm lại ý nghĩa câu nói...'},
+     {text:'Phải trồng thật nhiều cây',      emoji:'🌳',correct:false,ok:'',fail:''},
+     {text:'Chỉ nên ăn trái cây tươi',       emoji:'🍎',correct:false,ok:'',fail:''},
+     {text:'Không nên hái quả của người khác',emoji:'🚫',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'forest_h3', level:4, emoji:'🦉',
+   bg:'linear-gradient(180deg,#08081a 0%,#12122e 100%)',
+   scene:'Chú cú thông thái năm nào quay trở lại, nghiêm nghị hỏi {H}: <span class="highlight-word">"Hãy chia động từ đúng: <i>She ___ (go) to school every day.</i>"</span> 🦉',
+   sub:'eng', q:'Chia động từ: "She ___ (go) to school every day."',
+   choices:[
+     {text:'goes',   emoji:'✅',correct:true,
+      ok:'The owl hooted proudly: <span class="highlight-word">"Perfect grammar! You truly understand present simple tense!"</span> 🌟',
+      fail:'The owl shook its head slowly. {H} thought about subject-verb agreement again...'},
+     {text:'go',     emoji:'❌',correct:false,ok:'',fail:''},
+     {text:'going',  emoji:'❌',correct:false,ok:'',fail:''},
+     {text:'gone',   emoji:'❌',correct:false,ok:'',fail:''},
+   ]},
+
+  // ── Vương quốc biển: siêu khó ──
+  {id:'ocean_h1', level:4, emoji:'🐳',
+   bg:'linear-gradient(180deg,#010a1c 0%,#031430 100%)',
+   scene:'Cụ cá voi già xuất hiện từ vực sâu thăm thẳm, hỏi {H} một câu đố hóc búa: <span class="highlight-word">"Một bể cá chứa 3/4 bể nước, tương đương 60 lít. Vậy khi đầy bể chứa được bao nhiêu lít nước?"</span> 🐳',
+   sub:'math', q:'3/4 bể = 60 lít. Bể đầy chứa bao nhiêu lít?',
+   choices:[
+     {text:'80 lít',  emoji:'💧',correct:true,
+      ok:'Cụ cá voi gật đầu trầm trồ: <span class="highlight-word">"Chuẩn xác! Con giỏi phân số lắm!"</span> và dẫn {H} đến rạn san hô cổ 🌊',
+      fail:'Cụ cá voi lặn xuống sâu hơn. {H} thử tính lại từ phân số...'},
+     {text:'75 lít',  emoji:'💧',correct:false,ok:'',fail:''},
+     {text:'90 lít',  emoji:'💧',correct:false,ok:'',fail:''},
+     {text:'45 lít',  emoji:'💧',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean_h2', level:4, emoji:'🌊',
+   bg:'linear-gradient(180deg,#020c20 0%,#051834 100%)',
+   scene:'Nàng tiên cá bí ẩn xuất hiện, hỏi {H} bằng ánh mắt sắc sảo: <span class="highlight-word">"Thành ngữ <i>‘Đầu voi đuôi chuột’</i> dùng để chỉ điều gì?"</span> 🧜‍♀️',
+   sub:'viet', q:'Thành ngữ "Đầu voi đuôi chuột" chỉ điều gì?',
+   choices:[
+     {text:'Bắt đầu hoành tráng nhưng kết thúc hời hợt', emoji:'📉',correct:true,
+      ok:'Nàng tiên cá mỉm cười tán thưởng: <span class="highlight-word">"Đúng vậy! Con hiểu thành ngữ sâu sắc lắm!"</span> 🌟',
+      fail:'Nàng tiên cá lắc đầu, bơi vòng quanh. {H} suy ngẫm lại nghĩa bóng của câu...'},
+     {text:'Voi và chuột là bạn thân',   emoji:'🐘',correct:false,ok:'',fail:''},
+     {text:'Việc gì cũng phải làm to tát',emoji:'📢',correct:false,ok:'',fail:''},
+     {text:'Nên sợ hãi mọi thử thách',    emoji:'😨',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'ocean_h3', level:4, emoji:'🦑',
+   bg:'linear-gradient(180deg,#020818 0%,#04102a 100%)',
+   scene:'Con mực khổng lồ cuộn mình bí ẩn, ra một câu đố tiếng Anh khó nhằn: <span class="highlight-word">"Choose the correct sentence: I ___ finished my homework already."</span> 🦑',
+   sub:'eng', q:'Choose correctly: "I ___ finished my homework already."',
+   choices:[
+     {text:'have',   emoji:'✅',correct:true,
+      ok:'The giant squid glowed with respect: <span class="highlight-word">"Impressive! You know present perfect tense well!"</span> 🌟',
+      fail:'The squid retreated into a cloud of ink. {H} thought about the tense rule again...'},
+     {text:'has',    emoji:'❌',correct:false,ok:'',fail:''},
+     {text:'had',    emoji:'❌',correct:false,ok:'',fail:''},
+     {text:'having', emoji:'❌',correct:false,ok:'',fail:''},
+   ]},
+
+  // ── Thành phố tương lai: siêu khó ──
+  {id:'future_h1', level:4, emoji:'🧑‍🚀',
+   bg:'linear-gradient(180deg,#04001a 0%,#0e0034 100%)',
+   scene:'Chỉ huy trạm vũ trụ đưa cho {H} một bài toán hóc búa: <span class="highlight-word">"Tàu bay với vận tốc 120km/h trong 3 giờ, sau đó tăng tốc thêm 60km/h nữa trong 2 giờ tiếp theo. Tổng quãng đường tàu đã bay là bao nhiêu km?"</span> 🚀',
+   sub:'math', q:'120km/h×3h, sau đó 180km/h×2h. Tổng quãng đường là bao nhiêu km?',
+   choices:[
+     {text:'720 km',  emoji:'🛰️',correct:true,
+      ok:'Chỉ huy trạm gật đầu kính phục: <span class="highlight-word">"Xuất sắc! Con giải bài toán chuyển động thành thạo!"</span> và trao {H} huy hiệu phi hành gia danh dự 🏅',
+      fail:'Màn hình báo lỗi nhấp nháy đỏ. {H} tính lại từng chặng đường cẩn thận hơn...'},
+     {text:'660 km',  emoji:'🛰️',correct:false,ok:'',fail:''},
+     {text:'600 km',  emoji:'🛰️',correct:false,ok:'',fail:''},
+     {text:'780 km',  emoji:'🛰️',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future_h2', level:4, emoji:'🌠',
+   bg:'linear-gradient(180deg,#08001e 0%,#160038 100%)',
+   scene:'Trí tuệ nhân tạo trung tâm thành phố hỏi {H} một câu hỏi triết lý: <span class="highlight-word">"Từ <i>‘kiên trì’</i> gần nghĩa nhất với từ nào sau đây?"</span> 🌠',
+   sub:'viet', q:'Từ nào gần nghĩa nhất với "kiên trì"?',
+   choices:[
+     {text:'Bền bỉ',    emoji:'💪',correct:true,
+      ok:'Trí tuệ nhân tạo phát sáng xanh dịu: <span class="highlight-word">"Chính xác! Con phân biệt từ đồng nghĩa rất tốt!"</span> ✨',
+      fail:'Hệ thống phát tín hiệu chưa chính xác. {H} suy nghĩ lại nghĩa của từ...'},
+     {text:'Nóng vội',  emoji:'🔥',correct:false,ok:'',fail:''},
+     {text:'Rụt rè',    emoji:'😳',correct:false,ok:'',fail:''},
+     {text:'Lơ đãng',   emoji:'💭',correct:false,ok:'',fail:''},
+   ]},
+
+  {id:'future_h3', level:4, emoji:'👾',
+   bg:'linear-gradient(180deg,#0a0020 0%,#180040 100%)',
+   scene:'Người ngoài hành tinh thủ lĩnh xuất hiện, thách thức {H} bằng câu hỏi ngữ pháp khó: <span class="highlight-word">"Which sentence uses the comparative form correctly?"</span> 👾',
+   sub:'eng', q:'Which sentence is correct?',
+   choices:[
+     {text:'This spaceship is faster than that one.', emoji:'✅',correct:true,
+      ok:'The alien leader nodded with deep respect: <span class="highlight-word">"Impressive! Your grammar is truly advanced!"</span> 🌟',
+      fail:'The alien tilted its head, unconvinced. {H} thought about comparative adjectives again...'},
+     {text:'This spaceship is more faster than that one.', emoji:'❌',correct:false,ok:'',fail:''},
+     {text:'This spaceship is fastest than that one.',      emoji:'❌',correct:false,ok:'',fail:''},
+     {text:'This spaceship is fast than that one.',         emoji:'❌',correct:false,ok:'',fail:''},
+   ]},
+];
+
+// ── HERO / MOOD DATA ─────────────────────────────────────
+const HERO_INFO={
+  forest:{journeyLabel:'khu rừng ma thuật',  item:'hạt giống ma thuật'},
+  ocean :{journeyLabel:'vương quốc biển',     item:'ngọc trai lấp lánh'},
+  future:{journeyLabel:'thành phố tương lai', item:'huy hiệu năng lượng'},
+};
+// mood level: -2..+2 → emoji
+const MOOD_EMOJI={'-2':'😢','-1':'😟','0':'🙂','1':'😊','2':'🤩'};
+const LEVEL_INFO={1:{label:'Dễ',stars:'★☆☆'},2:{label:'Vừa',stars:'★★☆'},3:{label:'Khó',stars:'★★★'},4:{label:'Siêu khó',stars:'★★★★'}};
+const ELITE_NAMES=['NẤM','NHÍM'];
+function isEliteName(name){ return ELITE_NAMES.includes((name||'').trim().toUpperCase()); }
+function journeyOf(node){ return node.id.replace(/(_h)?[0-9]+$/,''); }
+function personalize(text){ return (text||'').split('{H}').join(playerName||'Bạn nhỏ'); }
+
+// Chọn ngẫu nhiên câu hỏi cho mỗi độ khó của mỗi hành trình, rồi sắp xếp
+// từ dễ đến khó để độ khó tăng dần theo tiến trình chơi — mỗi ván sẽ
+// khác nhau vì có nhiều lựa chọn ở mỗi mức độ.
+function buildPlaylist(){
+  const journeys=['forest','ocean','future'];
+  let picked=[];
+  const elite=isEliteName(playerName);
+  journeys.forEach(jy=>{
+    const pool=STORIES.filter(s=>s.id.startsWith(jy));
+    [1,2,3].forEach(lv=>{
+      const opts=pool.filter(s=>s.level===lv);
+      if(opts.length) picked.push(opts[Math.floor(Math.random()*opts.length)]);
+    });
+    // câu siêu khó (level 4) chỉ mở khóa cho NẤM & NHÍM
+    if(elite){
+      const eliteOpts=pool.filter(s=>s.level===4);
+      if(eliteOpts.length) picked.push(eliteOpts[Math.floor(Math.random()*eliteOpts.length)]);
+    }
+  });
+  // random hoá thứ tự trong cùng 1 mức độ, nhưng vẫn tăng dần độ khó tổng thể
+  return picked
+    .map(n=>({n,r:Math.random()}))
+    .sort((a,b)=> a.n.level-b.n.level || a.r-b.r)
+    .map(x=>x.n);
+}
+
+// ── STATE ─────────────────────────────────────────────────
+let score=0,lives=3,streak=0,maxStreak=0,correct=0,total=0;
+let playlist=[], curIdx=0, curNode=null, gameActive=false;
+let answered=false;
+let heroMood={forest:0,ocean:0,future:0}; // -2..+2 per journey hero
+let journeysSeen=new Set();
+let playerName='';
+
+// ── NEW FEATURES: STATE ─────────────────────────────────────
+const HINTS_PER_GAME=2;
+let hintsLeft=HINTS_PER_GAME;
+let voiceEnabled=true;
+let wrongStreak=0; // đếm số lần sai liên tiếp → dùng để giảm độ khó câu tiếp theo
+let twoPlayerMode=false;
+let players=[
+  {name:'',score:0,streak:0,maxStreak:0,correct:0,wrongStreak:0},
+  {name:'',score:0,streak:0,maxStreak:0,correct:0,wrongStreak:0}
+];
+let curPlayerIdx=0;
+const HS_KEY='storyquest_highscore';
+
+// ── MODE TOGGLE (1P / 2P) ───────────────────────────────────
+document.getElementById('modeToggle').addEventListener('click',(e)=>{
+  const btn=e.target.closest('.mode-btn');
+  if(!btn)return;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('picked'));
+  btn.classList.add('picked');
+  twoPlayerMode = btn.dataset.mode==='2';
+  document.getElementById('player2Wrap').style.display = twoPlayerMode?'flex':'none';
+  document.getElementById('nameLabel1').textContent = twoPlayerMode?'Tên người chơi thứ 1?':'Tên của bạn là gì?';
+});
+
+// ── HIGHSCORE ────────────────────────────────────────────────
+function getHighscore(){ return parseInt(localStorage.getItem(HS_KEY)||'0',10); }
+function setHighscoreIfBetter(val){
+  const cur=getHighscore();
+  if(val>cur){ localStorage.setItem(HS_KEY,String(val)); return val; }
+  return cur;
+}
+function refreshHighscoreDisplay(){
+  const hs=getHighscore();
+  const badge=document.getElementById('highscoreBadge');
+  if(hs>0){ badge.style.display='inline-block'; document.getElementById('highscoreVal').textContent=hs; }
+  else{ badge.style.display='none'; }
+}
+
+// ── VOICE TOGGLE ─────────────────────────────────────────────
+function toggleVoice(){
+  voiceEnabled=!voiceEnabled;
+  const btn=document.getElementById('voiceBtn');
+  btn.textContent=voiceEnabled?'🔊':'🔇';
+  btn.classList.toggle('off',!voiceEnabled);
+  if(!voiceEnabled && window.speechSynthesis) speechSynthesis.cancel();
+}
+
+// ── HINT 50/50 ───────────────────────────────────────────────
+function useHint(){
+  if(!gameActive||answered||hintsLeft<=0)return;
+  hintsLeft--;
+  document.getElementById('hintCount').textContent=hintsLeft;
+  if(hintsLeft<=0) document.getElementById('hintBtn').disabled=true;
+  const wrongBtns=[...document.querySelectorAll('.choice-btn')].filter(b=>{
+    const txt=b.querySelector('.choice-text').textContent;
+    const match=curNode.choices.find(c=>c.text===txt&&c.correct);
+    return !match;
+  });
+  wrongBtns.sort(()=>Math.random()-.5).slice(0,2).forEach(b=>b.classList.add('hidden-hint'));
+}
+
+// ── NAME PRESET CHIPS ───────────────────────────────────────
+document.getElementById('namePresets').addEventListener('click',(e)=>{
+  const chip=e.target.closest('.name-chip');
+  if(!chip)return;
+  document.getElementById('playerNameInput').value=chip.dataset.name;
+  document.querySelectorAll('#namePresets .name-chip').forEach(c=>c.classList.remove('picked'));
+  chip.classList.add('picked');
+});
+document.getElementById('playerNameInput').addEventListener('input',()=>{
+  document.querySelectorAll('#namePresets .name-chip').forEach(c=>c.classList.remove('picked'));
+});
+document.getElementById('namePresets2').addEventListener('click',(e)=>{
+  const chip=e.target.closest('.name-chip');
+  if(!chip)return;
+  document.getElementById('playerName2Input').value=chip.dataset.name;
+  document.querySelectorAll('#namePresets2 .name-chip').forEach(c=>c.classList.remove('picked'));
+  chip.classList.add('picked');
+});
+document.getElementById('playerName2Input').addEventListener('input',()=>{
+  document.querySelectorAll('#namePresets2 .name-chip').forEach(c=>c.classList.remove('picked'));
+});
+let twTimer=null; // typewriter timer
+let isTyping=false, twFullHtml='', twOnDone=null;
+refreshHighscoreDisplay();
+
+// ── AUDIO ─────────────────────────────────────────────────
+let AC=null;
+function unlockAudio(){
+  if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended')AC.resume();
+  const b=AC.createBuffer(1,1,22050),s=AC.createBufferSource();
+  s.buffer=b;s.connect(AC.destination);s.start(0);
+}
+
+// ── NHẠC NỀN ─────────────────────────────────────────────────
+const BGM_VOLUME=0.35;
+let bgmFadeTimer=null;
+function playBgMusic(){
+  const bgm=document.getElementById('bgMusic');
+  if(!bgm)return;
+  clearInterval(bgmFadeTimer);
+  bgm.volume=0;
+  bgm.currentTime=0;
+  bgm.play().catch(()=>{/* trình duyệt chặn autoplay, sẽ phát lại khi có tương tác kế tiếp */});
+  // fade-in nhẹ nhàng để không giật
+  let v=0;
+  bgmFadeTimer=setInterval(()=>{
+    v=Math.min(BGM_VOLUME,v+0.03);
+    bgm.volume=v;
+    if(v>=BGM_VOLUME)clearInterval(bgmFadeTimer);
+  },60);
+}
+function stopBgMusic(){
+  const bgm=document.getElementById('bgMusic');
+  if(!bgm)return;
+  clearInterval(bgmFadeTimer);
+  bgm.pause();
+}
+function tone(f,d,t='sine',v=0.2,dl=0){
+  if(!AC)return;
+  try{
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(AC.destination);
+    o.type=t;o.frequency.value=f;
+    const ts=AC.currentTime+dl;
+    g.gain.setValueAtTime(0,ts);g.gain.linearRampToValueAtTime(v,ts+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,ts+d);
+    o.start(ts);o.stop(ts+d+0.05);
+  }catch(e){}
+}
+function sfxType()  {tone(1200,.02,'square',.04);}
+function sfxOK()    {[523,659,784,1047].forEach((f,i)=>tone(f,.14,'triangle',.28,i*.07));}
+function sfxWrong() {tone(200,.28,'sawtooth',.22);tone(160,.2,'sawtooth',.18,.15);}
+function sfxPage()  {[440,550].forEach((f,i)=>tone(f,.12,'triangle',.15,i*.06));}
+
+let viV=null,enV=null;
+function loadVoices(){
+  const vs=speechSynthesis.getVoices();
+  viV=vs.find(v=>v.lang==='vi-VN')||vs.find(v=>v.lang.startsWith('vi'))||null;
+  enV=vs.find(v=>v.lang==='en-US')||vs.find(v=>v.lang.startsWith('en'))||null;
+}
+if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function speak(t,lang='vi'){
+  if(!window.speechSynthesis||!voiceEnabled)return;
+  speechSynthesis.cancel();
+  const clean=t.replace(/<[^>]+>/g,'').replace(/[\u{1F000}-\u{1FFFF}]/gu,'').trim();
+  const u=new SpeechSynthesisUtterance(clean);
+  u.lang=lang==='en'?'en-US':'vi-VN';u.rate=0.88;u.pitch=1.1;u.volume=1;
+  const v=lang==='en'?enV:viV;if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+
+// ── INIT ──────────────────────────────────────────────────
+function initGame(){
+  unlockAudio();
+  playBgMusic();
+  if(window.speechSynthesis){const w=new SpeechSynthesisUtterance(' ');w.volume=0;speechSynthesis.speak(w);}
+  score=0;lives=3;streak=0;maxStreak=0;correct=0;total=0;
+  heroMood={forest:0,ocean:0,future:0}; journeysSeen=new Set();
+  wrongStreak=0; hintsLeft=HINTS_PER_GAME;
+  document.getElementById('hintBtn').disabled=false;
+  document.getElementById('hintCount').textContent=hintsLeft;
+
+  const nameInput=document.getElementById('playerNameInput').value.trim();
+  playerName=nameInput||'Bạn nhỏ';
+
+  if(twoPlayerMode){
+    const name2Input=document.getElementById('playerName2Input').value.trim();
+    players=[
+      {name:playerName,score:0,streak:0,maxStreak:0,correct:0,wrongStreak:0},
+      {name:name2Input||'Bạn nhỏ 2',score:0,streak:0,maxStreak:0,correct:0,wrongStreak:0}
+    ];
+    curPlayerIdx=0;
+    document.getElementById('turnBadge').style.display='block';
+    updateTurnBadge();
+  } else {
+    document.getElementById('turnBadge').style.display='none';
+  }
+
+  playlist=buildPlaylist(); curIdx=0; gameActive=true;
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('endScreen').style.display='none';
+  document.getElementById('outcomeOverlay').style.display='none';
+  document.getElementById('hudLogo').textContent='🪄 '+playerName;
+  buildStars();
+  updateHUD();
+  loadNode();
+}
+
+// ── TWO-PLAYER HELPERS ───────────────────────────────────────
+function updateTurnBadge(){
+  if(!twoPlayerMode)return;
+  document.getElementById('turnName').textContent=players[curPlayerIdx].name;
+}
+function syncPlayerFromState(){
+  if(!twoPlayerMode)return;
+  Object.assign(players[curPlayerIdx],{score,streak,maxStreak,correct,wrongStreak});
+}
+function loadPlayerToState(idx){
+  if(!twoPlayerMode)return;
+  const p=players[idx];
+  score=p.score;streak=p.streak;maxStreak=p.maxStreak;correct=p.correct;wrongStreak=p.wrongStreak;
+  playerName=p.name;
+}
+
+// ── LOAD NODE ─────────────────────────────────────────────
+function loadNode(){
+  if(curIdx>=playlist.length){endGame();return;}
+  curNode=playlist[curIdx]; answered=false;
+  total++;
+
+  // bg
+  document.getElementById('sceneBg').style.background=curNode.bg;
+
+  // chapter badge (số chương theo tiến trình thực tế của ván chơi) + emoji
+  document.getElementById('chapterBadge').textContent='Chương '+(curIdx+1)+'/'+playlist.length;
+  document.getElementById('sceneEmoji').textContent=curNode.emoji;
+
+  // mood badge (cảm xúc nhân vật — dùng tên người chơi đã chọn)
+  const jy=journeyOf(curNode); journeysSeen.add(jy);
+  document.getElementById('moodName').textContent=playerName;
+  document.getElementById('moodEmoji').textContent=MOOD_EMOJI[heroMood[jy]];
+
+  // subject badge
+  const badge=document.getElementById('qBadge');
+  const bl={viet:'📚 Tiếng Việt',eng:'🌍 Tiếng Anh',math:'🔢 Toán'};
+  const bc={viet:'qsb-viet',eng:'qsb-eng',math:'qsb-math'};
+  badge.textContent=bl[curNode.sub];
+  badge.className='q-sub-badge '+bc[curNode.sub];
+
+  // level badge (độ khó)
+  const lvl=LEVEL_INFO[curNode.level]||LEVEL_INFO[1];
+  const lvlEl=document.getElementById('levelBadge');
+  lvlEl.textContent=lvl.stars+' '+lvl.label;
+  lvlEl.className='q-sub-badge lvl-'+curNode.level;
+
+  // question
+  document.getElementById('qText').textContent=personalize(curNode.q);
+
+  // turn badge (2P mode)
+  if(twoPlayerMode) updateTurnBadge();
+
+  // hint button state for this question
+  document.getElementById('hintBtn').disabled = hintsLeft<=0;
+  document.getElementById('hintCount').textContent=hintsLeft;
+
+  // choices
+  renderChoices();
+
+  // typewriter story
+  typewrite(personalize(curNode.scene), ()=>{
+    sfxPage();
+    setTimeout(()=>speak(curNode.q, curNode.sub==='eng'?'en':'vi'),400);
+  });
+
+  updateProgress();
+}
+
+// ── TYPEWRITER ─────────────────────────────────────────────
+function typewrite(html, onDone){
+  clearTimeout(twTimer);
+  const el=document.getElementById('storyText');
+  el.innerHTML='';
+  isTyping=true; twFullHtml=html; twOnDone=onDone;
+
+  // strip HTML tags to get plain chars, but rebuild with HTML
+  // Simple approach: insert char by char using innerHTML slice
+  let i=0;
+  let displayed='';
+
+  function next(){
+    if(i>=html.length){el.innerHTML=html;isTyping=false;if(onDone)onDone();return;}
+    // skip HTML tags instantly
+    if(html[i]==='<'){
+      const end=html.indexOf('>',i);
+      if(end!==-1){displayed+=html.slice(i,end+1);i=end+1;}
+      else{displayed+=html[i++];}
+    } else {
+      displayed+=html[i++];
+      if(i%3===0)sfxType();
+    }
+    el.innerHTML=displayed+'<span class="cursor"></span>';
+    twTimer=setTimeout(next, 28);
+  }
+  next();
+}
+
+// Chạm vào khung truyện để bỏ qua hiệu ứng chữ chạy và hiện toàn bộ văn bản ngay
+function skipTypewrite(){
+  if(!isTyping)return;
+  clearTimeout(twTimer);
+  document.getElementById('storyText').innerHTML=twFullHtml;
+  isTyping=false;
+  const cb=twOnDone; twOnDone=null;
+  if(cb)cb();
+}
+
+// ── RENDER CHOICES ─────────────────────────────────────────
+function renderChoices(){
+  const wrap=document.getElementById('choices');
+  wrap.innerHTML='';
+  // shuffle choices display order
+  const shuffled=[...curNode.choices].sort(()=>Math.random()-.5);
+  shuffled.forEach(ch=>{
+    const btn=document.createElement('div');
+    btn.className='choice-btn';
+    btn.innerHTML=`<div class="choice-emoji">${ch.emoji}</div><div class="choice-text">${ch.text}</div>`;
+    btn.addEventListener('pointerdown',()=>onChoice(ch,btn),{passive:true});
+    wrap.appendChild(btn);
+  });
+}
+
+// ── ON CHOICE ─────────────────────────────────────────────
+function onChoice(ch, btn){
+  if(!gameActive||answered)return;
+  answered=true;
+  clearTimeout(twTimer);
+
+  const jy=journeyOf(curNode);
+
+  if(ch.correct){
+    btn.classList.add('correct');
+    score+=15+streak*4; streak++; correct++;
+    maxStreak=Math.max(maxStreak,streak);
+    heroMood[jy]=Math.min(2,heroMood[jy]+1);
+    wrongStreak=0; // trả lời đúng thì reset đếm sai liên tiếp
+    sfxOK();
+    showOutcome(true, personalize(ch.ok));
+    spawnConf(24);
+  } else {
+    btn.classList.add('wrong');
+    // highlight correct
+    document.querySelectorAll('.choice-btn').forEach(b=>{
+      const txt=b.querySelector('.choice-text').textContent;
+      const match=curNode.choices.find(c=>c.text===txt&&c.correct);
+      if(match)b.classList.add('correct');
+    });
+    streak=0; lives--; wrongStreak++;
+    heroMood[jy]=Math.max(-2,heroMood[jy]-1);
+    sfxWrong();
+    showOutcome(false, personalize(ch.fail)||`Chưa đúng rồi! Đáp án đúng là: <b>${curNode.choices.find(c=>c.correct).text}</b>`);
+  }
+  updateMoodBadge(jy);
+  updateHUD();
+}
+
+// ── MOOD BADGE UPDATE (with bump animation) ────────────────
+function updateMoodBadge(jy){
+  const badge=document.getElementById('moodBadge');
+  document.getElementById('moodEmoji').textContent=MOOD_EMOJI[heroMood[jy]];
+  badge.classList.remove('mood-bump');
+  void badge.offsetWidth; // restart animation
+  badge.classList.add('mood-bump');
+}
+
+// ── OUTCOME OVERLAY ────────────────────────────────────────
+function showOutcome(ok, storyText){
+  const ol=document.getElementById('outcomeOverlay');
+  const icons_ok =['🌟','🎉','✨','🏆','🎊','💫','🌈'];
+  const icons_fail=['💔','😟','😮','🌧️','😬'];
+  document.getElementById('outIcon').textContent=ok?icons_ok[Math.floor(Math.random()*icons_ok.length)]:icons_fail[Math.floor(Math.random()*icons_fail.length)];
+  document.getElementById('outTitle').textContent=ok?['Tuyệt vời!','Chính xác!','Xuất sắc!','Giỏi lắm!'][Math.floor(Math.random()*4)]:['Sai rồi!','Chưa đúng!','Thử lại nào!'][Math.floor(Math.random()*3)];
+  document.getElementById('outTitle').style.color=ok?'var(--mint)':'var(--rose)';
+  document.getElementById('outStory').innerHTML=storyText;
+  ol.style.background=ok?'rgba(0,20,10,.88)':'rgba(20,0,5,.88)';
+  ol.style.display='flex';
+  // speak outcome
+  const lang=curNode.sub==='eng'?'en':'vi';
+  setTimeout(()=>speak(storyText,lang),300);
+  if(lives<=0&&!ok){
+    document.querySelector('.out-btn').textContent='🔄 Chơi lại';
+    document.querySelector('.out-btn').onclick=()=>initGame();
+  } else {
+    document.querySelector('.out-btn').textContent='Tiếp tục ➜';
+    document.querySelector('.out-btn').onclick=()=>continueStory();
+  }
+}
+
+function continueStory(){
+  document.getElementById('outcomeOverlay').style.display='none';
+  if(lives<=0){endGame();return;}
+
+  if(twoPlayerMode){
+    syncPlayerFromState();       // lưu lại kết quả của người vừa chơi
+    curPlayerIdx=1-curPlayerIdx; // đổi lượt
+    loadPlayerToState(curPlayerIdx);
+    updateHUD();
+  }
+
+  curIdx++;
+  adaptDifficultyIfNeeded();
+  loadNode();
+}
+
+// ── ĐỘ KHÓ THÍCH ỨNG ─────────────────────────────────────────
+// Nếu sai 2 lần liên tiếp, tìm một câu hỏi dễ hơn còn lại trong hàng đợi
+// và đưa lên chơi tiếp theo, giúp bé lấy lại tự tin trước khi tăng khó trở lại.
+function adaptDifficultyIfNeeded(){
+  if(wrongStreak<2||curIdx>=playlist.length)return;
+  const curLevel=playlist[curIdx].level;
+  for(let i=curIdx+1;i<playlist.length;i++){
+    if(playlist[i].level<curLevel){
+      const [easier]=playlist.splice(i,1);
+      playlist.splice(curIdx,0,easier);
+      break;
+    }
+  }
+  wrongStreak=0;
+}
+
+// ── HUD / PROGRESS ─────────────────────────────────────────
+function updateHUD(){
+  document.getElementById('scoreVal').textContent=score;
+  document.getElementById('streakVal').textContent=streak;
+  let h='';for(let i=0;i<3;i++)h+=i<lives?'❤️':'🖤';
+  document.getElementById('livesEl').textContent=h;
+}
+function updateProgress(){
+  document.getElementById('progBar').style.width=Math.min(100,(curIdx/playlist.length)*100)+'%';
+}
+
+// ── END ────────────────────────────────────────────────────
+function endGame(){
+  gameActive=false;
+  if(twoPlayerMode) syncPlayerFromState(); // lưu kết quả người chơi hiện tại lần cuối
+
+  const pct=total>0?correct/total:0;
+  let icon='💪',title='Cố gắng thêm nhé!';
+  if(pct>=.9){icon='🏆';title='Anh hùng huyền thoại!';}
+  else if(pct>=.75){icon='🌟';title='Phiêu lưu gia xuất sắc!';}
+  else if(pct>=.5){icon='😄';title='Dũng cảm lắm rồi!';}
+  document.getElementById('endIcon').textContent=icon;
+  document.getElementById('epilogueText').innerHTML=buildEpilogue(pct);
+
+  if(twoPlayerMode){
+    // ── Kết quả 2 người chơi ──
+    document.getElementById('endTitle').textContent='Kết thúc hành trình!';
+    document.getElementById('soloStats').style.display='none';
+    document.getElementById('vsStats').style.display='flex';
+    const p1=players[0], p2=players[1];
+    document.getElementById('vsName1').textContent=p1.name;
+    document.getElementById('vsScore1').textContent=p1.score;
+    document.getElementById('vsName2').textContent=p2.name;
+    document.getElementById('vsScore2').textContent=p2.score;
+    document.getElementById('vsCard1').classList.toggle('winner',p1.score>p2.score);
+    document.getElementById('vsCard2').classList.toggle('winner',p2.score>p1.score);
+    const best=Math.max(p1.score,p2.score);
+    setHighscoreIfBetter(best);
+  } else {
+    // ── Kết quả 1 người chơi ──
+    document.getElementById('endTitle').textContent=playerName+' — '+title;
+    document.getElementById('soloStats').style.display='grid';
+    document.getElementById('vsStats').style.display='none';
+    document.getElementById('r-score').textContent=score;
+    document.getElementById('r-ok').textContent=correct+'/'+total;
+    document.getElementById('r-streak').textContent=maxStreak;
+    setHighscoreIfBetter(score);
+  }
+  refreshHighscoreDisplay();
+
+  document.getElementById('endScreen').style.display='flex';
+  speak(title); spawnConf(60);
+}
+
+// ── EPILOGUE (đoạn kết ngắn dựa trên hành trình đã đi) ─────
+function buildEpilogue(pct){
+  const heroes=[...journeysSeen].map(jy=>HERO_INFO[jy]);
+  if(heroes.length===0)return '';
+  const places=heroes.map(h=>h.journeyLabel).join(', ');
+  const items=heroes.map(h=>h.item).join(', ');
+
+  if(pct>=.75){
+    return `${playerName} trở về nhà, tay ôm đầy ${items} mang từ ${places}. Từ đó, mỗi khi kể lại chuyến phiêu lưu, mắt ${playerName} lại sáng lên lấp lánh như những vì sao. ✨🏡`;
+  } else if(pct>=.4){
+    return `${playerName} đã hoàn thành hành trình qua ${places}, tuy có vài lần vấp ngã nhưng chưa bao giờ bỏ cuộc. Mang theo ${items}, ${playerName} trở về nhà với thật nhiều điều mới học được. 🌙`;
+  }
+  return `Dù chặng đường qua ${places} còn nhiều thử thách, ${playerName} vẫn không nản lòng. Hẹn ${playerName} sẽ quay lại phiêu lưu lần nữa, giỏi giang và tự tin hơn! 💪🌟`;
+}
+
+// ── STARS ──────────────────────────────────────────────────
+function buildStars(){
+  document.querySelectorAll('.star').forEach(s=>s.remove());
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=.8+Math.random()*2;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
+    document.body.appendChild(s);
+  }
+}
+
+// ── CONFETTI ───────────────────────────────────────────────
+function spawnConf(n=25){
+  const cols=['#ffe066','#ff6b9d','#00e5b0','#5ee7ff','#c084fc','#c6f135','#ff9f43'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');c.className='cf';
+    c.style.cssText=`left:${Math.random()*100}vw;top:${-4+Math.random()*10}px;
+      background:${cols[i%cols.length]};border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${.9+Math.random()*.9}s;animation-delay:${Math.random()*.3}s;`;
+    document.body.appendChild(c);setTimeout(()=>c.remove(),2200);
+  }
+}
+</script>
+</body>
+</html>

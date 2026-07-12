@@ -1578,6 +1578,27 @@ function renderAgeChips(){
   });
   wrap.innerHTML = html;
 }
+/* Xoá hết các bộ lọc "phụ" (tuổi, lớp trong môn, tìm kiếm) — KHÔNG đổi môn đang xem,
+   để bé/phụ huynh không bị "mất chỗ" đang đứng. Gọi mỗi khi quay lại tab (sau khi mở 1
+   trò chơi/bài học ở tab mới), tránh tình trạng danh sách "tự nhiên còn 1-2 bài" do
+   quên bộ lọc cũ còn dính lại. */
+function resetActiveFilters(){
+  let changed = false;
+  if(currentAge !== 'all'){ currentAge = 'all'; changed = true; }
+  if(currentGrade !== 'all'){ currentGrade = 'all'; changed = true; }
+  if(currentSearch !== ''){
+    currentSearch = '';
+    const input = document.getElementById('search-input');
+    if(input) input.value = '';
+    changed = true;
+  }
+  if(!changed) return;
+  renderAgeChips();
+  renderFeatured();
+  renderEssential();
+  renderSubjectSections();
+  updateNavCount();
+}
 function filterAge(age, el){
   currentAge = age;
   document.querySelectorAll('#age-chips .chip').forEach(c => c.classList.remove('active'));
@@ -1975,6 +1996,12 @@ async function init(){
   renderSubjectSections();
   updateStats();
   updateNavCount();
+
+  /* Mỗi lần bé quay lại tab này (VD: vừa mở 1 trò chơi/bài học ở tab mới rồi bấm quay
+     lại), tự xoá bộ lọc tuổi/lớp/tìm kiếm còn sót — tránh cảm giác "tự nhiên ít bài đi". */
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible') resetActiveFilters();
+  });
 }
 init();
 </script>
