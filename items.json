@@ -688,5 +688,89 @@
     "mood": [
       "Thử thách"
     ]
+  },
+  {
+    "title": "Bé Tập Đọc Mỗi Ngày",
+    "file": "be-tap-doc-moi-ngay.html",
+    "emoji": "🌻",
+    "subject": "Tiếng Việt",
+    "type": "Luyện tập",
+    "grade": "Lớp 1–2",
+    "gradeLevel": [
+      1,
+      2
+    ],
+    "desc": "Luyện đọc trơn từng đoạn văn ngắn mỗi ngày, giúp bé đọc trôi chảy và tự tin hơn.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#1c1a08,#26220d)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thư giãn"
+    ]
+  },
+  {
+    "title": "Bé Tập Đọc Cùng Biển Xanh (Phần 2)",
+    "file": "be-tap-doc-moi-ngay-phan2.html",
+    "emoji": "🌊",
+    "subject": "Tiếng Việt",
+    "type": "Luyện tập",
+    "grade": "Lớp 1–2",
+    "gradeLevel": [
+      1,
+      2
+    ],
+    "desc": "Phần 2 của chuỗi luyện đọc — theo chủ đề biển xanh, tiếp tục rèn kỹ năng đọc trơn cho bé.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#081a1c,#0d2428)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thư giãn"
+    ]
+  },
+  {
+    "title": "Chíp Và Đảo Từ Vựng (Phần 1)",
+    "file": "hoc-tieng-anh-vui.html",
+    "emoji": "🏝️",
+    "subject": "Tiếng Anh",
+    "type": "Trò chơi",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Cùng Chíp phiêu lưu qua đảo từ vựng, học từ tiếng Anh cơ bản qua hình ảnh và trò chơi.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0a1a12,#0d2618)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách",
+      "Khám phá"
+    ]
+  },
+  {
+    "title": "Chíp Và Đảo Từ Vựng (Phần 2)",
+    "file": "hoc-tieng-anh-vui-phan2.html",
+    "emoji": "🏝️",
+    "subject": "Tiếng Anh",
+    "type": "Trò chơi",
+    "grade": "Lớp 1–3",
+    "gradeLevel": [
+      1,
+      2,
+      3
+    ],
+    "desc": "Phần 2 của hành trình cùng Chíp — thêm nhiều từ vựng mới: gia đình, cảm xúc và hơn thế nữa.",
+    "date": "2026",
+    "color": "linear-gradient(135deg,#0e1a0a,#16260d)",
+    "featured": false,
+    "essential": false,
+    "mood": [
+      "Thử thách",
+      "Khám phá"
+    ]
   }
 ]

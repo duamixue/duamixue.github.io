@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Chíp Và Đảo Từ Vựng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#5EC8D8; --sky-dark:#3FA9BC; --sun:#FFD166; --grass:#6BBF59;
+    --berry:#EF6F6C; --cream:#FFFBF2; --plum:#3A2E39; --white:#ffffff;
+    --purple:#A78BFA; --purple-dark:#7c63d6; --shadow: 0 6px 0 rgba(58,46,57,0.15);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh; font-family:'Lexend',sans-serif;
+    background: radial-gradient(circle at 15% 10%, rgba(255,255,255,0.5) 0, transparent 40%),
+      linear-gradient(180deg, var(--sky) 0%, var(--sky-dark) 55%, #2E8B9C 100%);
+    color:var(--plum); overflow-x:hidden; position:relative;
+  }
+  .cloud{ position:absolute; background:rgba(255,255,255,0.55); border-radius:50%; pointer-events:none; }
+  h1,h2,h3{font-family:'Fredoka',sans-serif; margin:0;}
+  .screen{ min-height:100vh; display:none; flex-direction:column; align-items:center; padding:20px 16px 50px; position:relative; z-index:2; }
+  .screen.active{display:flex;}
+  .app-frame{ width:100%; max-width:480px; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
+
+  .mascot{ font-size:70px; display:inline-block; animation:bob 2.6s ease-in-out infinite; filter:drop-shadow(0 6px 6px rgba(0,0,0,0.15)); }
+  @keyframes bob{ 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-10px) rotate(2deg);} }
+  .speech-bubble{ background:var(--white); border-radius:20px; padding:14px 18px; margin-top:10px; font-weight:600; font-size:16px; text-align:center; box-shadow:var(--shadow); position:relative; max-width:340px; }
+  .speech-bubble:after{ content:""; position:absolute; top:-10px; left:50%; transform:translateX(-50%); border-width:0 10px 10px 10px; border-style:solid; border-color:transparent transparent var(--white) transparent; }
+
+  .btn{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:19px; color:var(--white); background:var(--berry); border:none; border-radius:18px; padding:16px 28px; min-height:56px; box-shadow:0 6px 0 #c85653; cursor:pointer; transition:transform .08s ease; touch-action:manipulation; }
+  .btn:active{ transform:translateY(4px); box-shadow:0 2px 0 #c85653; }
+  .btn.secondary{ background:var(--sun); box-shadow:0 6px 0 #d9a63e; color:var(--plum);}
+  .btn.secondary:active{ box-shadow:0 2px 0 #d9a63e; }
+  .btn.green{ background:var(--grass); box-shadow:0 6px 0 #4f9542; }
+  .btn.green:active{ box-shadow:0 2px 0 #4f9542; }
+  .btn.purple{ background:var(--purple); box-shadow:0 6px 0 var(--purple-dark); }
+  .btn.purple:active{ box-shadow:0 2px 0 var(--purple-dark); }
+  .btn.small{ font-size:15px; padding:10px 16px; min-height:44px; }
+  .btn:disabled{ opacity:0.5; cursor:default; }
+
+  .name-input{ font-family:'Lexend',sans-serif; font-size:18px; padding:14px 18px; border-radius:16px; border:3px solid var(--white); width:100%; max-width:300px; text-align:center; margin:14px 0; outline:none; }
+  .avatar-row{ display:flex; gap:14px; margin:16px 0; flex-wrap:wrap; justify-content:center; }
+  .avatar-choice{ background:var(--white); border-radius:50%; padding:5px; cursor:pointer; box-shadow:var(--shadow); border:4px solid transparent; transition:.15s; width:78px; height:78px; }
+  .avatar-choice img{ width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
+  .avatar-choice.selected{ border-color:var(--sun); transform:scale(1.08); }
+  .avatar-name{ font-family:'Fredoka',sans-serif; font-size:14px; text-align:center; margin-top:4px; font-weight:600;}
+  .player-badge{ width:40px; height:40px; border-radius:50%; object-fit:cover; border:3px solid white; box-shadow:var(--shadow); }
+  .music-toggle{ position:fixed; top:18px; right:18px; background:rgba(255,255,255,0.85); border:none; border-radius:50%;
+    width:40px; height:40px; font-size:18px; cursor:pointer; z-index:20; box-shadow:var(--shadow); }
+
+  .card{ background:var(--cream); border-radius:26px; padding:26px 22px; width:100%; box-shadow:0 10px 0 rgba(0,0,0,0.12), 0 14px 30px rgba(0,0,0,0.18); text-align:center; }
+
+  .top-links{ display:flex; gap:10px; margin-top:18px; }
+
+  /* ---- Adventure island map ---- */
+  .island-path{ position:relative; width:100%; margin-top:14px; }
+  .island-path svg{ position:absolute; top:0; left:0; z-index:0; pointer-events:none; }
+  .island-node{ position:absolute; transform:translate(-50%,-60%); width:126px; display:flex; flex-direction:column; align-items:center;
+    background:none; border:none; cursor:pointer; z-index:1; font-family:'Lexend',sans-serif; padding:0; }
+  .island-node:active .island-shape{ transform:translateY(3px); }
+  .island-node.locked{ opacity:0.5; filter:grayscale(0.55); cursor:default; }
+  .island-node.locked:active .island-shape{ transform:none; }
+
+  .island-shape{ width:92px; height:92px; display:flex; align-items:center; justify-content:center; font-size:36px;
+    background:var(--white); box-shadow:var(--shadow); position:relative; transition:transform .08s ease; }
+  .shape-circle{ border-radius:50%; background:linear-gradient(160deg, #9B7BF0, #6339C4); border:3px solid rgba(255,255,255,0.85); }
+  .shape-oval{ width:112px; height:76px; border-radius:50%; background:linear-gradient(160deg, #FFB648, #E8791F); border:3px solid rgba(255,255,255,0.85); }
+  .shape-dolphin{ width:98px; height:80px; border-radius:52% 48% 46% 54% / 62% 66% 38% 42%; background:linear-gradient(160deg, #5ED4E8, #1F8FA6); border:3px solid rgba(255,255,255,0.85); }
+  .shape-dolphin::after{ content:""; position:absolute; top:-13px; left:58%; width:0; height:0;
+    border-left:9px solid transparent; border-right:9px solid transparent; border-bottom:20px solid #1F8FA6; transform:rotate(18deg); }
+  .shape-palette{ width:104px; height:82px; border-radius:50% 50% 45% 55% / 65% 65% 35% 35%; border:3px solid rgba(255,255,255,0.85);
+    background:
+      radial-gradient(circle 8px at 22% 28%, #EF6F6C 100%, transparent 101%),
+      radial-gradient(circle 8px at 48% 16%, #FFD166 100%, transparent 101%),
+      radial-gradient(circle 8px at 74% 24%, #6BBF59 100%, transparent 101%),
+      radial-gradient(circle 8px at 86% 48%, #5EC8D8 100%, transparent 101%),
+      linear-gradient(160deg, #F0B75E, #C97F1F); }
+  .shape-chest{ width:90px; height:78px; border-radius:18px; background:linear-gradient(160deg, #FFD166, #C98A2E); border:3px solid rgba(255,255,255,0.85); }
+  .shape-cloud{ width:112px; height:76px; border-radius:44px; border:3px solid rgba(255,255,255,0.85);
+    background:
+      radial-gradient(circle 24px at 22% 55%, #FF6F91 100%, transparent 101%),
+      radial-gradient(circle 20px at 80% 48%, #FF6F91 100%, transparent 101%),
+      linear-gradient(160deg, #FF9CB4, #E8506F); }
+  .shape-icon{ position:relative; z-index:2; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.22)); }
+
+  .island-caption{ margin-top:8px; text-align:center; width:100%; }
+  .cap-title{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:12.5px; line-height:1.2; color:white; text-shadow:0 2px 0 rgba(0,0,0,0.2); }
+  .cap-sub{ font-size:10.5px; color:rgba(255,255,255,0.9); margin-top:2px; text-shadow:0 1px 0 rgba(0,0,0,0.2); }
+
+  .lock-badge{ position:absolute; top:-6px; right:-6px; background:var(--plum); color:white; width:24px; height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:11px; z-index:3; }
+  .here-marker{ position:absolute; top:-30px; left:50%; transform:translateX(-50%); font-size:24px; animation:bob 2s ease-in-out infinite; z-index:3; }
+  .footstep{ position:absolute; font-size:15px; opacity:0.8; z-index:0; }
+
+  /* ---- Station stepping stones ---- */
+  .stone-path{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:20px; }
+  .stone{ width:80px; display:flex; flex-direction:column; align-items:center; gap:4px; background:var(--white); border-radius:18px; padding:12px 6px; box-shadow:var(--shadow); cursor:pointer; border:none; }
+  .stone:active{ transform:translateY(3px); }
+  .stone-emoji{ font-size:28px; }
+  .stone-title{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:10.5px; text-align:center; line-height:1.2; }
+  .stone-stars{ font-size:10.5px; }
+  .monster-gate{ width:96px; background:linear-gradient(160deg,var(--purple-dark),#4a3894); color:white; border-radius:18px; padding:12px 8px; text-align:center; box-shadow:var(--shadow); cursor:pointer; border:none; }
+  .monster-gate:active{ transform:translateY(3px); }
+  .monster-gate.locked{ opacity:0.5; cursor:default; background:linear-gradient(160deg,#9c96a8,#6c6678); }
+  .monster-gate.locked:active{ transform:none; }
+  .monster-gate.defeated{ background:linear-gradient(160deg,var(--grass),#4f9542); }
+  .mg-emoji{ font-size:30px; }
+  .mg-title{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:11px; margin-top:4px; }
+
+  /* ---- Game header ---- */
+  .game-header{ width:100%; display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:8px; flex-wrap:wrap; }
+  .progress-track{ flex:1; height:14px; background:rgba(255,255,255,0.4); border-radius:10px; overflow:hidden; min-width:110px; }
+  .progress-fill{ height:100%; background:var(--grass); border-radius:10px; transition:width .3s ease; }
+  .pill{ background:var(--white); border-radius:14px; padding:6px 11px; font-family:'Fredoka',sans-serif; font-weight:600; font-size:13px; display:flex; align-items:center; gap:5px; white-space:nowrap; }
+  .pill.streak{ background:var(--sun); }
+  .timer-track{ width:100%; height:8px; background:rgba(255,255,255,0.35); border-radius:6px; overflow:hidden; margin-bottom:14px; }
+  .timer-fill{ height:100%; background:var(--berry); width:100%; }
+
+  /* ---- Monster battle ---- */
+  .battle-header{ display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.18); border-radius:18px; padding:12px 16px; margin-bottom:12px; width:100%; }
+  .battle-monster{ font-size:46px; transition:transform .15s ease; }
+  .battle-monster.hit{ animation:shake .4s ease; }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px) rotate(-6deg);} 75%{transform:translateX(8px) rotate(6deg);} }
+  .battle-info{ flex:1; text-align:left; color:white; }
+  .battle-name{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:14px; }
+  .hp-hearts{ font-size:17px; margin-top:2px; }
+
+  .prompt-emoji{ font-size:84px; line-height:1; margin:4px 0 12px; }
+  .prompt-emoji.opt-emoji{ font-size:28px; margin:0; }
+  .prompt-emoji.big-opt{ font-size:44px; margin:0; }
+  .color-swatch{ width:88px; height:88px; border-radius:20px; margin:6px auto 12px; box-shadow:0 5px 0 rgba(0,0,0,0.12); border:3px solid rgba(0,0,0,0.08); }
+  .color-swatch.opt-swatch{ width:30px; height:30px; border-radius:9px; margin:0; box-shadow:none; }
+  .color-swatch.big-opt{ width:52px; height:52px; border-radius:14px; margin:0; box-shadow:none; }
+  .prompt-number{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:80px; color:var(--sky-dark); margin:4px 0 12px; }
+  .prompt-number.opt-number{ font-size:26px; margin:0; }
+  .prompt-number.big-opt{ font-size:38px; margin:0; color:var(--sky-dark); }
+  .prompt-letter{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:92px; color:var(--berry); line-height:1; margin:6px 0 6px; }
+  .prompt-text{ font-size:15px; color:#7a6f7c; margin-bottom:12px; }
+  .sound-btn{ background:var(--sky); border:none; border-radius:50%; width:52px; height:52px; font-size:22px; color:white; cursor:pointer; box-shadow:0 4px 0 #3f96a3; margin-bottom:10px; }
+  .sound-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #3f96a3; }
+
+  .options-grid{ display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+  .options-grid.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .option-btn{ font-family:'Lexend',sans-serif; font-weight:600; font-size:17px; background:var(--white); border:3px solid #e7e1d8; border-radius:16px; padding:12px; min-height:56px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .option-btn.correct{ background:#DFF3DC; border-color:var(--grass); }
+  .option-btn.wrong{ background:#FBDCDB; border-color:var(--berry); }
+  .option-btn:disabled{ opacity:0.55; }
+
+  .spell-word-row{ display:flex; justify-content:center; gap:7px; margin:14px 0 14px; flex-wrap:wrap; min-height:52px; }
+  .spell-slot{ width:42px; height:48px; border-radius:10px; border:3px dashed #cfc6bb; background:rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-family:'Fredoka',sans-serif; font-size:22px; font-weight:600; }
+  .spell-slot.filled{ border-style:solid; border-color:var(--grass); background:var(--white); }
+  .letter-tiles{ display:flex; justify-content:center; gap:7px; flex-wrap:wrap; margin-top:8px; }
+  .letter-tile{ width:42px; height:48px; border-radius:10px; border:none; background:var(--sun); font-family:'Fredoka',sans-serif; font-size:20px; font-weight:700; cursor:pointer; box-shadow:0 4px 0 #d9a63e; color:var(--plum); }
+  .letter-tile:active{ transform:translateY(3px); box-shadow:0 1px 0 #d9a63e; }
+  .letter-tile.used{ visibility:hidden; }
+  .spell-actions{ display:flex; gap:10px; justify-content:center; margin-top:14px; }
+
+  .feedback-banner{ position:fixed; left:0; right:0; bottom:0; padding:16px 18px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:'Fredoka',sans-serif; font-weight:600; font-size:17px; color:white; transform:translateY(120%); transition:transform .25s ease; z-index:10; }
+  .feedback-banner.show{ transform:translateY(0); }
+  .feedback-banner.ok{ background:var(--grass); }
+  .feedback-banner.no{ background:var(--berry); }
+  .feedback-banner .fb-text{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+  .fb-bonus{ font-size:13px; opacity:0.9; display:block; font-weight:500; }
+
+  .stars-row{ font-size:40px; margin:12px 0; letter-spacing:5px; }
+  .confetti{ position:fixed; top:-20px; font-size:22px; z-index:5; animation:fall linear forwards; }
+  @keyframes fall{ to{ transform:translateY(110vh) rotate(360deg); opacity:0.2; } }
+  @keyframes pop{ 0%{transform:scale(0.5); opacity:0;} 60%{transform:scale(1.15);} 100%{transform:scale(1); opacity:1;} }
+  .pop-in{ animation:pop .3s ease; }
+
+  .top-back{ position:absolute; top:18px; left:18px; background:rgba(255,255,255,0.85); border:none; border-radius:50%; width:40px; height:40px; font-size:18px; cursor:pointer; z-index:3; }
+  .footer-note{ margin-top:20px; font-size:12px; color:rgba(255,255,255,0.75); text-align:center; }
+
+  .badge-row{ display:flex; justify-content:center; gap:16px; margin:14px 0; }
+  .badge{ text-align:center; font-size:13px; opacity:0.4; }
+  .badge.earned{ opacity:1; }
+  .badge .b-emoji{ font-size:34px; display:block; }
+
+  .gem-row{ display:flex; justify-content:center; gap:14px; margin:16px 0; flex-wrap:wrap; }
+  .gem-slot{ text-align:center; font-size:12px; opacity:0.35; }
+  .gem-slot.earned{ opacity:1; }
+  .gem-slot .g-emoji{ font-size:36px; display:block; }
+
+  .achv-grid{ display:flex; flex-direction:column; gap:10px; width:100%; margin-top:10px; text-align:left; }
+  .achv-row{ display:flex; align-items:center; justify-content:space-between; background:var(--white); border-radius:14px; padding:10px 14px; font-size:13.5px; }
+  .achv-row b{ font-family:'Fredoka',sans-serif; }
+
+  .chest{ font-size:90px; display:inline-block; }
+  .chest.shake{ animation:shake .5s ease 2; }
+
+  .memory-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:9px; margin-top:8px; }
+  .memory-card{ aspect-ratio:1; border-radius:14px; border:none; cursor:pointer; background:linear-gradient(160deg,var(--sky),var(--sky-dark));
+    color:white; font-size:26px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); padding:4px; }
+  .memory-card.revealed{ background:var(--white); color:var(--plum); font-size:14px; font-weight:600; font-family:'Fredoka',sans-serif; }
+  .memory-card.matched{ background:#DFF3DC; color:var(--plum); font-size:13px; font-weight:600; font-family:'Fredoka',sans-serif; opacity:0.85; }
+  .memory-status{ font-size:13px; color:#7a6f7c; margin-top:12px; }
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" loop preload="none">
+  <source src="Chopin-Nocturn.mp3" type="audio/mpeg">
+</audio>
+<button class="music-toggle" onclick="toggleMusic(this)">🔈</button>
+
+<div class="cloud" style="width:120px;height:50px;top:6%;left:8%;"></div>
+<div class="cloud" style="width:80px;height:36px;top:15%;left:70%;"></div>
+<div class="cloud" style="width:100px;height:44px;top:32%;left:80%;"></div>
+
+<div id="screen-welcome" class="screen active">
+  <div class="app-frame">
+    <div style="margin-top:20px;" class="mascot" id="mascotWelcome">🐥</div>
+    <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+      <h1 style="color:white; font-size:26px; text-shadow:0 3px 0 rgba(0,0,0,0.15); text-align:center;">Chíp Và Đảo Từ Vựng</h1>
+      <span style="background:var(--sun); color:var(--plum); font-family:'Fredoka',sans-serif; font-weight:700; font-size:12px; padding:3px 9px; border-radius:10px; box-shadow:0 3px 0 #d9a63e;">v2.0</span>
+    </div>
+    <div class="speech-bubble">Chào bạn! Chíp cần người bạn đồng hành khám phá 5 vùng đất, đánh bại thử thách và mở rương báu. Cùng học tiếng Anh nhé!</div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>Bé nào chơi hôm nay?</h3>
+      <div class="avatar-row">
+        <div><div class="avatar-choice" onclick="pickAvatar(this,'Dừa','dua.jpg')"><img src="dua.jpg" alt="Dừa"></div><div class="avatar-name">Dừa</div></div>
+        <div><div class="avatar-choice" onclick="pickAvatar(this,'Mixue','mixue.jpg')"><img src="mixue.jpg" alt="Mixue"></div><div class="avatar-name">Mixue</div></div>
+      </div>
+      <input type="text" id="customName" class="name-input" placeholder="Hoặc nhập tên khác...">
+      <button class="btn" style="margin-top:6px;" onclick="startGame()">Ra khơi phiêu lưu 🚀</button>
+    </div>
+    <div class="footer-note">5 vùng đất · 25 chặng học · 5 người gác giữ rương báu</div>
+    <button class="btn secondary small" style="margin-top:12px;" onclick="show('screen-whatsnew')">🆕 Có gì mới trong bản 2.0?</button>
+  </div>
+</div>
+
+<div id="screen-whatsnew" class="screen">
+  <button class="top-back" onclick="show('screen-welcome')">←</button>
+  <div class="app-frame" style="margin-top:44px;">
+    <div class="mascot" style="font-size:60px;">🎉</div>
+    <div class="card" style="margin-top:12px; text-align:left;">
+      <h2 style="text-align:center;">Có Gì Mới — v2.0</h2>
+      <ul style="font-size:14px; line-height:1.7; color:var(--plum); padding-left:20px; margin-top:14px;">
+        <li><b>Vùng mới: Ngôi Nhà Cảm Xúc</b> ❤️ — học từ về gia đình (mẹ, bố, anh chị em) và cảm xúc (vui, buồn, tức giận, buồn ngủ, đói bụng) thay vì chỉ đồ vật quen thuộc</li>
+        <li><b>Cách học mới: Trí Nhớ</b> 🧠 — lật thẻ tìm cặp hình + từ khớp nhau, rèn trí nhớ thay vì chỉ chọn đáp án</li>
+        <li><b>Bản đồ phiêu lưu cong</b> nối 5 vùng đất bằng đường mòn có dấu chân, dẫn tới Bộ Sưu Tập Phần Thưởng</li>
+        <li><b>5 vùng học đa dạng</b>: Khu Rừng Động Vật, Xứ Sở Màu Sắc, Thế Giới Số Đếm, Thành Phố Đồ Vật, Ngôi Nhà Cảm Xúc — mỗi vùng một hình dạng và màu riêng</li>
+        <li><b>25 chặng chơi</b> với 5 dạng bài: Nghe Đoán, Chữ Cái Vui, Ghép Hình, Đánh Vần, Trí Nhớ</li>
+        <li><b>Độ khó tự thích ứng</b> theo phong độ + điểm thưởng tốc độ ⚡</li>
+        <li><b>Người gác giữ rương báu</b> — thắng thử thách để mở khóa viên ngọc của mỗi vùng</li>
+        <li><b>Avatar là ảnh thật</b> của Dừa và Mixue</li>
+        <li><b>Nhạc nền</b> có thể bật/tắt khi chơi</li>
+        <li><b>Lưu tiến trình</b> theo tên bé khi chơi trong Claude</li>
+      </ul>
+      <button class="btn green" style="margin-top:16px;" onclick="show('screen-welcome')">Về màn hình chính</button>
+    </div>
+  </div>
+</div>
+
+<div id="screen-topics" class="screen">
+  <div class="app-frame">
+    <div style="display:flex; align-items:center; gap:12px; margin-top:10px; width:100%;">
+      <div class="mascot" style="font-size:44px;">🐥</div>
+      <img id="playerBadge" class="player-badge" style="display:none;" src="" alt="">
+      <div>
+        <h2 id="topicGreeting" style="color:white; text-shadow:0 2px 0 rgba(0,0,0,0.15);">Chào bạn!</h2>
+        <div style="color:white; font-size:13px; opacity:0.9;">Bản đồ phiêu lưu — chọn vùng tiếp theo</div>
+      </div>
+    </div>
+    <div class="island-path" id="islandPath"></div>
+    <div class="top-links">
+      <button class="btn secondary small" onclick="showAchievements()">🎁 Bộ Sưu Tập Phần Thưởng</button>
+    </div>
+    <div class="footer-note" id="totalStarsNote"></div>
+  </div>
+</div>
+
+<div id="screen-map" class="screen">
+  <button class="top-back" onclick="show('screen-topics'); renderTopics();">←</button>
+  <div class="app-frame" style="margin-top:44px;">
+    <div style="text-align:center;">
+      <div class="mascot" style="font-size:48px;" id="mapTopicEmoji">🐾</div>
+      <h2 style="color:white; text-shadow:0 2px 0 rgba(0,0,0,0.15);" id="mapTopicTitle">Khu Rừng Động Vật</h2>
+      <div style="color:white; font-size:12.5px; opacity:0.85;" id="mapTopicSub">Hoàn thành 5 chặng để triệu hồi quái vật canh giữ rương báu</div>
+    </div>
+    <div class="stone-path" id="stonePath"></div>
+  </div>
+</div>
+
+<div id="screen-game" class="screen">
+  <button class="top-back" onclick="exitFromGame()">←</button>
+  <div class="app-frame" style="margin-top:44px;">
+    <div id="battleHeaderWrap"></div>
+    <div class="game-header" id="normalHeader">
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+      <div class="pill">⭐ <span id="scoreLabel">0</span></div>
+      <div class="pill streak" id="streakPill" style="display:none;">🔥 <span id="streakLabel">0</span></div>
+    </div>
+    <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+    <div class="card" id="gameCard"></div>
+  </div>
+</div>
+
+<div id="screen-result" class="screen">
+  <div class="app-frame">
+    <div class="mascot pop-in" id="resultMascot" style="margin-top:26px;">🐥</div>
+    <div class="card" style="margin-top:14px;">
+      <h2 id="resultTitle">Xong rồi!</h2>
+      <div class="stars-row" id="resultStars">⭐⭐⭐</div>
+      <div id="resultDetail" style="font-size:14px; color:#7a6f7c;"></div>
+      <div style="display:flex; gap:10px; margin-top:18px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn secondary" onclick="retryStation()">Chơi lại</button>
+        <button class="btn green" onclick="exitToStationMap()">Chặng khác</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-monster-intro" class="screen">
+  <div class="app-frame">
+    <div class="mascot pop-in" style="font-size:80px; margin-top:26px;" id="monsterIntroEmoji">🐗</div>
+    <div class="card" style="margin-top:14px;">
+      <h2 id="monsterIntroTitle">Một quái vật xuất hiện!</h2>
+      <div style="font-size:14px; color:#7a6f7c; margin:10px 0;" id="monsterIntroDesc">Trả lời đúng ít nhất 2/3 câu hỏi để đánh bại quái vật và mở rương báu!</div>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn purple" onclick="startMonsterBattle()">Bắt đầu trận đấu ⚔️</button>
+        <button class="btn secondary" onclick="exitToStationMap()">Để sau</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-monster-result" class="screen">
+  <div class="app-frame">
+    <div class="mascot pop-in" id="mrEmoji" style="font-size:80px; margin-top:20px;">🎉</div>
+    <div class="card" style="margin-top:12px;">
+      <h2 id="mrTitle">Chiến thắng!</h2>
+      <div id="mrDesc" style="font-size:14px; color:#7a6f7c; margin:8px 0 14px;"></div>
+      <div class="chest pop-in" id="mrChest" style="display:none;">📦</div>
+      <div style="font-size:44px; display:none;" id="mrGemReveal"></div>
+      <div style="display:flex; gap:10px; margin-top:16px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn purple" id="mrRetryBtn" onclick="startMonsterBattle()">Đấu lại</button>
+        <button class="btn green" onclick="exitToStationMap()">Về bản đồ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-topic-complete" class="screen">
+  <div class="app-frame">
+    <div class="mascot pop-in" style="font-size:80px; margin-top:26px;">🏝️</div>
+    <div class="card" style="margin-top:14px;">
+      <h2 id="tcTitle">Hoàn thành vùng đất!</h2>
+      <div class="stars-row" id="tcStars">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐</div>
+      <div style="font-size:14px; color:#7a6f7c;">Vùng tiếp theo đã được mở khóa!</div>
+      <div style="display:flex; gap:10px; margin-top:18px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn purple" onclick="show('screen-topics'); renderTopics();">Bản đồ phiêu lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-achv" class="screen">
+  <button class="top-back" onclick="show('screen-topics'); renderTopics();">←</button>
+  <div class="app-frame" style="margin-top:44px;">
+    <h2 style="color:white; text-shadow:0 2px 0 rgba(0,0,0,0.15);">🎁 Bộ Sưu Tập Phần Thưởng</h2>
+    <div class="gem-row" id="gemRow"></div>
+    <div class="badge-row" id="badgeRow"></div>
+    <div id="achvTotalNote" style="color:white; font-size:14px; margin-top:4px;"></div>
+    <div class="achv-grid" id="achvGrid"></div>
+  </div>
+</div>
+
+<div id="screen-final" class="screen">
+  <div class="app-frame">
+    <div class="mascot pop-in" style="font-size:90px; margin-top:16px;">🏆</div>
+    <div class="card" style="margin-top:10px; border:4px solid var(--sun);">
+      <h2 style="color:var(--berry);">Chứng Nhận Xuất Sắc</h2>
+      <div style="font-size:14px; margin:8px 0 4px; color:#7a6f7c;">Trao cho bé</div>
+      <div style="font-family:'Fredoka',sans-serif; font-size:24px; font-weight:700;" id="certName">—</div>
+      <div style="font-size:14px; margin:10px 0; color:#7a6f7c;">đã chinh phục toàn bộ 4 vùng đất cùng Chíp!</div>
+      <button class="btn" style="margin-top:10px;" onclick="restartAll()">Chơi lại từ đầu 🔁</button>
+    </div>
+  </div>
+</div>
+
+<div id="feedbackBanner" class="feedback-banner">
+  <div class="fb-text">
+    <span id="fbEmoji">✅</span>
+    <span><span id="fbText">Đúng rồi!</span><span class="fb-bonus" id="fbBonus"></span></span>
+  </div>
+  <button class="btn secondary small" id="fbNextBtn" onclick="nextRound()">Tiếp tục →</button>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const TOPICS = [
+  { key:"animals", title:"Khu Rừng Động Vật", terrain:"🌴", emoji:"🐾", gem:"🟢", gemName:"Ngọc Lục Bảo Rừng", shape:"shape-dolphin",
+    monster:{emoji:"🐗", name:"Heo Rừng Tinh Nghịch"},
+    words:[
+      {word:"CAT", vtype:"emoji", visual:"🐱", vi:"Con mèo"},
+      {word:"DOG", vtype:"emoji", visual:"🐶", vi:"Con chó"},
+      {word:"BIRD", vtype:"emoji", visual:"🐦", vi:"Con chim"},
+      {word:"FISH", vtype:"emoji", visual:"🐟", vi:"Con cá"},
+      {word:"LION", vtype:"emoji", visual:"🦁", vi:"Sư tử"},
+      {word:"BEAR", vtype:"emoji", visual:"🐻", vi:"Con gấu"},
+      {word:"FROG", vtype:"emoji", visual:"🐸", vi:"Con ếch"},
+      {word:"DUCK", vtype:"emoji", visual:"🦆", vi:"Con vịt"},
+      {word:"BEE", vtype:"emoji", visual:"🐝", vi:"Con ong"},
+      {word:"PIG", vtype:"emoji", visual:"🐷", vi:"Con lợn"},
+      {word:"HORSE", vtype:"emoji", visual:"🐴", vi:"Con ngựa"},
+      {word:"SHEEP", vtype:"emoji", visual:"🐑", vi:"Con cừu"},
+      {word:"MOUSE", vtype:"emoji", visual:"🐭", vi:"Con chuột"},
+      {word:"OWL", vtype:"emoji", visual:"🦉", vi:"Con cú"},
+    ]},
+  { key:"colors", title:"Xứ Sở Màu Sắc", terrain:"🌈", emoji:"🎨", gem:"💗", gemName:"Ngọc Hồng Cầu Vồng", shape:"shape-palette",
+    monster:{emoji:"👾", name:"Quái Vật Cầu Vồng"},
+    words:[
+      {word:"RED", vtype:"color", visual:"#EF6F6C", vi:"Màu đỏ"},
+      {word:"BLUE", vtype:"color", visual:"#5EC8D8", vi:"Màu xanh dương"},
+      {word:"GREEN", vtype:"color", visual:"#6BBF59", vi:"Màu xanh lá"},
+      {word:"YELLOW", vtype:"color", visual:"#FFD166", vi:"Màu vàng"},
+      {word:"PINK", vtype:"color", visual:"#F7A8C4", vi:"Màu hồng"},
+      {word:"PURPLE", vtype:"color", visual:"#A78BFA", vi:"Màu tím"},
+      {word:"ORANGE", vtype:"color", visual:"#FFA552", vi:"Màu cam"},
+      {word:"BROWN", vtype:"color", visual:"#A9714B", vi:"Màu nâu"},
+      {word:"BLACK", vtype:"color", visual:"#3A2E39", vi:"Màu đen"},
+      {word:"WHITE", vtype:"color", visual:"#FFFFFF", vi:"Màu trắng"},
+    ]},
+  { key:"numbers", title:"Thế Giới Số Đếm", terrain:"🏔️", emoji:"🔢", gem:"💎", gemName:"Kim Cương Đỉnh Núi", shape:"shape-circle",
+    monster:{emoji:"🐲", name:"Rồng Số Học"},
+    words:[
+      {word:"ONE", vtype:"number", visual:"1", vi:"Số một"},
+      {word:"TWO", vtype:"number", visual:"2", vi:"Số hai"},
+      {word:"THREE", vtype:"number", visual:"3", vi:"Số ba"},
+      {word:"FOUR", vtype:"number", visual:"4", vi:"Số bốn"},
+      {word:"FIVE", vtype:"number", visual:"5", vi:"Số năm"},
+      {word:"SIX", vtype:"number", visual:"6", vi:"Số sáu"},
+      {word:"SEVEN", vtype:"number", visual:"7", vi:"Số bảy"},
+      {word:"EIGHT", vtype:"number", visual:"8", vi:"Số tám"},
+      {word:"NINE", vtype:"number", visual:"9", vi:"Số chín"},
+      {word:"TEN", vtype:"number", visual:"10", vi:"Số mười"},
+    ]},
+  { key:"objects", title:"Thành Phố Đồ Vật", terrain:"🏠", emoji:"🎒", gem:"🟡", gemName:"Ngọc Vàng Gia Đình", shape:"shape-oval",
+    monster:{emoji:"🐙", name:"Bạch Tuộc Đồ Vật"},
+    words:[
+      {word:"HAT", vtype:"emoji", visual:"🎩", vi:"Cái mũ"},
+      {word:"CUP", vtype:"emoji", visual:"☕", vi:"Cái cốc"},
+      {word:"BOOK", vtype:"emoji", visual:"📖", vi:"Quyển sách"},
+      {word:"BALL", vtype:"emoji", visual:"⚽", vi:"Quả bóng"},
+      {word:"CHAIR", vtype:"emoji", visual:"🪑", vi:"Cái ghế"},
+      {word:"STAR", vtype:"emoji", visual:"⭐", vi:"Ngôi sao"},
+      {word:"TREE", vtype:"emoji", visual:"🌳", vi:"Cây"},
+      {word:"SUN", vtype:"emoji", visual:"☀️", vi:"Mặt trời"},
+      {word:"MOON", vtype:"emoji", visual:"🌙", vi:"Mặt trăng"},
+      {word:"BOX", vtype:"emoji", visual:"📦", vi:"Cái hộp"},
+      {word:"BAG", vtype:"emoji", visual:"🎒", vi:"Cái balo"},
+      {word:"KEY", vtype:"emoji", visual:"🔑", vi:"Chìa khóa"},
+      {word:"DOOR", vtype:"emoji", visual:"🚪", vi:"Cánh cửa"},
+      {word:"BED", vtype:"emoji", visual:"🛏️", vi:"Cái giường"},
+    ]},
+  { key:"family", title:"Ngôi Nhà Cảm Xúc", terrain:"🏡", emoji:"❤️", gem:"❤️", gemName:"Ngọc Trái Tim Yêu Thương", shape:"shape-cloud",
+    monster:{emoji:"🧸", name:"Gấu Bông Khổng Lồ"},
+    words:[
+      {word:"MOM", vtype:"emoji", visual:"👩", vi:"Mẹ"},
+      {word:"DAD", vtype:"emoji", visual:"👨", vi:"Bố"},
+      {word:"BABY", vtype:"emoji", visual:"👶", vi:"Em bé"},
+      {word:"SISTER", vtype:"emoji", visual:"👧", vi:"Chị/em gái"},
+      {word:"BROTHER", vtype:"emoji", visual:"👦", vi:"Anh/em trai"},
+      {word:"HAPPY", vtype:"emoji", visual:"😄", vi:"Vui vẻ"},
+      {word:"SAD", vtype:"emoji", visual:"😢", vi:"Buồn"},
+      {word:"ANGRY", vtype:"emoji", visual:"😠", vi:"Tức giận"},
+      {word:"SLEEPY", vtype:"emoji", visual:"😴", vi:"Buồn ngủ"},
+      {word:"HUNGRY", vtype:"emoji", visual:"🤤", vi:"Đói bụng"},
+    ]},
+];
+
+const STATION_DEFS = [
+  {key:"listen", title:"Nghe Đoán", sub:"Nghe từ, chọn đúng hình", emoji:"🎧"},
+  {key:"letter", title:"Chữ Cái Vui", sub:"Nghe chữ cái, chọn đúng hình", emoji:"🔤"},
+  {key:"picture", title:"Ghép Hình", sub:"Nhìn hình, chọn đúng từ", emoji:"🖼️"},
+  {key:"spell", title:"Đánh Vần", sub:"Ghép chữ cái thành từ đúng", emoji:"🔡"},
+  {key:"memory", title:"Trí Nhớ", sub:"Lật thẻ tìm đúng cặp đôi", emoji:"🧠"},
+];
+const ROUNDS_PER_STATION = 5;
+const ROUND_SECONDS = 8;
+const STARS_PER_TOPIC_MAX = STATION_DEFS.length * 3;
+const ALL_STATION_IDS = [];
+TOPICS.forEach(t => STATION_DEFS.forEach(s => ALL_STATION_IDS.push(t.key + "-" + s.key)));
+const STARS_TOTAL_MAX = ALL_STATION_IDS.length * 3;
+
+/* ================= STATE ================= */
+let playerName = "";
+let stationStars = {};
+ALL_STATION_IDS.forEach(id => stationStars[id] = 0);
+let topicGems = {};
+TOPICS.forEach(t => topicGems[t.key] = false);
+
+let current = {
+  topicKey:"", stationKey:"", rounds:[], roundIdx:0, score:0, correctCount:0,
+  awaitingNext:false, streak:0, difficulty:0, roundStart:0, spellFilled:[],
+};
+let battle = { topicKey:"", rounds:[], roundIdx:0, hits:0 };
+
+/* ================= HELPERS ================= */
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function pickN(arr,n){ return shuffle(arr).slice(0, Math.min(n, arr.length)); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function getTopic(key){ return TOPICS.find(t => t.key === key); }
+function speak(text, lang){
+  try{ window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = lang || 'en-US'; u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+let audioCtx = null;
+function playTone(correct){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type = "sine";
+    if(correct){ o.frequency.setValueAtTime(523, audioCtx.currentTime); o.frequency.setValueAtTime(784, audioCtx.currentTime+0.1); }
+    else { o.frequency.setValueAtTime(220, audioCtx.currentTime); }
+    g.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+    o.start(); o.stop(audioCtx.currentTime + 0.3);
+  }catch(e){}
+}
+function visualHTML(entry, sizeClass){
+  const typeCls = entry.vtype==='color' ? 'color-swatch' : (entry.vtype==='number' ? 'prompt-number' : 'prompt-emoji');
+  const extra = sizeClass ? ' ' + sizeClass : '';
+  if(entry.vtype === 'color') return `<div class="color-swatch${extra}" style="background:${entry.visual}"></div>`;
+  if(entry.vtype === 'number') return `<div class="prompt-number${extra}">${entry.visual}</div>`;
+  return `<div class="prompt-emoji${extra}">${entry.visual}</div>`;
+}
+
+/* ================= STORAGE ================= */
+async function loadProgress(){
+  try{
+    if(!window.storage) return;
+    const res = await window.storage.get('chip-island-progress:' + playerName.toLowerCase());
+    if(res && res.value){
+      const data = JSON.parse(res.value);
+      if(data.stars) stationStars = Object.assign(stationStars, data.stars);
+      if(data.gems) topicGems = Object.assign(topicGems, data.gems);
+    }
+  }catch(e){}
+}
+async function saveProgress(){
+  try{
+    if(!window.storage) return;
+    await window.storage.set('chip-island-progress:' + playerName.toLowerCase(), JSON.stringify({stars: stationStars, gems: topicGems}));
+  }catch(e){}
+}
+
+/* ================= WELCOME ================= */
+function pickAvatar(el, name, imgSrc){
+  document.querySelectorAll('.avatar-choice').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('customName').value = "";
+  window.__pickedName = name;
+  window.__pickedAvatarImg = imgSrc;
+}
+async function startGame(){
+  const custom = document.getElementById('customName').value.trim();
+  playerName = custom || window.__pickedName || "Bạn nhỏ";
+  await loadProgress();
+  document.getElementById('topicGreeting').textContent = "Chào " + playerName + "!";
+  const badge = document.getElementById('playerBadge');
+  if(window.__pickedAvatarImg && !custom){
+    badge.src = window.__pickedAvatarImg;
+    badge.alt = playerName;
+    badge.style.display = "inline-block";
+  } else {
+    badge.style.display = "none";
+  }
+  renderTopics();
+  show('screen-topics');
+}
+function toggleMusic(btn){
+  const audio = document.getElementById('bgMusic');
+  if(audio.paused){
+    audio.play().catch(()=>{});
+    btn.textContent = "🔊";
+  } else {
+    audio.pause();
+    btn.textContent = "🔈";
+  }
+}
+
+/* ================= ADVENTURE MAP (topic select) ================= */
+function topicStars(topicKey){
+  return STATION_DEFS.reduce((sum, s) => sum + stationStars[topicKey + "-" + s.key], 0);
+}
+function isTopicUnlocked(idx){
+  if(idx === 0) return true;
+  return topicStars(TOPICS[idx-1].key) > 0;
+}
+function bezierPoint(t, x0,y0,x1,y1,x2,y2,x3,y3){
+  const mt = 1-t;
+  const x = mt*mt*mt*x0 + 3*mt*mt*t*x1 + 3*mt*t*t*x2 + t*t*t*x3;
+  const y = mt*mt*mt*y0 + 3*mt*mt*t*y1 + 3*mt*t*t*y2 + t*t*t*y3;
+  return {x,y};
+}
+function bezierTangent(t, x0,y0,x1,y1,x2,y2,x3,y3){
+  const mt = 1-t;
+  const dx = 3*mt*mt*(x1-x0) + 6*mt*t*(x2-x1) + 3*t*t*(x3-x2);
+  const dy = 3*mt*mt*(y1-y0) + 6*mt*t*(y2-y1) + 3*t*t*(y3-y2);
+  return {dx,dy};
+}
+
+function renderTopics(){
+  const wrap = document.getElementById('islandPath');
+  wrap.innerHTML = "";
+
+  const rowH = 160;      // vertical spacing between nodes, px
+  const topPad = 80;     // first node offset from top, px
+  const bottomPad = 55;
+  const numPoints = TOPICS.length + 1; // +1 for the trailing "Kho Báu" node
+  const totalH = topPad + (numPoints - 1) * rowH + bottomPad;
+  wrap.style.height = totalH + "px";
+
+  // approximate real pixel width of the map container (screen padding 16px each side)
+  const containerWidth = Math.min(window.innerWidth, 480) - 32;
+
+  // alternate x position (percent) left/right, curving through each node (topics + treasure)
+  const xs = Array.from({length:numPoints}, (_, i) => (i % 2 === 0 ? 28 : 72));
+  const ys = Array.from({length:numPoints}, (_, i) => topPad + i * rowH);
+
+  // build a smooth S-curve through the points + collect segment control points for sampling
+  let d = `M ${xs[0]} ${ys[0]} `;
+  const segments = [];
+  for(let i = 0; i < xs.length - 1; i++){
+    const x0 = xs[i], y0 = ys[i], x1 = xs[i+1], y1 = ys[i+1];
+    const dy = (y1 - y0) / 2;
+    const cx1 = x0, cy1 = y0 + dy, cx2 = x1, cy2 = y1 - dy;
+    d += `C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x1} ${y1} `;
+    segments.push({x0,y0,cx1,cy1,cx2,cy2,x1,y1});
+  }
+
+  const svgHtml = `<svg viewBox="0 0 100 ${totalH}" preserveAspectRatio="none" style="width:100%; height:${totalH}px;">
+    <path d="${d}" fill="none" stroke="#FCE9C2" stroke-width="16" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.9"/>
+    <path d="${d}" fill="none" stroke="#E8C583" stroke-width="16" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.35" stroke-dasharray="0.5 6"/>
+  </svg>`;
+  wrap.insertAdjacentHTML('beforeend', svgHtml);
+
+  // scatter little footstep icons along the whole curve (topics + path to treasure) instead of a dashed line
+  const stepsPerSegment = 5;
+  segments.forEach(seg=>{
+    for(let s=1; s<=stepsPerSegment; s++){
+      const t = s/(stepsPerSegment+1);
+      const p = bezierPoint(t, seg.x0,seg.y0, seg.cx1,seg.cy1, seg.cx2,seg.cy2, seg.x1,seg.y1);
+      const tan = bezierTangent(t, seg.x0,seg.y0, seg.cx1,seg.cy1, seg.cx2,seg.cy2, seg.x1,seg.y1);
+      const dxPx = (tan.dx/100) * containerWidth;
+      const angle = Math.atan2(tan.dy, dxPx) * 180/Math.PI;
+      const foot = document.createElement('div');
+      foot.className = "footstep";
+      foot.textContent = "👣";
+      foot.style.left = p.x + "%";
+      foot.style.top = p.y + "px";
+      const flip = s % 2 === 0 ? -1 : 1;
+      foot.style.transform = `translate(-50%,-50%) rotate(${angle+90}deg) scaleX(${flip})`;
+      wrap.appendChild(foot);
+    }
+  });
+
+  let currentIdx = TOPICS.findIndex((t,i)=> isTopicUnlocked(i) && topicStars(t.key) < STARS_PER_TOPIC_MAX);
+  if(currentIdx === -1) currentIdx = TOPICS.length - 1;
+
+  TOPICS.forEach((t, idx)=>{
+    const unlocked = isTopicUnlocked(idx);
+    const stars = topicStars(t.key);
+    const node = document.createElement('button');
+    node.className = "island-node" + (unlocked ? "" : " locked");
+    node.style.left = xs[idx] + "%";
+    node.style.top = ys[idx] + "px";
+    node.innerHTML = `
+      <div class="island-shape ${t.shape}">${!unlocked ? '<div class="lock-badge">🔒</div>' : ''}<span class="shape-icon">${t.terrain}</span></div>
+      <div class="island-caption">
+        <div class="cap-title">${t.emoji} ${t.title}</div>
+        <div class="cap-sub">⭐ ${stars}/${STARS_PER_TOPIC_MAX}${topicGems[t.key] ? ' · ' + t.gem : ''}</div>
+      </div>
+    `;
+    if(unlocked) node.onclick = ()=> openTopicMap(t.key);
+    if(idx === currentIdx && unlocked) node.innerHTML = `<div class="here-marker">🐥</div>` + node.innerHTML;
+    wrap.appendChild(node);
+  });
+
+  // trailing "Kho Báu" node continuing the curve past the last topic
+  const treasureIdx = TOPICS.length;
+  const treasureNode = document.createElement('button');
+  treasureNode.className = "island-node";
+  treasureNode.style.left = xs[treasureIdx] + "%";
+  treasureNode.style.top = ys[treasureIdx] + "px";
+  treasureNode.innerHTML = `
+    <div class="island-shape shape-chest"><span class="shape-icon">🧰</span></div>
+    <div class="island-caption"><div class="cap-title">Bộ Sưu Tập<br>Phần Thưởng</div></div>
+  `;
+  treasureNode.onclick = ()=> showAchievements();
+  wrap.appendChild(treasureNode);
+
+  const total = Object.values(stationStars).reduce((a,b)=>a+b,0);
+  document.getElementById('totalStarsNote').textContent = `Tổng sao: ${total} / ${STARS_TOTAL_MAX}`;
+}
+
+/* ================= STATION MAP (within a topic) ================= */
+function openTopicMap(topicKey){
+  current.topicKey = topicKey;
+  const t = getTopic(topicKey);
+  document.getElementById('mapTopicEmoji').textContent = t.terrain;
+  document.getElementById('mapTopicTitle').textContent = t.title;
+  const wrap = document.getElementById('stonePath');
+  wrap.innerHTML = "";
+  STATION_DEFS.forEach(st=>{
+    const id = topicKey + "-" + st.key;
+    const stars = stationStars[id];
+    const starsTxt = "⭐".repeat(stars) + "☆".repeat(3-stars);
+    const stone = document.createElement('button');
+    stone.className = "stone";
+    stone.innerHTML = `<div class="stone-emoji">${st.emoji}</div><div class="stone-title">${st.title}</div><div class="stone-stars">${starsTxt}</div>`;
+    stone.onclick = ()=> beginStation(topicKey, st.key);
+    wrap.appendChild(stone);
+  });
+
+  const allDone = STATION_DEFS.every(s => stationStars[topicKey + "-" + s.key] > 0);
+  const gate = document.createElement('button');
+  const defeated = topicGems[topicKey];
+  gate.className = "monster-gate" + (allDone ? (defeated ? " defeated" : "") : " locked");
+  gate.innerHTML = `<div class="mg-emoji">${defeated ? '🏆' : t.monster.emoji}</div><div class="mg-title">${defeated ? 'Đã đánh bại' : t.monster.name}</div>`;
+  if(allDone) gate.onclick = ()=> openMonsterIntro(topicKey);
+  wrap.appendChild(gate);
+
+  show('screen-map');
+}
+function exitToStationMap(){
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  openTopicMap(current.topicKey);
+}
+function exitFromGame(){
+  if(battle.active){ battle.active = false; exitToStationMap(); }
+  else exitToStationMap();
+}
+
+/* ================= ACHIEVEMENTS / TREASURE ================= */
+function showAchievements(){
+  const total = Object.values(stationStars).reduce((a,b)=>a+b,0);
+  const tiers = [
+    {name:"Đồng", need: Math.round(STARS_TOTAL_MAX/3), emoji:"🥉"},
+    {name:"Bạc", need: Math.round(STARS_TOTAL_MAX*2/3), emoji:"🥈"},
+    {name:"Vàng", need: STARS_TOTAL_MAX, emoji:"🥇"},
+  ];
+  document.getElementById('achvTotalNote').textContent = `Tổng cộng: ${total} / ${STARS_TOTAL_MAX} sao`;
+  document.getElementById('gemRow').innerHTML = TOPICS.map(t=>
+    `<div class="gem-slot ${topicGems[t.key]?'earned':''}"><span class="g-emoji">${topicGems[t.key] ? t.gem : '❔'}</span>${topicGems[t.key] ? t.gemName : '???'}</div>`
+  ).join('');
+  document.getElementById('badgeRow').innerHTML = tiers.map(tr=>
+    `<div class="badge ${total>=tr.need?'earned':''}"><span class="b-emoji">${tr.emoji}</span>${tr.name}</div>`
+  ).join('');
+  const grid = document.getElementById('achvGrid');
+  grid.innerHTML = "";
+  TOPICS.forEach(t=>{
+    STATION_DEFS.forEach(st=>{
+      const id = t.key + "-" + st.key;
+      const stars = stationStars[id];
+      const row = document.createElement('div');
+      row.className = "achv-row";
+      row.innerHTML = `<span>${t.emoji} <b>${t.title}</b> · ${st.title}</span><span>${"⭐".repeat(stars)}${"☆".repeat(3-stars)}</span>`;
+      grid.appendChild(row);
+    });
+  });
+  show('screen-achv');
+}
+
+/* ================= NORMAL STATION GAMEPLAY ================= */
+function beginStation(topicKey, stationKey){
+  if(stationKey === "memory"){ beginMemoryGame(topicKey); return; }
+  battle.active = false;
+  current.topicKey = topicKey;
+  current.stationKey = stationKey;
+  current.roundIdx = 0;
+  current.score = 0;
+  current.correctCount = 0;
+  current.awaitingNext = false;
+  current.streak = 0;
+  current.difficulty = 0;
+
+  const topic = getTopic(topicKey);
+  const chosenWords = pickN(topic.words, ROUNDS_PER_STATION);
+  current.rounds = chosenWords.map(w => ({ target:w, pool: topic.words }));
+
+  document.getElementById('battleHeaderWrap').innerHTML = "";
+  document.getElementById('normalHeader').style.display = "flex";
+  document.getElementById('timerFill').parentElement.style.display = "block";
+  document.getElementById('scoreLabel').textContent = "0";
+  document.getElementById('streakPill').style.display = "none";
+  document.getElementById('progressFill').style.width = "0%";
+  show('screen-game');
+  renderRound();
+}
+
+/* ================= MEMORY MATCH (Trí Nhớ) — new mechanic: flip cards, match picture with word ================= */
+let memory = { topicKey:"", cards:[], flippedIdx:[], matchedIds:new Set(), mismatches:0, lock:false, totalPairs:0 };
+
+function beginMemoryGame(topicKey){
+  battle.active = false;
+  current.topicKey = topicKey;
+  current.stationKey = "memory";
+  const topic = getTopic(topicKey);
+  const chosen = pickN(topic.words, 4);
+  let cards = [];
+  chosen.forEach(w=>{
+    cards.push({pairId:w.word, kind:"visual", data:w});
+    cards.push({pairId:w.word, kind:"word", data:w});
+  });
+  memory = { topicKey, cards: shuffle(cards), flippedIdx:[], matchedIds:new Set(), mismatches:0, lock:false, totalPairs:chosen.length };
+
+  document.getElementById('battleHeaderWrap').innerHTML = "";
+  document.getElementById('normalHeader').style.display = "flex";
+  document.getElementById('timerFill').parentElement.style.display = "none";
+  document.getElementById('streakPill').style.display = "none";
+  document.getElementById('scoreLabel').textContent = "0";
+  document.getElementById('progressFill').style.width = "0%";
+  show('screen-game');
+  renderMemoryBoard();
+}
+function renderMemoryBoard(){
+  document.getElementById('progressFill').style.width = Math.round((memory.matchedIds.size/memory.totalPairs)*100) + "%";
+  const cardEl = document.getElementById('gameCard');
+  cardEl.innerHTML = `
+    <div class="prompt-text">Lật 2 thẻ để tìm hình và từ khớp nhau nhé!</div>
+    <div class="memory-grid" id="memGrid"></div>
+    <div class="memory-status">Cặp đúng: ${memory.matchedIds.size}/${memory.totalPairs} · Lượt sai: ${memory.mismatches}</div>
+  `;
+  const grid = document.getElementById('memGrid');
+  memory.cards.forEach((c, idx)=>{
+    const isMatched = memory.matchedIds.has(c.pairId);
+    const isFlipped = memory.flippedIdx.includes(idx);
+    const btn = document.createElement('button');
+    btn.className = "memory-card" + (isMatched ? " matched" : (isFlipped ? " revealed" : ""));
+    if(isMatched || isFlipped){
+      btn.innerHTML = c.kind === "word" ? c.data.word : visualHTML(c.data, 'opt-emoji');
+    } else {
+      btn.textContent = "❓";
+    }
+    btn.onclick = ()=> flipMemoryCard(idx);
+    grid.appendChild(btn);
+  });
+}
+function flipMemoryCard(idx){
+  if(memory.lock) return;
+  if(memory.matchedIds.has(memory.cards[idx].pairId)) return;
+  if(memory.flippedIdx.includes(idx)) return;
+  memory.flippedIdx.push(idx);
+  renderMemoryBoard();
+  if(memory.flippedIdx.length === 2){
+    memory.lock = true;
+    const [i1, i2] = memory.flippedIdx;
+    const c1 = memory.cards[i1], c2 = memory.cards[i2];
+    if(c1.pairId === c2.pairId && c1.kind !== c2.kind){
+      memory.matchedIds.add(c1.pairId);
+      playTone(true);
+      speak(c1.data.word);
+      setTimeout(()=>{
+        memory.flippedIdx = [];
+        memory.lock = false;
+        renderMemoryBoard();
+        if(memory.matchedIds.size >= memory.totalPairs) finishMemoryStation();
+      }, 500);
+    } else {
+      memory.mismatches += 1;
+      playTone(false);
+      setTimeout(()=>{
+        memory.flippedIdx = [];
+        memory.lock = false;
+        renderMemoryBoard();
+      }, 900);
+    }
+  }
+}
+async function finishMemoryStation(){
+  let stars = 1;
+  if(memory.mismatches <= 1) stars = 3; else if(memory.mismatches <= 3) stars = 2;
+  const id = memory.topicKey + "-memory";
+  stationStars[id] = Math.max(stationStars[id], stars);
+  await saveProgress();
+
+  document.getElementById('resultTitle').textContent = "Trí Nhớ hoàn thành!";
+  document.getElementById('resultStars').textContent = "⭐".repeat(stars) + "☆".repeat(3-stars);
+  document.getElementById('resultDetail').textContent = `Sai ${memory.mismatches} lượt · Tìm đủ ${memory.totalPairs} cặp`;
+  document.getElementById('resultMascot').textContent = stars === 3 ? "🥳" : (stars === 2 ? "🐥" : "💪");
+  current.topicKey = memory.topicKey;
+  current.stationKey = "memory";
+  show('screen-result');
+}
+function updateHeader(){
+  const pct = Math.round((current.roundIdx / ROUNDS_PER_STATION) * 100);
+  document.getElementById('progressFill').style.width = pct + "%";
+  document.getElementById('scoreLabel').textContent = current.score;
+  const streakPill = document.getElementById('streakPill');
+  if(current.streak >= 2){ streakPill.style.display = "flex"; document.getElementById('streakLabel').textContent = current.streak; }
+  else streakPill.style.display = "none";
+}
+function startTimer(){
+  current.roundStart = Date.now();
+  const fill = document.getElementById('timerFill');
+  fill.style.transition = "none";
+  fill.style.width = "100%";
+  requestAnimationFrame(()=>{
+    fill.style.transition = `width ${ROUND_SECONDS}s linear`;
+    fill.style.width = "0%";
+  });
+}
+function elapsedSeconds(){ return current.roundStart ? (Date.now() - current.roundStart)/1000 : 999; }
+
+function renderRound(){
+  updateHeader();
+  const round = current.rounds[current.roundIdx];
+  const target = round.target;
+  const cardEl = document.getElementById('gameCard');
+  const numOptions = current.difficulty >= 1 ? 4 : 3;
+
+  if(current.stationKey === "listen"){
+    const distractors = pickN(round.pool.filter(x=>x.word!==target.word), numOptions-1);
+    const options = shuffle([target, ...distractors]);
+    cardEl.innerHTML = `
+      <div class="prompt-text">Nghe kỹ rồi chọn đúng hình nhé!</div>
+      <div style="font-size:56px; margin:10px 0;">👂</div>
+      <button class="sound-btn" onclick="speak('${target.word}')">🔊 Nghe</button>
+      <div class="options-grid grid2" id="optWrap"></div>`;
+    const wrap = document.getElementById('optWrap');
+    options.forEach(opt=>{
+      const b = document.createElement('button');
+      b.className = "option-btn";
+      b.innerHTML = visualHTML(opt, 'big-opt');
+      b.onclick = ()=> answerChoice(b, opt, target);
+      wrap.appendChild(b);
+    });
+    speak(target.word);
+    startTimer();
+  }
+  else if(current.stationKey === "letter"){
+    const letter = target.word[0];
+    const distractors = pickN(round.pool.filter(x=>x.word!==target.word), numOptions-1);
+    const options = shuffle([target, ...distractors]);
+    cardEl.innerHTML = `
+      <div class="prompt-text">Chữ cái nào bắt đầu từ này?</div>
+      <div class="prompt-letter">${letter}</div>
+      <button class="sound-btn" onclick="speak('${letter}')">🔊</button>
+      <div class="options-grid" id="optWrap"></div>`;
+    const wrap = document.getElementById('optWrap');
+    options.forEach(opt=>{
+      const b = document.createElement('button');
+      b.className = "option-btn";
+      b.innerHTML = `${visualHTML(opt, 'opt-emoji')}<span>${opt.word}</span>`;
+      if(opt.vtype!=='emoji') b.innerHTML = `${visualHTML(opt, opt.vtype==='color'?'opt-swatch':'opt-number')}<span>${opt.word}</span>`;
+      b.onclick = ()=> answerChoice(b, opt, target);
+      wrap.appendChild(b);
+    });
+    startTimer();
+  }
+  else if(current.stationKey === "picture"){
+    const distractors = pickN(round.pool.filter(x=>x.word!==target.word), numOptions-1);
+    const options = shuffle([target, ...distractors]);
+    cardEl.innerHTML = `
+      <div class="prompt-text">Đây là gì bằng tiếng Anh?</div>
+      ${visualHTML(target)}
+      <button class="sound-btn" onclick="speak('${target.word}')">🔊</button>
+      <div class="options-grid" id="optWrap"></div>`;
+    const wrap = document.getElementById('optWrap');
+    options.forEach(opt=>{
+      const b = document.createElement('button');
+      b.className = "option-btn";
+      b.textContent = opt.word;
+      b.onclick = ()=> answerChoice(b, opt, target);
+      wrap.appendChild(b);
+    });
+    startTimer();
+  }
+  else if(current.stationKey === "spell"){
+    renderSpellRound(target);
+    startTimer();
+  }
+}
+
+function renderSpellRound(target){
+  const cardEl = document.getElementById('gameCard');
+  const word = target.word;
+  const decoyCount = current.difficulty >= 1 ? 2 : 0;
+  const decoyPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').filter(c => !word.includes(c));
+  const decoys = pickN(decoyPool, decoyCount);
+  const letters = shuffle(word.split('').concat(decoys));
+
+  cardEl.innerHTML = `
+    <div class="prompt-text">Ghép chữ cái để được: <strong>${target.vi}</strong></div>
+    ${visualHTML(target)}
+    <button class="sound-btn" onclick="speak('${word}')">🔊</button>
+    <div class="spell-word-row" id="slotRow"></div>
+    <div class="letter-tiles" id="tileRow"></div>
+    <div class="spell-actions">
+      <button class="btn secondary small" onclick="clearSpell()">🔄 Xóa</button>
+      <button class="btn green small" id="checkSpellBtn" onclick="checkSpell()" disabled>✅ Kiểm tra</button>
+    </div>`;
+  const slotRow = document.getElementById('slotRow');
+  const tileRow = document.getElementById('tileRow');
+  word.split('').forEach((ch,i)=>{
+    const s = document.createElement('div');
+    s.className = "spell-slot"; s.id = "slot-"+i;
+    slotRow.appendChild(s);
+  });
+  letters.forEach((ch, i)=>{
+    const t = document.createElement('button');
+    t.className = "letter-tile";
+    t.textContent = ch; t.id = "tile-"+i;
+    t.onclick = ()=> placeLetter(t, ch);
+    tileRow.appendChild(t);
+  });
+  current.spellFilled = new Array(word.length).fill(null);
+}
+
+function placeLetter(tileEl, ch){
+  if(tileEl.classList.contains('used') || current.awaitingNext) return;
+  const filled = current.spellFilled;
+  const nextIdx = filled.findIndex(v=>v===null);
+  if(nextIdx === -1) return;
+  filled[nextIdx] = {ch, tileId: tileEl.id};
+  const slot = document.getElementById('slot-'+nextIdx);
+  slot.textContent = ch; slot.classList.add('filled');
+  tileEl.classList.add('used');
+  document.getElementById('checkSpellBtn').disabled = !filled.every(v=>v!==null);
+}
+function clearSpell(){
+  if(current.awaitingNext) return;
+  current.spellFilled.forEach((v,i)=>{
+    const slot = document.getElementById('slot-'+i);
+    slot.textContent = ""; slot.classList.remove('filled');
+    if(v){ const tile = document.getElementById(v.tileId); if(tile) tile.classList.remove('used'); }
+  });
+  current.spellFilled = current.spellFilled.map(()=>null);
+  document.getElementById('checkSpellBtn').disabled = true;
+}
+function checkSpell(){
+  if(current.awaitingNext) return;
+  current.awaitingNext = true;
+  const word = current.rounds[current.roundIdx].target.word;
+  const attempt = current.spellFilled.map(v=>v.ch).join('');
+  const correct = attempt === word;
+  const slotRow = document.getElementById('slotRow');
+  document.getElementById('checkSpellBtn').disabled = true;
+  document.querySelectorAll('.letter-tile').forEach(t=>t.disabled = true);
+  slotRow.querySelectorAll('.spell-slot').forEach(s=> s.style.borderColor = correct ? 'var(--grass)' : 'var(--berry)');
+  resolveAnswer(correct, 15, correct ? null : word);
+}
+
+function answerChoice(btnEl, chosen, target){
+  if(current.awaitingNext) return;
+  current.awaitingNext = true;
+  const correct = chosen.word === target.word;
+  const allBtns = document.querySelectorAll('#optWrap .option-btn');
+  allBtns.forEach(b=>b.disabled = true);
+  if(correct){ btnEl.classList.add('correct'); }
+  else{
+    btnEl.classList.add('wrong');
+  }
+  resolveAnswer(correct, 10, correct ? null : target.word);
+}
+
+function resolveAnswer(correct, basePoints, correctWord){
+  const timeTaken = elapsedSeconds();
+  let bonus = 0;
+  if(correct){
+    current.correctCount += 1;
+    current.streak += 1;
+    current.difficulty = current.streak >= 2 ? 1 : 0;
+    if(timeTaken <= ROUND_SECONDS * 0.4) bonus = 5;
+    current.score += basePoints + bonus;
+    playTone(true);
+  } else {
+    current.streak = 0;
+    current.difficulty = 0;
+    playTone(false);
+  }
+  updateHeader();
+  showFeedback(correct, bonus, correctWord);
+}
+function showFeedback(correct, bonus, correctWord){
+  const banner = document.getElementById('feedbackBanner');
+  banner.className = "feedback-banner show " + (correct ? "ok" : "no");
+  document.getElementById('fbEmoji').textContent = correct ? "✅" : "❌";
+  document.getElementById('fbText').textContent = correct ? "Chính xác luôn!" : (correctWord ? "Chưa đúng, đáp án là " + correctWord : "Chưa đúng rồi!");
+  document.getElementById('fbBonus').textContent = bonus > 0 ? `⚡ Nhanh tay! +${bonus} điểm thưởng` : "";
+  speak(correct ? "Great job!" : "Try again", "en-US");
+}
+function nextRound(){
+  document.getElementById('feedbackBanner').classList.remove('show');
+  current.awaitingNext = false;
+  current.roundIdx += 1;
+  if(current.roundIdx >= ROUNDS_PER_STATION) finishStation();
+  else renderRound();
+}
+
+async function finishStation(){
+  updateHeader();
+  const acc = current.correctCount / ROUNDS_PER_STATION;
+  let stars = 1;
+  if(acc >= 0.99) stars = 3; else if(acc >= 0.6) stars = 2;
+  const id = current.topicKey + "-" + current.stationKey;
+  stationStars[id] = Math.max(stationStars[id], stars);
+  await saveProgress();
+
+  document.getElementById('resultTitle').textContent = STATION_DEFS.find(s=>s.key===current.stationKey).title + " hoàn thành!";
+  document.getElementById('resultStars').textContent = "⭐".repeat(stars) + "☆".repeat(3-stars);
+  document.getElementById('resultDetail').textContent = `Đúng ${current.correctCount}/${ROUNDS_PER_STATION} câu · ${current.score} điểm`;
+  document.getElementById('resultMascot').textContent = stars === 3 ? "🥳" : (stars === 2 ? "🐥" : "💪");
+  show('screen-result');
+}
+
+function retryStation(){ beginStation(current.topicKey, current.stationKey); }
+
+/* ================= MONSTER BATTLE ================= */
+function openMonsterIntro(topicKey){
+  const t = getTopic(topicKey);
+  document.getElementById('monsterIntroEmoji').textContent = t.monster.emoji;
+  document.getElementById('monsterIntroTitle').textContent = topicGems[topicKey]
+    ? t.monster.name + " quay lại thách đấu!"
+    : t.monster.name + " xuất hiện, canh giữ " + t.gemName + "!";
+  battle.topicKey = topicKey;
+  show('screen-monster-intro');
+}
+function startMonsterBattle(){
+  const topic = getTopic(battle.topicKey);
+  const chosen = pickN(topic.words, 3);
+  battle.rounds = chosen.map(w => {
+    const distractors = pickN(topic.words.filter(x=>x.word!==w.word), 2);
+    return { target:w, options: shuffle([w, ...distractors]) };
+  });
+  battle.roundIdx = 0;
+  battle.hits = 0;
+  battle.active = true;
+
+  document.getElementById('normalHeader').style.display = "none";
+  show('screen-game');
+  renderBattleRound();
+}
+function renderBattleHeader(){
+  const t = getTopic(battle.topicKey);
+  const heartsLeft = 3 - battle.hits;
+  document.getElementById('battleHeaderWrap').innerHTML = `
+    <div class="battle-header">
+      <div class="battle-monster" id="battleMonsterEmoji">${t.monster.emoji}</div>
+      <div class="battle-info">
+        <div class="battle-name">${t.monster.name}</div>
+        <div class="hp-hearts">${"❤️".repeat(heartsLeft)}${"🖤".repeat(battle.hits)}</div>
+      </div>
+    </div>`;
+}
+function renderBattleRound(){
+  renderBattleHeader();
+  const round = battle.rounds[battle.roundIdx];
+  const target = round.target;
+  const cardEl = document.getElementById('gameCard');
+  cardEl.innerHTML = `
+    <div class="prompt-text">Câu ${battle.roundIdx+1}/3 — Đây là gì?</div>
+    ${visualHTML(target)}
+    <button class="sound-btn" onclick="speak('${target.word}')">🔊</button>
+    <div class="options-grid" id="optWrap"></div>`;
+  const wrap = document.getElementById('optWrap');
+  round.options.forEach(opt=>{
+    const b = document.createElement('button');
+    b.className = "option-btn";
+    b.textContent = opt.word;
+    b.onclick = ()=> answerBattle(b, opt, target);
+    wrap.appendChild(b);
+  });
+}
+function answerBattle(btnEl, chosen, target){
+  const allBtns = document.querySelectorAll('#optWrap .option-btn');
+  allBtns.forEach(b=>b.disabled = true);
+  const correct = chosen.word === target.word;
+  const monsterEmoji = document.getElementById('battleMonsterEmoji');
+  if(correct){
+    btnEl.classList.add('correct');
+    battle.hits += 1;
+    monsterEmoji.classList.add('hit');
+    playTone(true);
+    setTimeout(()=> monsterEmoji.classList.remove('hit'), 400);
+  } else {
+    btnEl.classList.add('wrong');
+    playTone(false);
+  }
+  renderBattleHeader();
+  document.getElementById('fbEmoji').textContent = correct ? "⚔️" : "🛡️";
+  document.getElementById('fbText').textContent = correct ? "Đánh trúng quái vật!" : "Quái vật né được rồi!";
+  document.getElementById('fbBonus').textContent = "";
+  document.getElementById('feedbackBanner').className = "feedback-banner show " + (correct ? "ok" : "no");
+  document.getElementById('fbNextBtn').onclick = nextBattleRound;
+}
+async function nextBattleRound(){
+  document.getElementById('feedbackBanner').classList.remove('show');
+  battle.roundIdx += 1;
+  if(battle.roundIdx >= 3){ await finishBattle(); }
+  else renderBattleRound();
+}
+async function finishBattle(){
+  battle.active = false;
+  const t = getTopic(battle.topicKey);
+  const win = battle.hits >= 2;
+  document.getElementById('fbNextBtn').onclick = nextRound;
+
+  if(win){
+    topicGems[battle.topicKey] = true;
+    await saveProgress();
+    document.getElementById('mrEmoji').textContent = battle.hits === 3 ? "🥳" : "🎉";
+    document.getElementById('mrTitle').textContent = battle.hits === 3 ? "Hạ gục hoàn toàn!" : "Đã đánh lui quái vật!";
+    document.getElementById('mrDesc').textContent = `Đúng ${battle.hits}/3 câu — rương báu đã mở!`;
+    document.getElementById('mrChest').style.display = "inline-block";
+    document.getElementById('mrChest').classList.add('shake');
+    document.getElementById('mrGemReveal').style.display = "none";
+    document.getElementById('mrRetryBtn').textContent = "Đấu lại để luyện tập";
+    setTimeout(()=>{
+      document.getElementById('mrChest').textContent = "🎁";
+      document.getElementById('mrGemReveal').style.display = "block";
+      document.getElementById('mrGemReveal').innerHTML = `${t.gem} <div style="font-size:14px; font-family:'Lexend',sans-serif; color:#7a6f7c; margin-top:6px;">${t.gemName}</div>`;
+      launchConfetti();
+    }, 900);
+  } else {
+    document.getElementById('mrEmoji').textContent = t.monster.emoji;
+    document.getElementById('mrTitle').textContent = "Quái vật chạy mất rồi!";
+    document.getElementById('mrDesc').textContent = `Đúng ${battle.hits}/3 câu — cần ít nhất 2/3 để thắng. Thử lại nhé!`;
+    document.getElementById('mrChest').style.display = "none";
+    document.getElementById('mrGemReveal').style.display = "none";
+    document.getElementById('mrRetryBtn').textContent = "Đấu lại";
+  }
+  show('screen-monster-result');
+
+  const allComplete = ALL_STATION_IDS.every(sid => stationStars[sid] > 0) && Object.values(topicGems).every(Boolean);
+  if(allComplete){
+    setTimeout(()=>{
+      document.getElementById('certName').textContent = playerName;
+      launchConfetti();
+      show('screen-final');
+    }, 2000);
+  } else if(win){
+    const topicComplete = STATION_DEFS.every(s => stationStars[battle.topicKey + "-" + s.key] > 0);
+    if(topicComplete){
+      setTimeout(()=>{
+        const tstars = topicStars(battle.topicKey);
+        document.getElementById('tcStars').textContent = "⭐".repeat(tstars) + "☆".repeat(STARS_PER_TOPIC_MAX-tstars);
+        document.getElementById('tcTitle').textContent = t.title + " hoàn thành!";
+      }, 0);
+    }
+  }
+}
+
+async function restartAll(){
+  ALL_STATION_IDS.forEach(id => stationStars[id] = 0);
+  TOPICS.forEach(t => topicGems[t.key] = false);
+  await saveProgress();
+  renderTopics();
+  show('screen-topics');
+}
+
+/* ================= CONFETTI ================= */
+function launchConfetti(){
+  const emojis = ["🎉","⭐","🎊","✨","🏅"];
+  for(let i=0;i<26;i++){
+    const c = document.createElement('div');
+    c.className = "confetti"; c.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    c.style.left = Math.random()*100 + "vw";
+    c.style.animationDuration = (2.5 + Math.random()*2) + "s";
+    c.style.fontSize = (16 + Math.random()*14) + "px";
+    document.body.appendChild(c);
+    setTimeout(()=> c.remove(), 5000);
+  }
+}
+</script>
+</body>
+</html>
