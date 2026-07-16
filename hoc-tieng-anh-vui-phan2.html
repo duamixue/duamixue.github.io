@@ -81,6 +81,12 @@
       radial-gradient(circle 8px at 86% 48%, #5EC8D8 100%, transparent 101%),
       linear-gradient(160deg, #F0B75E, #C97F1F); }
   .shape-chest{ width:90px; height:78px; border-radius:18px; background:linear-gradient(160deg, #FFD166, #C98A2E); border:3px solid rgba(255,255,255,0.85); }
+  .shape-star{ width:104px; height:104px; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    background:linear-gradient(160deg, #FFE066, #E8A317); filter:drop-shadow(0 4px 0 rgba(0,0,0,0.2)); }
+  .shape-hexagon{ width:100px; height:96px; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background:linear-gradient(160deg, #FFB199, #E8623F); filter:drop-shadow(0 4px 0 rgba(0,0,0,0.2)); }
+  .shape-diamond{ width:98px; height:98px; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    background:linear-gradient(160deg, #FF9466, #D65A22); filter:drop-shadow(0 4px 0 rgba(0,0,0,0.2)); }
   .shape-cloud{ width:112px; height:76px; border-radius:44px; border:3px solid rgba(255,255,255,0.85);
     background:
       radial-gradient(circle 24px at 22% 55%, #FF6F91 100%, transparent 101%),
@@ -160,13 +166,6 @@
   .letter-tile.used{ visibility:hidden; }
   .spell-actions{ display:flex; gap:10px; justify-content:center; margin-top:14px; }
 
-  .feedback-banner{ position:fixed; left:0; right:0; bottom:0; padding:16px 18px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:'Fredoka',sans-serif; font-weight:600; font-size:17px; color:white; transform:translateY(120%); transition:transform .25s ease; z-index:10; }
-  .feedback-banner.show{ transform:translateY(0); }
-  .feedback-banner.ok{ background:var(--grass); }
-  .feedback-banner.no{ background:var(--berry); }
-  .feedback-banner .fb-text{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
-  .fb-bonus{ font-size:13px; opacity:0.9; display:block; font-weight:500; }
-
   .stars-row{ font-size:40px; margin:12px 0; letter-spacing:5px; }
   .confetti{ position:fixed; top:-20px; font-size:22px; z-index:5; animation:fall linear forwards; }
   @keyframes fall{ to{ transform:translateY(110vh) rotate(360deg); opacity:0.2; } }
@@ -217,9 +216,9 @@
     <div style="margin-top:20px;" class="mascot" id="mascotWelcome">🐥</div>
     <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
       <h1 style="color:white; font-size:26px; text-shadow:0 3px 0 rgba(0,0,0,0.15); text-align:center;">Chíp Và Đảo Từ Vựng</h1>
-      <span style="background:var(--sun); color:var(--plum); font-family:'Fredoka',sans-serif; font-weight:700; font-size:12px; padding:3px 9px; border-radius:10px; box-shadow:0 3px 0 #d9a63e;">v2.0</span>
+      <span style="background:var(--sun); color:var(--plum); font-family:'Fredoka',sans-serif; font-weight:700; font-size:12px; padding:3px 9px; border-radius:10px; box-shadow:0 3px 0 #d9a63e;">v3.1</span>
     </div>
-    <div class="speech-bubble">Chào bạn! Chíp cần người bạn đồng hành khám phá 5 vùng đất, đánh bại thử thách và mở rương báu. Cùng học tiếng Anh nhé!</div>
+    <div class="speech-bubble">Chào bạn! Chíp cần người bạn đồng hành khám phá 8 vùng đất, đánh bại thử thách và mở rương báu. Cùng học tiếng Anh nhé!</div>
 
     <div class="card" style="margin-top:20px;">
       <h3>Bé nào chơi hôm nay?</h3>
@@ -230,7 +229,7 @@
       <input type="text" id="customName" class="name-input" placeholder="Hoặc nhập tên khác...">
       <button class="btn" style="margin-top:6px;" onclick="startGame()">Ra khơi phiêu lưu 🚀</button>
     </div>
-    <div class="footer-note">5 vùng đất · 25 chặng học · 5 người gác giữ rương báu</div>
+    <div class="footer-note">8 vùng đất · 40 chặng học · 8 người gác giữ rương báu</div>
     <button class="btn secondary small" style="margin-top:12px;" onclick="show('screen-whatsnew')">🆕 Có gì mới trong bản 2.0?</button>
   </div>
 </div>
@@ -240,17 +239,21 @@
   <div class="app-frame" style="margin-top:44px;">
     <div class="mascot" style="font-size:60px;">🎉</div>
     <div class="card" style="margin-top:12px; text-align:left;">
-      <h2 style="text-align:center;">Có Gì Mới — v2.0</h2>
+      <h2 style="text-align:center;">Có Gì Mới — v3.1</h2>
       <ul style="font-size:14px; line-height:1.7; color:var(--plum); padding-left:20px; margin-top:14px;">
-        <li><b>Vùng mới: Ngôi Nhà Cảm Xúc</b> ❤️ — học từ về gia đình (mẹ, bố, anh chị em) và cảm xúc (vui, buồn, tức giận, buồn ngủ, đói bụng) thay vì chỉ đồ vật quen thuộc</li>
-        <li><b>Cách học mới: Trí Nhớ</b> 🧠 — lật thẻ tìm cặp hình + từ khớp nhau, rèn trí nhớ thay vì chỉ chọn đáp án</li>
-        <li><b>Bản đồ phiêu lưu cong</b> nối 5 vùng đất bằng đường mòn có dấu chân, dẫn tới Bộ Sưu Tập Phần Thưởng</li>
-        <li><b>5 vùng học đa dạng</b>: Khu Rừng Động Vật, Xứ Sở Màu Sắc, Thế Giới Số Đếm, Thành Phố Đồ Vật, Ngôi Nhà Cảm Xúc — mỗi vùng một hình dạng và màu riêng</li>
-        <li><b>25 chặng chơi</b> với 5 dạng bài: Nghe Đoán, Chữ Cái Vui, Ghép Hình, Đánh Vần, Trí Nhớ</li>
+        <li><b>2 vùng đất hoàn toàn mới</b>: <b>Cơ Thể Bé Yêu</b> 💪 (mắt, tai, mũi, tay, chân...) và <b>Thế Giới Thức Ăn</b> 🍎 (bánh mì, sữa, cơm, trứng, bánh ngọt...)</li>
+        <li><b>Làm mới toàn bộ từ vựng</b> ở 5 vùng cũ — mỗi vùng thêm 4-7 từ mới hoàn toàn, không lặp lại y hệt bản trước</li>
+        <li><b>Vùng: Thế Giới Hành Động</b> ⚡ — học động từ (chạy, nhảy, bơi, hát, đọc sách...) thay vì chỉ danh từ tĩnh</li>
+        <li><b>Chơi mượt hơn</b>: trả lời xong tự động chuyển câu sau 2 giây, không cần bấm "Tiếp tục" nữa</li>
+        <li><b>Bỏ lời khen, đọc lại từ vựng</b>: thay vì khen "Great job", Chíp sẽ đọc lại từ tiếng Anh vừa học thêm 1 lần</li>
+        <li><b>Vùng: Ngôi Nhà Cảm Xúc</b> ❤️ — từ vựng gia đình và cảm xúc</li>
+        <li><b>Cách học: Trí Nhớ</b> 🧠 — lật thẻ tìm cặp hình + từ khớp nhau</li>
+        <li><b>Bản đồ phiêu lưu cong</b> nối 8 vùng đất bằng đường mòn có dấu chân, dẫn tới Bộ Sưu Tập Phần Thưởng</li>
+        <li><b>8 vùng học đa dạng</b>: Khu Rừng Động Vật, Xứ Sở Màu Sắc, Thế Giới Số Đếm, Thành Phố Đồ Vật, Ngôi Nhà Cảm Xúc, Thế Giới Hành Động, Cơ Thể Bé Yêu, Thế Giới Thức Ăn — mỗi vùng một hình dạng và màu riêng</li>
+        <li><b>40 chặng chơi</b> với 5 dạng bài: Nghe Đoán, Chữ Cái Vui, Ghép Hình, Đánh Vần, Trí Nhớ</li>
         <li><b>Độ khó tự thích ứng</b> theo phong độ + điểm thưởng tốc độ ⚡</li>
         <li><b>Người gác giữ rương báu</b> — thắng thử thách để mở khóa viên ngọc của mỗi vùng</li>
-        <li><b>Avatar là ảnh thật</b> của Dừa và Mixue</li>
-        <li><b>Nhạc nền</b> có thể bật/tắt khi chơi</li>
+        <li><b>Avatar là ảnh thật</b> của Dừa và Mixue, có nhạc nền bật/tắt được</li>
         <li><b>Lưu tiến trình</b> theo tên bé khi chơi trong Claude</li>
       </ul>
       <button class="btn green" style="margin-top:16px;" onclick="show('screen-welcome')">Về màn hình chính</button>
@@ -385,15 +388,8 @@
   </div>
 </div>
 
-<div id="feedbackBanner" class="feedback-banner">
-  <div class="fb-text">
-    <span id="fbEmoji">✅</span>
-    <span><span id="fbText">Đúng rồi!</span><span class="fb-bonus" id="fbBonus"></span></span>
-  </div>
-  <button class="btn secondary small" id="fbNextBtn" onclick="nextRound()">Tiếp tục →</button>
-</div>
-
 <script>
+
 /* ================= DATA ================= */
 const TOPICS = [
   { key:"animals", title:"Khu Rừng Động Vật", terrain:"🌴", emoji:"🐾", gem:"🟢", gemName:"Ngọc Lục Bảo Rừng", shape:"shape-dolphin",
@@ -413,6 +409,12 @@ const TOPICS = [
       {word:"SHEEP", vtype:"emoji", visual:"🐑", vi:"Con cừu"},
       {word:"MOUSE", vtype:"emoji", visual:"🐭", vi:"Con chuột"},
       {word:"OWL", vtype:"emoji", visual:"🦉", vi:"Con cú"},
+      {word:"MONKEY", vtype:"emoji", visual:"🐵", vi:"Con khỉ"},
+      {word:"ELEPHANT", vtype:"emoji", visual:"🐘", vi:"Con voi"},
+      {word:"TIGER", vtype:"emoji", visual:"🐯", vi:"Con hổ"},
+      {word:"RABBIT", vtype:"emoji", visual:"🐰", vi:"Con thỏ"},
+      {word:"TURTLE", vtype:"emoji", visual:"🐢", vi:"Con rùa"},
+      {word:"PENGUIN", vtype:"emoji", visual:"🐧", vi:"Chim cánh cụt"},
     ]},
   { key:"colors", title:"Xứ Sở Màu Sắc", terrain:"🌈", emoji:"🎨", gem:"💗", gemName:"Ngọc Hồng Cầu Vồng", shape:"shape-palette",
     monster:{emoji:"👾", name:"Quái Vật Cầu Vồng"},
@@ -427,6 +429,10 @@ const TOPICS = [
       {word:"BROWN", vtype:"color", visual:"#A9714B", vi:"Màu nâu"},
       {word:"BLACK", vtype:"color", visual:"#3A2E39", vi:"Màu đen"},
       {word:"WHITE", vtype:"color", visual:"#FFFFFF", vi:"Màu trắng"},
+      {word:"GRAY", vtype:"color", visual:"#9CA3AF", vi:"Màu xám"},
+      {word:"GOLD", vtype:"color", visual:"#D4AF37", vi:"Màu vàng kim"},
+      {word:"SILVER", vtype:"color", visual:"#C0C0C0", vi:"Màu bạc"},
+      {word:"NAVY", vtype:"color", visual:"#1F3A5F", vi:"Xanh navy"},
     ]},
   { key:"numbers", title:"Thế Giới Số Đếm", terrain:"🏔️", emoji:"🔢", gem:"💎", gemName:"Kim Cương Đỉnh Núi", shape:"shape-circle",
     monster:{emoji:"🐲", name:"Rồng Số Học"},
@@ -441,6 +447,10 @@ const TOPICS = [
       {word:"EIGHT", vtype:"number", visual:"8", vi:"Số tám"},
       {word:"NINE", vtype:"number", visual:"9", vi:"Số chín"},
       {word:"TEN", vtype:"number", visual:"10", vi:"Số mười"},
+      {word:"ZERO", vtype:"number", visual:"0", vi:"Số không"},
+      {word:"TWENTY", vtype:"number", visual:"20", vi:"Số hai mươi"},
+      {word:"THIRTY", vtype:"number", visual:"30", vi:"Số ba mươi"},
+      {word:"HUNDRED", vtype:"number", visual:"100", vi:"Số một trăm"},
     ]},
   { key:"objects", title:"Thành Phố Đồ Vật", terrain:"🏠", emoji:"🎒", gem:"🟡", gemName:"Ngọc Vàng Gia Đình", shape:"shape-oval",
     monster:{emoji:"🐙", name:"Bạch Tuộc Đồ Vật"},
@@ -459,6 +469,12 @@ const TOPICS = [
       {word:"KEY", vtype:"emoji", visual:"🔑", vi:"Chìa khóa"},
       {word:"DOOR", vtype:"emoji", visual:"🚪", vi:"Cánh cửa"},
       {word:"BED", vtype:"emoji", visual:"🛏️", vi:"Cái giường"},
+      {word:"WINDOW", vtype:"emoji", visual:"🪟", vi:"Cửa sổ"},
+      {word:"CLOCK", vtype:"emoji", visual:"🕐", vi:"Đồng hồ"},
+      {word:"LAMP", vtype:"emoji", visual:"💡", vi:"Cái đèn"},
+      {word:"PHONE", vtype:"emoji", visual:"📱", vi:"Điện thoại"},
+      {word:"UMBRELLA", vtype:"emoji", visual:"☂️", vi:"Cái ô"},
+      {word:"KITE", vtype:"emoji", visual:"🪁", vi:"Cái diều"},
     ]},
   { key:"family", title:"Ngôi Nhà Cảm Xúc", terrain:"🏡", emoji:"❤️", gem:"❤️", gemName:"Ngọc Trái Tim Yêu Thương", shape:"shape-cloud",
     monster:{emoji:"🧸", name:"Gấu Bông Khổng Lồ"},
@@ -473,6 +489,53 @@ const TOPICS = [
       {word:"ANGRY", vtype:"emoji", visual:"😠", vi:"Tức giận"},
       {word:"SLEEPY", vtype:"emoji", visual:"😴", vi:"Buồn ngủ"},
       {word:"HUNGRY", vtype:"emoji", visual:"🤤", vi:"Đói bụng"},
+      {word:"GRANDMA", vtype:"emoji", visual:"👵", vi:"Bà"},
+      {word:"GRANDPA", vtype:"emoji", visual:"👴", vi:"Ông"},
+      {word:"EXCITED", vtype:"emoji", visual:"🤩", vi:"Phấn khích"},
+      {word:"SCARED", vtype:"emoji", visual:"😨", vi:"Sợ hãi"},
+      {word:"TIRED", vtype:"emoji", visual:"🥱", vi:"Mệt mỏi"},
+    ]},
+  { key:"actions", title:"Thế Giới Hành Động", terrain:"🏃", emoji:"⚡", gem:"⚡", gemName:"Tia Chớp Năng Động", shape:"shape-star",
+    monster:{emoji:"🐆", name:"Báo Đốm Tia Chớp"},
+    words:[
+      {word:"RUN", vtype:"emoji", visual:"🏃", vi:"Chạy"},
+      {word:"JUMP", vtype:"emoji", visual:"🤸", vi:"Nhảy"},
+      {word:"EAT", vtype:"emoji", visual:"🍽️", vi:"Ăn"},
+      {word:"DRINK", vtype:"emoji", visual:"🥤", vi:"Uống"},
+      {word:"SWIM", vtype:"emoji", visual:"🏊", vi:"Bơi"},
+      {word:"DANCE", vtype:"emoji", visual:"💃", vi:"Nhảy múa"},
+      {word:"SING", vtype:"emoji", visual:"🎤", vi:"Hát"},
+      {word:"READ", vtype:"emoji", visual:"📖", vi:"Đọc sách"},
+      {word:"WALK", vtype:"emoji", visual:"🚶", vi:"Đi bộ"},
+      {word:"CLIMB", vtype:"emoji", visual:"🧗", vi:"Leo trèo"},
+    ]},
+  { key:"body", title:"Cơ Thể Bé Yêu", terrain:"🧍", emoji:"💪", gem:"🦴", gemName:"Ngọc Xương Khỏe Mạnh", shape:"shape-hexagon",
+    monster:{emoji:"🤖", name:"Người Máy Tò Mò"},
+    words:[
+      {word:"EYE", vtype:"emoji", visual:"👁️", vi:"Mắt"},
+      {word:"EAR", vtype:"emoji", visual:"👂", vi:"Tai"},
+      {word:"NOSE", vtype:"emoji", visual:"👃", vi:"Mũi"},
+      {word:"MOUTH", vtype:"emoji", visual:"👄", vi:"Miệng"},
+      {word:"HAND", vtype:"emoji", visual:"✋", vi:"Bàn tay"},
+      {word:"FOOT", vtype:"emoji", visual:"🦶", vi:"Bàn chân"},
+      {word:"ARM", vtype:"emoji", visual:"💪", vi:"Cánh tay"},
+      {word:"LEG", vtype:"emoji", visual:"🦵", vi:"Chân"},
+      {word:"TOOTH", vtype:"emoji", visual:"🦷", vi:"Cái răng"},
+      {word:"FINGER", vtype:"emoji", visual:"👆", vi:"Ngón tay"},
+    ]},
+  { key:"food", title:"Thế Giới Thức Ăn", terrain:"🍽️", emoji:"🍎", gem:"🍎", gemName:"Ngọc Táo Vàng Thơm Ngon", shape:"shape-diamond",
+    monster:{emoji:"🐹", name:"Chuột Hamster Háu Ăn"},
+    words:[
+      {word:"BREAD", vtype:"emoji", visual:"🍞", vi:"Bánh mì"},
+      {word:"MILK", vtype:"emoji", visual:"🥛", vi:"Sữa"},
+      {word:"RICE", vtype:"emoji", visual:"🍚", vi:"Cơm"},
+      {word:"EGG", vtype:"emoji", visual:"🥚", vi:"Trứng"},
+      {word:"CAKE", vtype:"emoji", visual:"🍰", vi:"Bánh ngọt"},
+      {word:"JUICE", vtype:"emoji", visual:"🧃", vi:"Nước ép"},
+      {word:"NOODLE", vtype:"emoji", visual:"🍜", vi:"Mì"},
+      {word:"APPLE", vtype:"emoji", visual:"🍎", vi:"Quả táo"},
+      {word:"BANANA", vtype:"emoji", visual:"🍌", vi:"Quả chuối"},
+      {word:"CANDY", vtype:"emoji", visual:"🍬", vi:"Kẹo"},
     ]},
 ];
 
@@ -934,6 +997,7 @@ function renderRound(){
       const b = document.createElement('button');
       b.className = "option-btn";
       b.innerHTML = visualHTML(opt, 'big-opt');
+      b.dataset.word = opt.word;
       b.onclick = ()=> answerChoice(b, opt, target);
       wrap.appendChild(b);
     });
@@ -955,6 +1019,7 @@ function renderRound(){
       b.className = "option-btn";
       b.innerHTML = `${visualHTML(opt, 'opt-emoji')}<span>${opt.word}</span>`;
       if(opt.vtype!=='emoji') b.innerHTML = `${visualHTML(opt, opt.vtype==='color'?'opt-swatch':'opt-number')}<span>${opt.word}</span>`;
+      b.dataset.word = opt.word;
       b.onclick = ()=> answerChoice(b, opt, target);
       wrap.appendChild(b);
     });
@@ -973,6 +1038,7 @@ function renderRound(){
       const b = document.createElement('button');
       b.className = "option-btn";
       b.textContent = opt.word;
+      b.dataset.word = opt.word;
       b.onclick = ()=> answerChoice(b, opt, target);
       wrap.appendChild(b);
     });
@@ -1050,7 +1116,7 @@ function checkSpell(){
   document.getElementById('checkSpellBtn').disabled = true;
   document.querySelectorAll('.letter-tile').forEach(t=>t.disabled = true);
   slotRow.querySelectorAll('.spell-slot').forEach(s=> s.style.borderColor = correct ? 'var(--grass)' : 'var(--berry)');
-  resolveAnswer(correct, 15, correct ? null : word);
+  resolveAnswer(correct, 15, word);
 }
 
 function answerChoice(btnEl, chosen, target){
@@ -1062,11 +1128,12 @@ function answerChoice(btnEl, chosen, target){
   if(correct){ btnEl.classList.add('correct'); }
   else{
     btnEl.classList.add('wrong');
+    allBtns.forEach(b=>{ if(b.dataset.word === target.word) b.classList.add('correct'); });
   }
-  resolveAnswer(correct, 10, correct ? null : target.word);
+  resolveAnswer(correct, 10, target.word);
 }
 
-function resolveAnswer(correct, basePoints, correctWord){
+function resolveAnswer(correct, basePoints, targetWord){
   const timeTaken = elapsedSeconds();
   let bonus = 0;
   if(correct){
@@ -1082,18 +1149,10 @@ function resolveAnswer(correct, basePoints, correctWord){
     playTone(false);
   }
   updateHeader();
-  showFeedback(correct, bonus, correctWord);
-}
-function showFeedback(correct, bonus, correctWord){
-  const banner = document.getElementById('feedbackBanner');
-  banner.className = "feedback-banner show " + (correct ? "ok" : "no");
-  document.getElementById('fbEmoji').textContent = correct ? "✅" : "❌";
-  document.getElementById('fbText').textContent = correct ? "Chính xác luôn!" : (correctWord ? "Chưa đúng, đáp án là " + correctWord : "Chưa đúng rồi!");
-  document.getElementById('fbBonus').textContent = bonus > 0 ? `⚡ Nhanh tay! +${bonus} điểm thưởng` : "";
-  speak(correct ? "Great job!" : "Try again", "en-US");
+  speak(targetWord, "en-US"); // đọc lại từ vựng thay vì khen "Great job"
+  setTimeout(()=> nextRound(), 2000);
 }
 function nextRound(){
-  document.getElementById('feedbackBanner').classList.remove('show');
   current.awaitingNext = false;
   current.roundIdx += 1;
   if(current.roundIdx >= ROUNDS_PER_STATION) finishStation();
@@ -1170,6 +1229,7 @@ function renderBattleRound(){
     const b = document.createElement('button');
     b.className = "option-btn";
     b.textContent = opt.word;
+    b.dataset.word = opt.word;
     b.onclick = ()=> answerBattle(b, opt, target);
     wrap.appendChild(b);
   });
@@ -1187,17 +1247,14 @@ function answerBattle(btnEl, chosen, target){
     setTimeout(()=> monsterEmoji.classList.remove('hit'), 400);
   } else {
     btnEl.classList.add('wrong');
+    allBtns.forEach(b=>{ if(b.dataset.word === target.word) b.classList.add('correct'); });
     playTone(false);
   }
   renderBattleHeader();
-  document.getElementById('fbEmoji').textContent = correct ? "⚔️" : "🛡️";
-  document.getElementById('fbText').textContent = correct ? "Đánh trúng quái vật!" : "Quái vật né được rồi!";
-  document.getElementById('fbBonus').textContent = "";
-  document.getElementById('feedbackBanner').className = "feedback-banner show " + (correct ? "ok" : "no");
-  document.getElementById('fbNextBtn').onclick = nextBattleRound;
+  speak(target.word, "en-US"); // đọc lại từ vựng thay vì khen
+  setTimeout(()=> nextBattleRound(), 2000);
 }
 async function nextBattleRound(){
-  document.getElementById('feedbackBanner').classList.remove('show');
   battle.roundIdx += 1;
   if(battle.roundIdx >= 3){ await finishBattle(); }
   else renderBattleRound();
@@ -1206,7 +1263,6 @@ async function finishBattle(){
   battle.active = false;
   const t = getTopic(battle.topicKey);
   const win = battle.hits >= 2;
-  document.getElementById('fbNextBtn').onclick = nextRound;
 
   if(win){
     topicGems[battle.topicKey] = true;

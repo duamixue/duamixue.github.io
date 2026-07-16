@@ -81,6 +81,11 @@
       radial-gradient(circle 8px at 86% 48%, #5EC8D8 100%, transparent 101%),
       linear-gradient(160deg, #F0B75E, #C97F1F); }
   .shape-chest{ width:90px; height:78px; border-radius:18px; background:linear-gradient(160deg, #FFD166, #C98A2E); border:3px solid rgba(255,255,255,0.85); }
+  .shape-cloud{ width:112px; height:76px; border-radius:44px; border:3px solid rgba(255,255,255,0.85);
+    background:
+      radial-gradient(circle 24px at 22% 55%, #FF6F91 100%, transparent 101%),
+      radial-gradient(circle 20px at 80% 48%, #FF6F91 100%, transparent 101%),
+      linear-gradient(160deg, #FF9CB4, #E8506F); }
   .shape-icon{ position:relative; z-index:2; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.22)); }
 
   .island-caption{ margin-top:8px; text-align:center; width:100%; }
@@ -155,13 +160,6 @@
   .letter-tile.used{ visibility:hidden; }
   .spell-actions{ display:flex; gap:10px; justify-content:center; margin-top:14px; }
 
-  .feedback-banner{ position:fixed; left:0; right:0; bottom:0; padding:16px 18px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:'Fredoka',sans-serif; font-weight:600; font-size:17px; color:white; transform:translateY(120%); transition:transform .25s ease; z-index:10; }
-  .feedback-banner.show{ transform:translateY(0); }
-  .feedback-banner.ok{ background:var(--grass); }
-  .feedback-banner.no{ background:var(--berry); }
-  .feedback-banner .fb-text{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
-  .fb-bonus{ font-size:13px; opacity:0.9; display:block; font-weight:500; }
-
   .stars-row{ font-size:40px; margin:12px 0; letter-spacing:5px; }
   .confetti{ position:fixed; top:-20px; font-size:22px; z-index:5; animation:fall linear forwards; }
   @keyframes fall{ to{ transform:translateY(110vh) rotate(360deg); opacity:0.2; } }
@@ -187,6 +185,13 @@
 
   .chest{ font-size:90px; display:inline-block; }
   .chest.shake{ animation:shake .5s ease 2; }
+
+  .memory-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:9px; margin-top:8px; }
+  .memory-card{ aspect-ratio:1; border-radius:14px; border:none; cursor:pointer; background:linear-gradient(160deg,var(--sky),var(--sky-dark));
+    color:white; font-size:26px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); padding:4px; }
+  .memory-card.revealed{ background:var(--white); color:var(--plum); font-size:14px; font-weight:600; font-family:'Fredoka',sans-serif; }
+  .memory-card.matched{ background:#DFF3DC; color:var(--plum); font-size:13px; font-weight:600; font-family:'Fredoka',sans-serif; opacity:0.85; }
+  .memory-status{ font-size:13px; color:#7a6f7c; margin-top:12px; }
 </style>
 </head>
 <body>
@@ -203,8 +208,11 @@
 <div id="screen-welcome" class="screen active">
   <div class="app-frame">
     <div style="margin-top:20px;" class="mascot" id="mascotWelcome">🐥</div>
-    <h1 style="color:white; font-size:26px; margin-top:8px; text-shadow:0 3px 0 rgba(0,0,0,0.15); text-align:center;">Chíp Và Đảo Từ Vựng</h1>
-    <div class="speech-bubble">Chào bạn! Chíp cần người bạn đồng hành khám phá 4 vùng đất, đánh bại quái vật và mở rương báu. Cùng học tiếng Anh nhé!</div>
+    <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+      <h1 style="color:white; font-size:26px; text-shadow:0 3px 0 rgba(0,0,0,0.15); text-align:center;">Chíp Và Đảo Từ Vựng</h1>
+      <span style="background:var(--sun); color:var(--plum); font-family:'Fredoka',sans-serif; font-weight:700; font-size:12px; padding:3px 9px; border-radius:10px; box-shadow:0 3px 0 #d9a63e;">v2.0</span>
+    </div>
+    <div class="speech-bubble">Chào bạn! Chíp cần người bạn đồng hành khám phá 5 vùng đất, đánh bại thử thách và mở rương báu. Cùng học tiếng Anh nhé!</div>
 
     <div class="card" style="margin-top:20px;">
       <h3>Bé nào chơi hôm nay?</h3>
@@ -215,7 +223,31 @@
       <input type="text" id="customName" class="name-input" placeholder="Hoặc nhập tên khác...">
       <button class="btn" style="margin-top:6px;" onclick="startGame()">Ra khơi phiêu lưu 🚀</button>
     </div>
-    <div class="footer-note">4 vùng đất · 16 chặng học · 4 quái vật giữ rương báu</div>
+    <div class="footer-note">5 vùng đất · 25 chặng học · 5 người gác giữ rương báu</div>
+    <button class="btn secondary small" style="margin-top:12px;" onclick="show('screen-whatsnew')">🆕 Có gì mới trong bản 2.0?</button>
+  </div>
+</div>
+
+<div id="screen-whatsnew" class="screen">
+  <button class="top-back" onclick="show('screen-welcome')">←</button>
+  <div class="app-frame" style="margin-top:44px;">
+    <div class="mascot" style="font-size:60px;">🎉</div>
+    <div class="card" style="margin-top:12px; text-align:left;">
+      <h2 style="text-align:center;">Có Gì Mới — v2.0</h2>
+      <ul style="font-size:14px; line-height:1.7; color:var(--plum); padding-left:20px; margin-top:14px;">
+        <li><b>Vùng mới: Ngôi Nhà Cảm Xúc</b> ❤️ — học từ về gia đình (mẹ, bố, anh chị em) và cảm xúc (vui, buồn, tức giận, buồn ngủ, đói bụng) thay vì chỉ đồ vật quen thuộc</li>
+        <li><b>Cách học mới: Trí Nhớ</b> 🧠 — lật thẻ tìm cặp hình + từ khớp nhau, rèn trí nhớ thay vì chỉ chọn đáp án</li>
+        <li><b>Bản đồ phiêu lưu cong</b> nối 5 vùng đất bằng đường mòn có dấu chân, dẫn tới Bộ Sưu Tập Phần Thưởng</li>
+        <li><b>5 vùng học đa dạng</b>: Khu Rừng Động Vật, Xứ Sở Màu Sắc, Thế Giới Số Đếm, Thành Phố Đồ Vật, Ngôi Nhà Cảm Xúc — mỗi vùng một hình dạng và màu riêng</li>
+        <li><b>25 chặng chơi</b> với 5 dạng bài: Nghe Đoán, Chữ Cái Vui, Ghép Hình, Đánh Vần, Trí Nhớ</li>
+        <li><b>Độ khó tự thích ứng</b> theo phong độ + điểm thưởng tốc độ ⚡</li>
+        <li><b>Người gác giữ rương báu</b> — thắng thử thách để mở khóa viên ngọc của mỗi vùng</li>
+        <li><b>Avatar là ảnh thật</b> của Dừa và Mixue</li>
+        <li><b>Nhạc nền</b> có thể bật/tắt khi chơi</li>
+        <li><b>Lưu tiến trình</b> theo tên bé khi chơi trong Claude</li>
+      </ul>
+      <button class="btn green" style="margin-top:16px;" onclick="show('screen-welcome')">Về màn hình chính</button>
+    </div>
   </div>
 </div>
 
@@ -243,7 +275,7 @@
     <div style="text-align:center;">
       <div class="mascot" style="font-size:48px;" id="mapTopicEmoji">🐾</div>
       <h2 style="color:white; text-shadow:0 2px 0 rgba(0,0,0,0.15);" id="mapTopicTitle">Khu Rừng Động Vật</h2>
-      <div style="color:white; font-size:12.5px; opacity:0.85;" id="mapTopicSub">Hoàn thành 4 chặng để triệu hồi quái vật canh giữ rương báu</div>
+      <div style="color:white; font-size:12.5px; opacity:0.85;" id="mapTopicSub">Hoàn thành 5 chặng để triệu hồi quái vật canh giữ rương báu</div>
     </div>
     <div class="stone-path" id="stonePath"></div>
   </div>
@@ -346,15 +378,8 @@
   </div>
 </div>
 
-<div id="feedbackBanner" class="feedback-banner">
-  <div class="fb-text">
-    <span id="fbEmoji">✅</span>
-    <span><span id="fbText">Đúng rồi!</span><span class="fb-bonus" id="fbBonus"></span></span>
-  </div>
-  <button class="btn secondary small" id="fbNextBtn" onclick="nextRound()">Tiếp tục →</button>
-</div>
-
 <script>
+
 /* ================= DATA ================= */
 const TOPICS = [
   { key:"animals", title:"Khu Rừng Động Vật", terrain:"🌴", emoji:"🐾", gem:"🟢", gemName:"Ngọc Lục Bảo Rừng", shape:"shape-dolphin",
@@ -421,6 +446,20 @@ const TOPICS = [
       {word:"DOOR", vtype:"emoji", visual:"🚪", vi:"Cánh cửa"},
       {word:"BED", vtype:"emoji", visual:"🛏️", vi:"Cái giường"},
     ]},
+  { key:"family", title:"Ngôi Nhà Cảm Xúc", terrain:"🏡", emoji:"❤️", gem:"❤️", gemName:"Ngọc Trái Tim Yêu Thương", shape:"shape-cloud",
+    monster:{emoji:"🧸", name:"Gấu Bông Khổng Lồ"},
+    words:[
+      {word:"MOM", vtype:"emoji", visual:"👩", vi:"Mẹ"},
+      {word:"DAD", vtype:"emoji", visual:"👨", vi:"Bố"},
+      {word:"BABY", vtype:"emoji", visual:"👶", vi:"Em bé"},
+      {word:"SISTER", vtype:"emoji", visual:"👧", vi:"Chị/em gái"},
+      {word:"BROTHER", vtype:"emoji", visual:"👦", vi:"Anh/em trai"},
+      {word:"HAPPY", vtype:"emoji", visual:"😄", vi:"Vui vẻ"},
+      {word:"SAD", vtype:"emoji", visual:"😢", vi:"Buồn"},
+      {word:"ANGRY", vtype:"emoji", visual:"😠", vi:"Tức giận"},
+      {word:"SLEEPY", vtype:"emoji", visual:"😴", vi:"Buồn ngủ"},
+      {word:"HUNGRY", vtype:"emoji", visual:"🤤", vi:"Đói bụng"},
+    ]},
 ];
 
 const STATION_DEFS = [
@@ -428,6 +467,7 @@ const STATION_DEFS = [
   {key:"letter", title:"Chữ Cái Vui", sub:"Nghe chữ cái, chọn đúng hình", emoji:"🔤"},
   {key:"picture", title:"Ghép Hình", sub:"Nhìn hình, chọn đúng từ", emoji:"🖼️"},
   {key:"spell", title:"Đánh Vần", sub:"Ghép chữ cái thành từ đúng", emoji:"🔡"},
+  {key:"memory", title:"Trí Nhớ", sub:"Lật thẻ tìm đúng cặp đôi", emoji:"🧠"},
 ];
 const ROUNDS_PER_STATION = 5;
 const ROUND_SECONDS = 8;
@@ -721,6 +761,7 @@ function showAchievements(){
 
 /* ================= NORMAL STATION GAMEPLAY ================= */
 function beginStation(topicKey, stationKey){
+  if(stationKey === "memory"){ beginMemoryGame(topicKey); return; }
   battle.active = false;
   current.topicKey = topicKey;
   current.stationKey = stationKey;
@@ -737,11 +778,107 @@ function beginStation(topicKey, stationKey){
 
   document.getElementById('battleHeaderWrap').innerHTML = "";
   document.getElementById('normalHeader').style.display = "flex";
+  document.getElementById('timerFill').parentElement.style.display = "block";
   document.getElementById('scoreLabel').textContent = "0";
   document.getElementById('streakPill').style.display = "none";
   document.getElementById('progressFill').style.width = "0%";
   show('screen-game');
   renderRound();
+}
+
+/* ================= MEMORY MATCH (Trí Nhớ) — new mechanic: flip cards, match picture with word ================= */
+let memory = { topicKey:"", cards:[], flippedIdx:[], matchedIds:new Set(), mismatches:0, lock:false, totalPairs:0 };
+
+function beginMemoryGame(topicKey){
+  battle.active = false;
+  current.topicKey = topicKey;
+  current.stationKey = "memory";
+  const topic = getTopic(topicKey);
+  const chosen = pickN(topic.words, 4);
+  let cards = [];
+  chosen.forEach(w=>{
+    cards.push({pairId:w.word, kind:"visual", data:w});
+    cards.push({pairId:w.word, kind:"word", data:w});
+  });
+  memory = { topicKey, cards: shuffle(cards), flippedIdx:[], matchedIds:new Set(), mismatches:0, lock:false, totalPairs:chosen.length };
+
+  document.getElementById('battleHeaderWrap').innerHTML = "";
+  document.getElementById('normalHeader').style.display = "flex";
+  document.getElementById('timerFill').parentElement.style.display = "none";
+  document.getElementById('streakPill').style.display = "none";
+  document.getElementById('scoreLabel').textContent = "0";
+  document.getElementById('progressFill').style.width = "0%";
+  show('screen-game');
+  renderMemoryBoard();
+}
+function renderMemoryBoard(){
+  document.getElementById('progressFill').style.width = Math.round((memory.matchedIds.size/memory.totalPairs)*100) + "%";
+  const cardEl = document.getElementById('gameCard');
+  cardEl.innerHTML = `
+    <div class="prompt-text">Lật 2 thẻ để tìm hình và từ khớp nhau nhé!</div>
+    <div class="memory-grid" id="memGrid"></div>
+    <div class="memory-status">Cặp đúng: ${memory.matchedIds.size}/${memory.totalPairs} · Lượt sai: ${memory.mismatches}</div>
+  `;
+  const grid = document.getElementById('memGrid');
+  memory.cards.forEach((c, idx)=>{
+    const isMatched = memory.matchedIds.has(c.pairId);
+    const isFlipped = memory.flippedIdx.includes(idx);
+    const btn = document.createElement('button');
+    btn.className = "memory-card" + (isMatched ? " matched" : (isFlipped ? " revealed" : ""));
+    if(isMatched || isFlipped){
+      btn.innerHTML = c.kind === "word" ? c.data.word : visualHTML(c.data, 'opt-emoji');
+    } else {
+      btn.textContent = "❓";
+    }
+    btn.onclick = ()=> flipMemoryCard(idx);
+    grid.appendChild(btn);
+  });
+}
+function flipMemoryCard(idx){
+  if(memory.lock) return;
+  if(memory.matchedIds.has(memory.cards[idx].pairId)) return;
+  if(memory.flippedIdx.includes(idx)) return;
+  memory.flippedIdx.push(idx);
+  renderMemoryBoard();
+  if(memory.flippedIdx.length === 2){
+    memory.lock = true;
+    const [i1, i2] = memory.flippedIdx;
+    const c1 = memory.cards[i1], c2 = memory.cards[i2];
+    if(c1.pairId === c2.pairId && c1.kind !== c2.kind){
+      memory.matchedIds.add(c1.pairId);
+      playTone(true);
+      speak(c1.data.word);
+      setTimeout(()=>{
+        memory.flippedIdx = [];
+        memory.lock = false;
+        renderMemoryBoard();
+        if(memory.matchedIds.size >= memory.totalPairs) finishMemoryStation();
+      }, 500);
+    } else {
+      memory.mismatches += 1;
+      playTone(false);
+      setTimeout(()=>{
+        memory.flippedIdx = [];
+        memory.lock = false;
+        renderMemoryBoard();
+      }, 900);
+    }
+  }
+}
+async function finishMemoryStation(){
+  let stars = 1;
+  if(memory.mismatches <= 1) stars = 3; else if(memory.mismatches <= 3) stars = 2;
+  const id = memory.topicKey + "-memory";
+  stationStars[id] = Math.max(stationStars[id], stars);
+  await saveProgress();
+
+  document.getElementById('resultTitle').textContent = "Trí Nhớ hoàn thành!";
+  document.getElementById('resultStars').textContent = "⭐".repeat(stars) + "☆".repeat(3-stars);
+  document.getElementById('resultDetail').textContent = `Sai ${memory.mismatches} lượt · Tìm đủ ${memory.totalPairs} cặp`;
+  document.getElementById('resultMascot').textContent = stars === 3 ? "🥳" : (stars === 2 ? "🐥" : "💪");
+  current.topicKey = memory.topicKey;
+  current.stationKey = "memory";
+  show('screen-result');
 }
 function updateHeader(){
   const pct = Math.round((current.roundIdx / ROUNDS_PER_STATION) * 100);
@@ -783,6 +920,7 @@ function renderRound(){
       const b = document.createElement('button');
       b.className = "option-btn";
       b.innerHTML = visualHTML(opt, 'big-opt');
+      b.dataset.word = opt.word;
       b.onclick = ()=> answerChoice(b, opt, target);
       wrap.appendChild(b);
     });
@@ -804,6 +942,7 @@ function renderRound(){
       b.className = "option-btn";
       b.innerHTML = `${visualHTML(opt, 'opt-emoji')}<span>${opt.word}</span>`;
       if(opt.vtype!=='emoji') b.innerHTML = `${visualHTML(opt, opt.vtype==='color'?'opt-swatch':'opt-number')}<span>${opt.word}</span>`;
+      b.dataset.word = opt.word;
       b.onclick = ()=> answerChoice(b, opt, target);
       wrap.appendChild(b);
     });
@@ -822,6 +961,7 @@ function renderRound(){
       const b = document.createElement('button');
       b.className = "option-btn";
       b.textContent = opt.word;
+      b.dataset.word = opt.word;
       b.onclick = ()=> answerChoice(b, opt, target);
       wrap.appendChild(b);
     });
@@ -899,7 +1039,7 @@ function checkSpell(){
   document.getElementById('checkSpellBtn').disabled = true;
   document.querySelectorAll('.letter-tile').forEach(t=>t.disabled = true);
   slotRow.querySelectorAll('.spell-slot').forEach(s=> s.style.borderColor = correct ? 'var(--grass)' : 'var(--berry)');
-  resolveAnswer(correct, 15, correct ? null : word);
+  resolveAnswer(correct, 15, word);
 }
 
 function answerChoice(btnEl, chosen, target){
@@ -911,11 +1051,12 @@ function answerChoice(btnEl, chosen, target){
   if(correct){ btnEl.classList.add('correct'); }
   else{
     btnEl.classList.add('wrong');
+    allBtns.forEach(b=>{ if(b.dataset.word === target.word) b.classList.add('correct'); });
   }
-  resolveAnswer(correct, 10, correct ? null : target.word);
+  resolveAnswer(correct, 10, target.word);
 }
 
-function resolveAnswer(correct, basePoints, correctWord){
+function resolveAnswer(correct, basePoints, targetWord){
   const timeTaken = elapsedSeconds();
   let bonus = 0;
   if(correct){
@@ -931,18 +1072,10 @@ function resolveAnswer(correct, basePoints, correctWord){
     playTone(false);
   }
   updateHeader();
-  showFeedback(correct, bonus, correctWord);
-}
-function showFeedback(correct, bonus, correctWord){
-  const banner = document.getElementById('feedbackBanner');
-  banner.className = "feedback-banner show " + (correct ? "ok" : "no");
-  document.getElementById('fbEmoji').textContent = correct ? "✅" : "❌";
-  document.getElementById('fbText').textContent = correct ? "Chính xác luôn!" : (correctWord ? "Chưa đúng, đáp án là " + correctWord : "Chưa đúng rồi!");
-  document.getElementById('fbBonus').textContent = bonus > 0 ? `⚡ Nhanh tay! +${bonus} điểm thưởng` : "";
-  speak(correct ? "Great job!" : "Try again", "en-US");
+  speak(targetWord, "en-US"); // đọc lại từ vựng thay vì khen "Great job"
+  setTimeout(()=> nextRound(), 2000);
 }
 function nextRound(){
-  document.getElementById('feedbackBanner').classList.remove('show');
   current.awaitingNext = false;
   current.roundIdx += 1;
   if(current.roundIdx >= ROUNDS_PER_STATION) finishStation();
@@ -1019,6 +1152,7 @@ function renderBattleRound(){
     const b = document.createElement('button');
     b.className = "option-btn";
     b.textContent = opt.word;
+    b.dataset.word = opt.word;
     b.onclick = ()=> answerBattle(b, opt, target);
     wrap.appendChild(b);
   });
@@ -1036,17 +1170,14 @@ function answerBattle(btnEl, chosen, target){
     setTimeout(()=> monsterEmoji.classList.remove('hit'), 400);
   } else {
     btnEl.classList.add('wrong');
+    allBtns.forEach(b=>{ if(b.dataset.word === target.word) b.classList.add('correct'); });
     playTone(false);
   }
   renderBattleHeader();
-  document.getElementById('fbEmoji').textContent = correct ? "⚔️" : "🛡️";
-  document.getElementById('fbText').textContent = correct ? "Đánh trúng quái vật!" : "Quái vật né được rồi!";
-  document.getElementById('fbBonus').textContent = "";
-  document.getElementById('feedbackBanner').className = "feedback-banner show " + (correct ? "ok" : "no");
-  document.getElementById('fbNextBtn').onclick = nextBattleRound;
+  speak(target.word, "en-US"); // đọc lại từ vựng thay vì khen
+  setTimeout(()=> nextBattleRound(), 2000);
 }
 async function nextBattleRound(){
-  document.getElementById('feedbackBanner').classList.remove('show');
   battle.roundIdx += 1;
   if(battle.roundIdx >= 3){ await finishBattle(); }
   else renderBattleRound();
@@ -1055,7 +1186,6 @@ async function finishBattle(){
   battle.active = false;
   const t = getTopic(battle.topicKey);
   const win = battle.hits >= 2;
-  document.getElementById('fbNextBtn').onclick = nextRound;
 
   if(win){
     topicGems[battle.topicKey] = true;
