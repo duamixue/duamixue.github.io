@@ -977,6 +977,20 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ─────────────────────────────────────────
+   CHẾ ĐỘ TV (Tizen/webOS/Smart TV) — trình duyệt trên TV thường RAM/GPU yếu,
+   dễ crash khi phải chạy đồng thời canvas hạt vô hạn + nhiều transform/backdrop-filter
+   (nhất là phần bản đồ). Tắt bớt các hiệu ứng nặng, giữ nguyên bố cục & nội dung.
+───────────────────────────────────────── */
+html.tv-mode *, html.tv-mode *::before, html.tv-mode *::after {
+  animation: none !important;
+  transition: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.tv-mode #particles-canvas,
+html.tv-mode .map-sparkle { display: none !important; }
 </style>
 </head>
 <body>
@@ -1246,6 +1260,14 @@ footer {
 
 <script>
 /* ══════════════════════════════════════════════════
+   CHẾ ĐỘ TV — nhận diện trình duyệt Smart TV (Samsung Tizen, LG webOS...) để tắt
+   bớt hiệu ứng nặng (canvas hạt, backdrop-filter, animation), tránh crash do
+   RAM/GPU trên TV yếu hơn điện thoại/máy tính nhiều.
+══════════════════════════════════════════════════ */
+const IS_TV = /Tizen|SmartTV|Smart-TV|WebOS|Web0S|HbbTV|NetCast|AFTT|AFTS|BRAVIA/i.test(navigator.userAgent);
+if(IS_TV) document.documentElement.classList.add('tv-mode');
+
+/* ══════════════════════════════════════════════════
    DATA — được tải từ items.json (đặt CÙNG THƯ MỤC với index.html)
    Thêm bài mới: mở items.json, thêm 1 object vào mảng, KHÔNG sửa file này
 ══════════════════════════════════════════════════ */
@@ -1395,6 +1417,7 @@ const LABEL_LAYOUT = {
 /* Tạo HTML cho chữ uốn cong dạng vòng cung ôm quanh icon (giống chữ trên huy hiệu tròn).
    baseAngle: 0=trên đỉnh, 90=bên phải, -90=bên trái, 180=phía dưới (độ, cùng chiều kim đồng hồ) */
 function curvedLabelHTML(text, radius, arcDeg, baseAngle){
+  if(IS_TV) return `<span class="node-label">${text}</span>`; // TV: bỏ hiệu ứng chữ cong (nhiều span/transform), dùng nhãn phẳng
   const chars = text.split('');
   const n = chars.length;
   const step = n > 1 ? arcDeg / (n - 1) : 0;
@@ -1428,7 +1451,7 @@ function renderSubjectMap(){
 
   // rắc vài ngôi sao lấp lánh dọc đường cho vui mắt
   const sparkleWrap = document.getElementById('map-sparkles');
-  if(sparkleWrap && !sparkleWrap.dataset.done){
+  if(sparkleWrap && !sparkleWrap.dataset.done && !IS_TV){
     let shtml = '';
     [0.12, 0.3, 0.5, 0.68, 0.85].forEach((t, i) => {
       const p = pathBase.getPointAtLength(t * pathBase.getTotalLength());
@@ -1907,6 +1930,7 @@ hero.addEventListener('mousemove', e => {
 
 /* ══ PARTICLES ══ */
 (function(){
+  if(IS_TV) return; // TV: bỏ hẳn hiệu ứng hạt nền, đỡ tốn CPU/GPU liên tục
   const canvas = document.getElementById('particles-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, particles = [];
