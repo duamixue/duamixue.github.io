@@ -991,6 +991,14 @@ html.tv-mode *, html.tv-mode *::before, html.tv-mode *::after {
 }
 html.tv-mode #particles-canvas,
 html.tv-mode .map-sparkle { display: none !important; }
+/* Các phần tử mặc định opacity:0 và CHỈ hiện ra nhờ animation (map-node, card) cần được
+   ép về trạng thái hiển thị cuối cùng khi animation đã bị tắt ở trên, nếu không sẽ kẹt vô hình. */
+html.tv-mode .map-node,
+html.tv-mode .card,
+html.tv-mode .edu-card {
+  opacity: 1 !important;
+  transform: none !important;
+}
 </style>
 </head>
 <body>
